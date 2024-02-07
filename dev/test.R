@@ -69,9 +69,13 @@ res_warm_starts <- rdmc(X_NA, nb_cat = nb_cat, lambda = lambdas, type = type,
 # check computation time
 library("microbenchmark")
 microbenchmark(
-  R = lapply(lambdas, function(lambda) {
+  R_full = lapply(lambdas, function(lambda) {
     rdmc_R(X_NA, nb_cat = nb_cat, type = type, lambda = lambda, 
-           loss = loss,  max_iter = max_iter)
+           loss = loss, max_iter = max_iter)
+  }),
+  R_10_iter = lapply(lambdas, function(lambda) {
+    rdmc_R(X_NA, nb_cat = nb_cat, type = type, lambda = lambda, 
+           loss = loss, max_iter = 10)
   }),
   Cpp_cold_starts = lapply(lambdas, function(lambda) {
     rdmc(X_NA, nb_cat = nb_cat, lambda = lambda, type = type, 
