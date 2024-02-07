@@ -12,7 +12,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // rdmc_cpp
-Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA, const arma::uword& nb_cat, const double& lambda, const char& type, const double& svd_tol, const double& delta, double mu, const double& conv_tol, const arma::uword& max_iter);
+Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA, const arma::uword& nb_cat, const arma::vec& lambda, const char& type, const double& svd_tol, const double& delta, double mu, const double& conv_tol, const arma::uword& max_iter);
 RcppExport SEXP _rdmc_rdmc_cpp(SEXP XSEXP, SEXP is_NASEXP, SEXP nb_catSEXP, SEXP lambdaSEXP, SEXP typeSEXP, SEXP svd_tolSEXP, SEXP deltaSEXP, SEXP muSEXP, SEXP conv_tolSEXP, SEXP max_iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -20,7 +20,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const arma::umat& >::type is_NA(is_NASEXP);
     Rcpp::traits::input_parameter< const arma::uword& >::type nb_cat(nb_catSEXP);
-    Rcpp::traits::input_parameter< const double& >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type lambda(lambdaSEXP);
     Rcpp::traits::input_parameter< const char& >::type type(typeSEXP);
     Rcpp::traits::input_parameter< const double& >::type svd_tol(svd_tolSEXP);
     Rcpp::traits::input_parameter< const double& >::type delta(deltaSEXP);

@@ -130,7 +130,7 @@ void rdmc_cpp(const arma::mat& X, const arma::uword& n, const arma::uword& p,
 // function to be called from R without starting values
 // [[Rcpp::export]]
 Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA, 
-                    const arma::uword& nb_cat, const double& lambda, 
+                    const arma::uword& nb_cat, const arma::vec& lambda, 
                     const char& type, const double& svd_tol, 
                     const double& delta, double mu, const double& conv_tol, 
                     const arma::uword& max_iter) {
@@ -160,57 +160,98 @@ Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA,
   
   // initialize Theta
   arma::mat Theta(n, p);
-  Theta.zeros();
+  // Theta.zeros();
   
   // find indices of missing and nonmissing cells of X
   arma::uvec ind_NA = find(is_NA == 1);
   arma::uvec ind_not_NA = find(is_NA == 0);
   
-  // call workhorse function with starting values
+  // initialize variables related to convergence 
+  // (to be updated by workhorse function)
   double frobenius;
   bool converged;
   arma::uword nb_iter;
-  rdmc_cpp(X, n, p, ind_NA, ind_not_NA, nb_cat, lambda, type, svd_tol, delta, 
-           mu, conv_tol, max_iter, L, Z, Theta, frobenius, converged, nb_iter);
   
-  // return list of results
-  return Rcpp::List::create(Rcpp::Named("L") = L, 
-                            Rcpp::Named("Z") = Z, 
-                            Rcpp::Named("Theta") = Theta, 
-                            Rcpp::Named("frobenius") = frobenius,
-                            Rcpp::Named("converged") = converged, 
-                            Rcpp::Named("nb_iter") = nb_iter);
+  // different behavior depending on whether we have one value of the 
+  // regularization parameter lambda or mulitple values
+  if (lambda.n_elem == 1) {
+    
+    // reset Theta to zeros
+    Theta.zeros();
+    // call workhorse function with initial values
+    rdmc_cpp(X, n, p, ind_NA, ind_not_NA, nb_cat, lambda(0), type, 
+             svd_tol, delta, mu, conv_tol, max_iter, L, Z, Theta, 
+             frobenius, converged, nb_iter);
+    // return list of results
+    return Rcpp::List::create(Rcpp::Named("lambda") = lambda(0), 
+                              Rcpp::Named("L") = L, 
+                              Rcpp::Named("Z") = Z, 
+                              Rcpp::Named("Theta") = Theta, 
+                              Rcpp::Named("frobenius") = frobenius,
+                              Rcpp::Named("converged") = converged, 
+                              Rcpp::Named("nb_iter") = nb_iter);
+    
+  } else {
+    
+    // loop over values of the regularization parameter lambda
+    arma::uword l;
+    Rcpp::List out(lambda.n_elem);
+    for (l = 0; l < lambda.n_elem; l++) {
+      // reset Theta to zeros
+      Theta.zeros();
+      // call workhorse function with starting values: note that solutions 
+      // for previous value of lambda are used as starting values
+      rdmc_cpp(X, n, p, ind_NA, ind_not_NA, nb_cat, lambda(l), type, 
+               svd_tol, delta, mu, conv_tol, max_iter, L, Z, Theta,
+               frobenius, converged, nb_iter);
+      // add list of results for current value of lambda: note that a copy of 
+      // the objects that are stored in the list so that they are not modified 
+      // in future calls to rdmc_cpp()
+      out[l] = Rcpp::List::create(Rcpp::Named("lambda") = lambda(l), 
+                                  Rcpp::Named("L") = L, 
+                                  Rcpp::Named("Z") = Z, 
+                                  Rcpp::Named("Theta") = Theta,
+                                  Rcpp::Named("frobenius") = frobenius,
+                                  Rcpp::Named("converged") = converged, 
+                                  Rcpp::Named("nb_iter") = nb_iter);
+    }
+    
+    // return list of results for all values of lambda
+    return out;
+    
+  }
   
 }
 
 
 // // function to be called from R with starting values
 // // [[Rcpp::export]]
-// Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA, 
-//                     const arma::uword& nb_cat, const double& lambda, 
-//                     const char& type, const double& svd_tol, 
-//                     const double& delta, double mu, const double& conv_tol, 
-//                     const arma::uword& max_iter, const arma::mat& L_start, 
-//                     const arma::mat& Z_start, const arma::mat& Theta_start) {
-//   
+// Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA,
+//                     const arma::uword& nb_cat, const double& lambda,
+//                     const char& type, const double& svd_tol,
+//                     const double& delta, double mu, const double& conv_tol,
+//                     const arma::uword& max_iter, 
+//                     // starting values are not passed as a reference so that
+//                     // a copy is created that can safely be modified
+//                     const arma::mat L, const arma::mat Z, const arma::mat Theta) {
+// 
 //   // find indices of missing and nonmissing cells of X
 //   arma::uvec ind_NA = find(is_NA == 1);
 //   arma::uvec ind_not_NA = find(is_NA == 0);
-//   
+// 
 //   // call workhorse function with starting values
-//   arma::mat L = L_start, Z = Z_start, Theta = Theta_start;
 //   double frobenius;
 //   bool converged;
 //   arma::uword nb_iter;
-//   rdmc_cpp(X, n, p, ind_NA, ind_not_NA, nb_cat, lambda, type, svd_tol, delta, 
+//   rdmc_cpp(X, n, p, ind_NA, ind_not_NA, nb_cat, lambda, type, svd_tol, delta,
 //            mu, conv_tol, max_iter, L, Z, Theta, frobenius, converged, nb_iter);
-//   
+// 
 //   // return list of results
-//   return Rcpp::List::create(Rcpp::Named("L") = L, 
-//                             Rcpp::Named("Z") = Z, 
-//                             Rcpp::Named("Theta") = Theta, 
+//   return Rcpp::List::create(Rcpp::Named("L") = L,
+//                             Rcpp::Named("Z") = Z,
+//                             Rcpp::Named("Theta") = Theta,
 //                             Rcpp::Named("frobenius") = frobenius,
-//                             Rcpp::Named("converged") = converged, 
+//                             Rcpp::Named("converged") = converged,
 //                             Rcpp::Named("nb_iter") = nb_iter);
-//   
+// 
 // }
