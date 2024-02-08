@@ -160,7 +160,7 @@ Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA,
   
   // initialize Theta
   arma::mat Theta(n, p);
-  // Theta.zeros();
+  Theta.zeros();
   
   // find indices of missing and nonmissing cells of X
   arma::uvec ind_NA = find(is_NA == 1);
@@ -177,7 +177,7 @@ Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA,
   if (lambda.n_elem == 1) {
     
     // reset Theta to zeros
-    Theta.zeros();
+    // Theta.zeros();
     // call workhorse function with initial values
     rdmc_cpp(X, n, p, ind_NA, ind_not_NA, values, lambda(0), type, 
              svd_tol, delta, mu, conv_tol, max_iter, L, Z, Theta, 
@@ -198,7 +198,7 @@ Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA,
     Rcpp::List out(lambda.n_elem);
     for (l = 0; l < lambda.n_elem; l++) {
       // reset Theta to zeros
-      Theta.zeros();
+      // Theta.zeros();
       // call workhorse function with starting values: note that solutions
       // for previous value of lambda are used as starting values
       rdmc_cpp(X, n, p, ind_NA, ind_not_NA, values, lambda(l), type,
