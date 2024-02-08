@@ -12,14 +12,14 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // rdmc_cpp
-Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA, const arma::uword& nb_cat, const arma::vec& lambda, const char& type, const double& svd_tol, const double& delta, double mu, const double& conv_tol, const arma::uword& max_iter);
-RcppExport SEXP _rdmc_rdmc_cpp(SEXP XSEXP, SEXP is_NASEXP, SEXP nb_catSEXP, SEXP lambdaSEXP, SEXP typeSEXP, SEXP svd_tolSEXP, SEXP deltaSEXP, SEXP muSEXP, SEXP conv_tolSEXP, SEXP max_iterSEXP) {
+Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA, const arma::vec& values, const arma::vec& lambda, const char& type, const double& svd_tol, const double& delta, double mu, const double& conv_tol, const arma::uword& max_iter);
+RcppExport SEXP _rdmc_rdmc_cpp(SEXP XSEXP, SEXP is_NASEXP, SEXP valuesSEXP, SEXP lambdaSEXP, SEXP typeSEXP, SEXP svd_tolSEXP, SEXP deltaSEXP, SEXP muSEXP, SEXP conv_tolSEXP, SEXP max_iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const arma::umat& >::type is_NA(is_NASEXP);
-    Rcpp::traits::input_parameter< const arma::uword& >::type nb_cat(nb_catSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type values(valuesSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type lambda(lambdaSEXP);
     Rcpp::traits::input_parameter< const char& >::type type(typeSEXP);
     Rcpp::traits::input_parameter< const double& >::type svd_tol(svd_tolSEXP);
@@ -27,7 +27,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type mu(muSEXP);
     Rcpp::traits::input_parameter< const double& >::type conv_tol(conv_tolSEXP);
     Rcpp::traits::input_parameter< const arma::uword& >::type max_iter(max_iterSEXP);
-    rcpp_result_gen = Rcpp::wrap(rdmc_cpp(X, is_NA, nb_cat, lambda, type, svd_tol, delta, mu, conv_tol, max_iter));
+    rcpp_result_gen = Rcpp::wrap(rdmc_cpp(X, is_NA, values, lambda, type, svd_tol, delta, mu, conv_tol, max_iter));
     return rcpp_result_gen;
 END_RCPP
 }
