@@ -23,33 +23,39 @@ void rdmc_cpp(const arma::mat& X, const arma::uword& n, const arma::uword& p,
               double mu, const double& conv_tol, const arma::uword& max_iter, 
               // output to be returned through arguments
               arma::mat& L, arma::mat& Z, arma::mat& Theta, 
-              double& frobenius, bool& converged, arma::uword& nb_iter) {
+              double& objective, bool& converged, arma::uword& nb_iter) {
   
   // initializations
-  frobenius = R_PosInf;
+  objective = R_PosInf;
   converged = false;
   nb_iter = 0;
   
-  // iterate update steps of Z and L
-  arma::uword rank, i, j, k, replace_i, nb_values = values.n_elem;
-  arma::mat U, V;
+  // iterate update steps of Z, L, and Theta
+  arma::uword rank, i, j, k, replace_i, nb_values = values.n_elem, which_min;
+  arma::mat U, V, L_minus_Z;
   arma::vec d;
-  double tmp, which_min, min, objective;
+  double nuclear_norm, tmp, objective_step2, objective_step2_min, 
+    loss_norm, loss, loss_min, previous_objective, change;
   while (!converged && nb_iter < max_iter) {
     
     // step 1: update Z keeping L fixed
     // soft-thresholding of L + 1/mu * Theta
     
     // compute SVD
-    // TODO: add option to use softImpute-ALS or SVD-ALS instead of the SVD
+    // TODO: add option to use SVD-ALS or softImpute-ALS instead of the SVD
     arma::svd(U, d, V, L + Theta/mu);
     // adjust singular values for our parametrization
     d -= lambda / mu;
     // compute rank of soft-thresholded singular values
+    nuclear_norm = 0;
     rank = 0;
     for (j = 0; j < d.n_elem; j++) {
-      if (d(j) > svd_tol) rank++;
+      if (d(j) > svd_tol) {
+        nuclear_norm += d(j);
+        rank++;
+      }
     }
+    // Rprintf("rank = %d\n", rank);
     if (rank == 0) break;
     // update Z from the soft-thresholded SVD
     // (efficient implementation of matrix multiplications without copying parts)
@@ -73,17 +79,17 @@ void rdmc_cpp(const arma::mat& X, const arma::uword& n, const arma::uword& p,
       tmp = -Z(replace_i) + Theta(replace_i)/mu;
       // initialize the minimum
       which_min = 0;
-      min = R_PosInf;
+      objective_step2_min = R_PosInf;
       // loop over the different values and choose the one that minimizes the 
       // objective function
       for (k = 0; k < nb_values; k++) {
         // The paper says to take the argmin of the squared expression. But 
         // this is equivalent to taking the argmin of the absolute value, 
         // which is faster to compute.
-        objective = std::abs(values(k) + tmp);
-        if (objective < min) {
+        objective_step2 = std::abs(values(k) + tmp);
+        if (objective_step2 < objective_step2_min) {
           which_min = k;
-          min = objective;
+          objective_step2_min = objective_step2;
         }
       }
       // update the element of L with the argmin of the objective function
@@ -91,6 +97,7 @@ void rdmc_cpp(const arma::mat& X, const arma::uword& n, const arma::uword& p,
     }
     
     // update L for cells with observed values in X
+    loss_norm = 0;
     for (i = 0; i < ind_not_NA.n_elem; i++) {
       // index of current cell to be updated
       replace_i = ind_not_NA(i);
@@ -98,31 +105,49 @@ void rdmc_cpp(const arma::mat& X, const arma::uword& n, const arma::uword& p,
       tmp = -Z(replace_i) + Theta(replace_i)/mu;
       // initialize the minimum
       which_min = 0;
-      min = R_PosInf;
+      objective_step2_min = R_PosInf;
       // loop over the different values and choose the one that minimizes the 
       // objective function
       for (k = 0; k < nb_values; k++) {
-        // objective = std::abs(values(k) - X(replace_i)) + mu * std::pow(values(k) + tmp, 2.0)/2.0;
-        objective = pseudo_huber(values(k) - X(replace_i), 1.0) + mu * std::pow(values(k) + tmp, 2.0)/2.0;
-        if (objective < min) {
+        // loss = std::abs(values(k) - X(replace_i));
+        loss = pseudo_huber(values(k) - X(replace_i), 1.0);
+        objective_step2 = loss + mu * std::pow(values(k) + tmp, 2.0)/2.0;
+        if (objective_step2 < objective_step2_min) {
           which_min = k;
-          min = objective;
+          loss_min = loss;
+          objective_step2_min = objective_step2;
         }
       }
       // update the element of L with the argmin of the objective function
       L(replace_i) = values(which_min);
+      // update the norm given by loss function
+      loss_norm += loss_min;
     }
     
     // step 3: update Lagrange multiplier Theta and parameter mu
-    Theta = Theta + mu * (L - Z);
+    L_minus_Z = L - Z;
+    Theta = Theta + mu * L_minus_Z;
     mu = delta * mu;
     
-    // update Frobenius norm (for convergence criterion) and iteration counter
-    frobenius = arma::norm(L - Z, "fro");
-    converged = frobenius < conv_tol;
+    // update iteration counter
     nb_iter++;
+    // update objective function for convergence criterion
+    previous_objective = objective;
+    objective = loss_norm + lambda * nuclear_norm + arma::dot(Theta, L_minus_Z) +
+      mu * arma::norm(L_minus_Z, "fro") / 2.0;
+    // Rprintf("objective function = %f\n", objective);
+    // compute relative change and check convergence
+    if (nb_iter > 1) {
+      // we can't compute relative change in the first iteration since the 
+      // objective function is initialized with infinity
+      change = std::abs((objective - previous_objective) / previous_objective);
+      // Rprintf("relative change = %f\n", change);
+      converged = change < conv_tol;
+    }
     
   }
+  
+  // Rprintf("number of iterations = %d\n", nb_iter);
   
 }
 
@@ -168,7 +193,7 @@ Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA,
   
   // initialize variables related to convergence 
   // (to be updated by workhorse function)
-  double frobenius;
+  double objective;
   bool converged;
   arma::uword nb_iter;
   
@@ -176,18 +201,16 @@ Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA,
   // regularization parameter lambda or mulitple values
   if (lambda.n_elem == 1) {
     
-    // reset Theta to zeros
-    // Theta.zeros();
     // call workhorse function with initial values
     rdmc_cpp(X, n, p, ind_NA, ind_not_NA, values, lambda(0), type, 
              svd_tol, delta, mu, conv_tol, max_iter, L, Z, Theta, 
-             frobenius, converged, nb_iter);
+             objective, converged, nb_iter);
     // return list of results
     return Rcpp::List::create(Rcpp::Named("lambda") = lambda(0), 
                               Rcpp::Named("L") = L, 
                               Rcpp::Named("Z") = Z, 
                               Rcpp::Named("Theta") = Theta, 
-                              Rcpp::Named("frobenius") = frobenius,
+                              Rcpp::Named("objective") = objective,
                               Rcpp::Named("converged") = converged, 
                               Rcpp::Named("nb_iter") = nb_iter);
     
@@ -197,13 +220,12 @@ Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA,
     arma::uword l;
     Rcpp::List out(lambda.n_elem);
     for (l = 0; l < lambda.n_elem; l++) {
-      // reset Theta to zeros
-      // Theta.zeros();
+      // Rprintf("\nlambda = %f\n", lambda(l));
       // call workhorse function with starting values: note that solutions
       // for previous value of lambda are used as starting values
       rdmc_cpp(X, n, p, ind_NA, ind_not_NA, values, lambda(l), type,
                svd_tol, delta, mu, conv_tol, max_iter, L, Z, Theta,
-               frobenius, converged, nb_iter);
+               objective, converged, nb_iter);
       // add list of results for current value of lambda: note that a copy of
       // the objects that are stored in the list so that they are not modified
       // in future calls to rdmc_cpp()
@@ -211,7 +233,7 @@ Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA,
                                   Rcpp::Named("L") = L,
                                   Rcpp::Named("Z") = Z,
                                   Rcpp::Named("Theta") = Theta,
-                                  Rcpp::Named("frobenius") = frobenius,
+                                  Rcpp::Named("objective") = objective,
                                   Rcpp::Named("converged") = converged,
                                   Rcpp::Named("nb_iter") = nb_iter);
     }
@@ -240,17 +262,18 @@ Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA,
 //   arma::uvec ind_not_NA = find(is_NA == 0);
 // 
 //   // call workhorse function with starting values
-//   double frobenius;
+//   double objective;
 //   bool converged;
 //   arma::uword nb_iter;
 //   rdmc_cpp(X, n, p, ind_NA, ind_not_NA, nb_cat, lambda, type, svd_tol, delta,
-//            mu, conv_tol, max_iter, L, Z, Theta, frobenius, converged, nb_iter);
+//            mu, conv_tol, max_iter, L, Z, Theta, objective, converged, nb_iter);
 // 
 //   // return list of results
-//   return Rcpp::List::create(Rcpp::Named("L") = L,
+//   return Rcpp::List::create(Rcpp::Named("lambda") = lambda(l),
+//                             Rcpp::Named("L") = L,
 //                             Rcpp::Named("Z") = Z,
 //                             Rcpp::Named("Theta") = Theta,
-//                             Rcpp::Named("frobenius") = frobenius,
+//                             Rcpp::Named("objective") = objective,
 //                             Rcpp::Named("converged") = converged,
 //                             Rcpp::Named("nb_iter") = nb_iter);
 // 
