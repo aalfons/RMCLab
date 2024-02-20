@@ -38,10 +38,11 @@ rdmc <- function(X, values, lambda, type = "svd", loss = "pseudo_huber",
   } else {
     # restructure output from C++
     out <- list(
+      lambda = sapply(out, "[[", "lambda"),
       L = lapply(out, "[[", "L"),
       Z = lapply(out, "[[", "Z"),
       Theta = lapply(out, "[[", "Theta"),
-      frobenius = sapply(out, "[[", "frobenius"),
+      objective = sapply(out, "[[", "objective"),
       converged = sapply(out, "[[", "converged"),
       nb_iter = sapply(out, "[[", "nb_iter")
     )
