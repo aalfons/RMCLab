@@ -56,15 +56,28 @@ void rdmc_cpp(const arma::mat& X, const arma::uword& n, const arma::uword& p,
       }
     }
     // Rprintf("rank = %d\n", rank);
-    if (rank == 0) break;
-    // update Z from the soft-thresholded SVD
-    // (efficient implementation of matrix multiplications without copying parts)
-    for (i = 0; i < n; i++) {
-      for (j = 0; j < p; j++) {
-        // initialize current matrix element
-        Z(i, j) = 0.0;
-        // add contributions from the different rows of U and columns of V'
-        for (k = 0; k < rank; k++) Z(i, j) += U(i, k) * d(k) * V(j, k);
+    // if (rank == 0) break;
+    // // update Z from the soft-thresholded SVD
+    // // (efficient implementation of matrix multiplications without copying parts)
+    // for (i = 0; i < n; i++) {
+    //   for (j = 0; j < p; j++) {
+    //     // initialize current matrix element
+    //     Z(i, j) = 0.0;
+    //     // add contributions from the different rows of U and columns of V'
+    //     for (k = 0; k < rank; k++) Z(i, j) += U(i, k) * d(k) * V(j, k);
+    //   }
+    // }
+    // initialize Z with zeros
+    Z.zeros();
+    // if we have a nonzero soft-thresholded singular value, update Z from 
+    // the soft-thresholded SVD
+    if (rank > 0) {
+      // efficient implementation of matrix multiplications without copying parts
+      for (i = 0; i < n; i++) {
+        for (j = 0; j < p; j++) {
+          // add contributions from the different rows of U and columns of V'
+          for (k = 0; k < rank; k++) Z(i, j) += U(i, k) * d(k) * V(j, k);
+        }
       }
     }
     
