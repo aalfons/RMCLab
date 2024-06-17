@@ -12,8 +12,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // rdmc_cpp
-Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA, const arma::vec& values, const arma::vec& lambda, const char& type, const double& svd_tol, const double& delta, double mu, const double& conv_tol, const arma::uword& max_iter);
-RcppExport SEXP _rdmc_rdmc_cpp(SEXP XSEXP, SEXP is_NASEXP, SEXP valuesSEXP, SEXP lambdaSEXP, SEXP typeSEXP, SEXP svd_tolSEXP, SEXP deltaSEXP, SEXP muSEXP, SEXP conv_tolSEXP, SEXP max_iterSEXP) {
+Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA, const arma::vec& values, const arma::vec& lambda, const char& type, const std::string& loss, const double& svd_tol, const double& loss_tuning, const double& delta, double mu, const double& conv_tol, const arma::uword& max_iter);
+RcppExport SEXP _rdmc_rdmc_cpp(SEXP XSEXP, SEXP is_NASEXP, SEXP valuesSEXP, SEXP lambdaSEXP, SEXP typeSEXP, SEXP lossSEXP, SEXP svd_tolSEXP, SEXP loss_tuningSEXP, SEXP deltaSEXP, SEXP muSEXP, SEXP conv_tolSEXP, SEXP max_iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -22,18 +22,20 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type values(valuesSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type lambda(lambdaSEXP);
     Rcpp::traits::input_parameter< const char& >::type type(typeSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type loss(lossSEXP);
     Rcpp::traits::input_parameter< const double& >::type svd_tol(svd_tolSEXP);
+    Rcpp::traits::input_parameter< const double& >::type loss_tuning(loss_tuningSEXP);
     Rcpp::traits::input_parameter< const double& >::type delta(deltaSEXP);
     Rcpp::traits::input_parameter< double >::type mu(muSEXP);
     Rcpp::traits::input_parameter< const double& >::type conv_tol(conv_tolSEXP);
     Rcpp::traits::input_parameter< const arma::uword& >::type max_iter(max_iterSEXP);
-    rcpp_result_gen = Rcpp::wrap(rdmc_cpp(X, is_NA, values, lambda, type, svd_tol, delta, mu, conv_tol, max_iter));
+    rcpp_result_gen = Rcpp::wrap(rdmc_cpp(X, is_NA, values, lambda, type, loss, svd_tol, loss_tuning, delta, mu, conv_tol, max_iter));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_rdmc_rdmc_cpp", (DL_FUNC) &_rdmc_rdmc_cpp, 10},
+    {"_rdmc_rdmc_cpp", (DL_FUNC) &_rdmc_rdmc_cpp, 12},
     {NULL, NULL, 0}
 };
 

@@ -7,15 +7,25 @@
 #' @importFrom Rcpp evalCpp
 #' @export
 
-rdmc <- function(X, values, lambda, type = "svd", loss = "pseudo_huber", 
-                 svd_tol = 1e-05, delta = 1.05, mu = 0.1, conv_tol = 1e-02, 
-                 max_iter = 10) {
+rdmc <- function(X, values, lambda, type = "svd", 
+                 loss = c("pseudo_huber", "absolute", "bounded"), 
+                 svd_tol = 1e-05, loss_tuning = NULL, delta = 1.05, 
+                 mu = 0.1, conv_tol = 1e-02, max_iter = 10) {
   
   # check arguments
   values <- sort(values)       # make sure values of rating scale are sorted
   nb_values <- length(values)  # number of values in rating scale (categories)
   type <- match.arg(type)
+  loss <- match.arg(loss)
   
+  # check bound in case bounded loss function
+  if (is.null(loss_tuning)) {
+    loss_tuning <- switch(loss, 
+                          pseudo_huber = 1,
+                          absolute = NA_real_,
+                          bounded = (max(values) - min(values)) / 2)
+  }
+
   # construct indicator matrix of missing values (as integers)
   is_NA <- is.na(X)
   storage.mode(is_NA) <- "integer"
@@ -27,7 +37,8 @@ rdmc <- function(X, values, lambda, type = "svd", loss = "pseudo_huber",
   
   # call C++ function
   out <- rdmc_cpp(X, is_NA = is_NA, values = values, lambda = lambda, 
-                  type = type, svd_tol = svd_tol, delta = delta, mu = mu, 
+                  type = type, loss = loss, svd_tol = svd_tol, 
+                  loss_tuning = loss_tuning, delta = delta, mu = mu, 
                   conv_tol = conv_tol, max_iter = max_iter)
   
   # obtain completed matrix on original rating scale
