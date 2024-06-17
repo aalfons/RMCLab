@@ -211,7 +211,7 @@ Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA,
   arma::uword nb_iter;
   
   // different behavior depending on whether we have one value of the 
-  // regularization parameter lambda or mulitple values
+  // regularization parameter lambda or multiple values
   if (lambda.n_elem == 1) {
     
     // call workhorse function with initial values

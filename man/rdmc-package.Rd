@@ -2,6 +2,7 @@
 % Please edit documentation in R/rdmc-package.R
 \docType{package}
 \name{rdmc-package}
+\alias{rdmc}
 \alias{rdmc-package}
 \title{\packageTitle{rdmc}}
 \description{
@@ -11,6 +12,14 @@
 The DESCRIPTION file:
 \packageDESCRIPTION{rdmc}
 \packageIndices{rdmc}
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/aalfons/rdmc}
+  \item Report bugs at \url{https://github.com/aalfons/rdmc/issues}
+}
+
 }
 \author{
 \packageAuthor{rdmc}
