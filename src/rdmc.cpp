@@ -55,18 +55,6 @@ void rdmc_cpp(const arma::mat& X, const arma::uword& n, const arma::uword& p,
         rank++;
       }
     }
-    // Rprintf("rank = %d\n", rank);
-    // if (rank == 0) break;
-    // // update Z from the soft-thresholded SVD
-    // // (efficient implementation of matrix multiplications without copying parts)
-    // for (i = 0; i < n; i++) {
-    //   for (j = 0; j < p; j++) {
-    //     // initialize current matrix element
-    //     Z(i, j) = 0.0;
-    //     // add contributions from the different rows of U and columns of V'
-    //     for (k = 0; k < rank; k++) Z(i, j) += U(i, k) * d(k) * V(j, k);
-    //   }
-    // }
     // initialize Z with zeros
     Z.zeros();
     // if we have a nonzero soft-thresholded singular value, update Z from 
@@ -148,19 +136,15 @@ void rdmc_cpp(const arma::mat& X, const arma::uword& n, const arma::uword& p,
     previous_objective = objective;
     objective = loss_norm + lambda * nuclear_norm + arma::dot(Theta, L_minus_Z) +
       mu * arma::norm(L_minus_Z, "fro") / 2.0;
-    // Rprintf("objective function = %f\n", objective);
     // compute relative change and check convergence
     if (nb_iter > 1) {
       // we can't compute relative change in the first iteration since the 
       // objective function is initialized with infinity
       change = std::abs((objective - previous_objective) / previous_objective);
-      // Rprintf("relative change = %f\n", change);
       converged = change < conv_tol;
     }
     
   }
-  
-  // Rprintf("number of iterations = %d\n", nb_iter);
   
 }
 
@@ -233,7 +217,6 @@ Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA,
     arma::uword l;
     Rcpp::List out(lambda.n_elem);
     for (l = 0; l < lambda.n_elem; l++) {
-      // Rprintf("\nlambda = %f\n", lambda(l));
       // call workhorse function with starting values: note that solutions
       // for previous value of lambda are used as starting values
       rdmc_cpp(X, n, p, ind_NA, ind_not_NA, values, lambda(l), type,
