@@ -3,9 +3,9 @@
 #         Erasmus Universiteit Rotterdam
 # **************************************
 
+## function to create folds for K-fold cross-validation
 #' @export
 
-# Function to set up folds for K-fold cross-validation
 cv_folds <- function(n, K = 5L) {
   # permute observations
   indices <- sample.int(n)
