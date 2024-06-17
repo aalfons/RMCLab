@@ -5,8 +5,6 @@
 
 #' @name rdmc-package
 #'
-#' @docType package
-#'
 #' @title \packageTitle{rdmc}
 #'
 #' @description \packageDescription{rdmc}
@@ -23,4 +21,4 @@
 #'
 #' @keywords package
 
-NULL
+"_PACKAGE"
