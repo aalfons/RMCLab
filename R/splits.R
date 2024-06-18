@@ -11,7 +11,7 @@ holdout_control <- function(pct = 0.1, R = 10L) {
   }
   if (R < 1L) stop("holdout validation requires at least 1 replication")
   control <- list(pct = pct, R = R)
-  class(control) <- "holdout_control"
+  class(control) <- c("holdout_control", "split_control")
   control
 }
 
@@ -20,18 +20,18 @@ holdout_control <- function(pct = 0.1, R = 10L) {
 fold_control <- function(K = 5L) {
   if (K < 2L) stop("cross-validation requires at least 2 folds")
   control <- list(K = K)
-  class(control) <- "fold_control"
+  class(control) <- c("fold_control", "split_control")
   control
 }
 
 
 ## generic function for validation splits
 #' @export
-splits <- function(indices, control) UseMethod("splits", control)
+create_splits <- function(indices, control) UseMethod("create_splits", control)
 
 ## method to draw indices for holdout validation
 #' @export
-splits.holdout_control <- function(indices, control) {
+create_splits.holdout_control <- function(indices, control) {
   # initializations
   n <- length(indices)
   pct <- control$pct
@@ -48,7 +48,7 @@ splits.holdout_control <- function(indices, control) {
 
 ## method to draw folds of indices for K-fold cross-validation
 #' @export
-splits.fold_control <- function(indices, control) {
+create_splits.fold_control <- function(indices, control) {
   # initialization
   n <- length(indices)
   K <- control$K
@@ -69,7 +69,7 @@ splits.fold_control <- function(indices, control) {
 #' @export
 holdout <- function(indices, pct = 0.1, R = 10) {
   control <- holdout_control(pct = pct, R = R)
-  splits(indices, control)
+  create_splits(indices, control)
 }
 
 
@@ -77,7 +77,7 @@ holdout <- function(indices, pct = 0.1, R = 10) {
 #' @export
 cv_folds <- function(indices, K = 5L) {
   control <- fold_control(K = K)
-  splits(indices, control)
+  create_splits(indices, control)
 }
 
 

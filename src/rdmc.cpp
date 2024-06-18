@@ -33,7 +33,7 @@ double pseudo_huber(const double& x, const double& delta) {
 void rdmc_pseudo_huber(const arma::mat& X, const arma::uword& n, 
                        const arma::uword& p, const arma::uvec& ind_NA, 
                        const arma::uvec& ind_not_NA, const arma::vec& values, 
-                       const double& lambda, const char& type, 
+                       const double& lambda, const std::string& type, 
                        const double& svd_tol, const double& loss_tuning, 
                        const double& delta, double mu, const double& conv_tol, 
                        const arma::uword& max_iter,
@@ -173,7 +173,7 @@ void rdmc_pseudo_huber(const arma::mat& X, const arma::uword& n,
 void rdmc_absolute(const arma::mat& X, const arma::uword& n, 
                   const arma::uword& p, const arma::uvec& ind_NA, 
                   const arma::uvec& ind_not_NA, const arma::vec& values, 
-                  const double& lambda, const char& type, 
+                  const double& lambda, const std::string& type, 
                   const double& svd_tol, const double& delta, double mu, 
                   const double& conv_tol, const arma::uword& max_iter,
                   // output to be returned through arguments
@@ -317,7 +317,7 @@ double bounded(const double& x, const double& bound) {
 void rdmc_bounded(const arma::mat& X, const arma::uword& n, 
                   const arma::uword& p, const arma::uvec& ind_NA, 
                   const arma::uvec& ind_not_NA, const arma::vec& values, 
-                  const double& lambda, const char& type, 
+                  const double& lambda, const std::string& type, 
                   const double& svd_tol, const double& loss_tuning, 
                   const double& delta, double mu, const double& conv_tol, 
                   const arma::uword& max_iter,
@@ -456,7 +456,7 @@ void rdmc_bounded(const arma::mat& X, const arma::uword& n,
 // [[Rcpp::export]]
 Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA,
                     const arma::vec& values, const arma::vec& lambda,
-                    const char& type, const std::string& loss, 
+                    const std::string& type, const std::string& loss, 
                     const double& svd_tol, const double& loss_tuning, 
                     const double& delta, double mu, const double& conv_tol, 
                     const arma::uword& max_iter) {
@@ -562,6 +562,64 @@ Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA,
     return out;
     
   }
+  
+}
+
+
+// ------------------------------------------------------------------------
+// function to be called from R with starting values
+// (only called after tuning the penalty parameter with the optimal lambda)
+// ------------------------------------------------------------------------
+
+// Andreas: I had the following comment as a separate line before the 
+// corresponding arguments, but that causes an error during compilation!
+// starting values (arguments L, Z, Theta) are not passed as a reference 
+// so that a copy is created that can safely be modified
+// [[Rcpp::export]]
+Rcpp::List rdmc_opt_cpp(const arma::mat& X, const arma::umat& is_NA,
+                        const arma::vec& values, const double& lambda,
+                        const std::string& type, const std::string& loss, 
+                        const double& svd_tol, const double& loss_tuning, 
+                        const double& delta, double mu, const double& conv_tol, 
+                        const arma::uword& max_iter, arma::mat L, arma::mat Z, 
+                        arma::mat Theta) {
+  
+  // extract number of rows and columns
+  arma::uword n = X.n_rows, p = X.n_cols;
+  
+  // find indices of missing and nonmissing cells of X
+  arma::uvec ind_NA = find(is_NA == 1);
+  arma::uvec ind_not_NA = find(is_NA == 0);
+  
+  // initialize variables related to convergence
+  // (to be updated by workhorse function)
+  double objective;
+  bool converged;
+  arma::uword nb_iter;
+  
+  // call workhorse function with initial values
+  if (loss == "pseudo_huber") {
+    rdmc_pseudo_huber(X, n, p, ind_NA, ind_not_NA, values, lambda, type,
+                      svd_tol, loss_tuning, delta, mu, conv_tol, max_iter,
+                      L, Z, Theta, objective, converged, nb_iter);
+  } else if (loss == "absolute") {
+    rdmc_absolute(X, n, p, ind_NA, ind_not_NA, values, lambda, type,
+                  svd_tol, delta, mu, conv_tol, max_iter, L, Z, Theta,
+                  objective, converged, nb_iter);
+  } else {
+    rdmc_bounded(X, n, p, ind_NA, ind_not_NA, values, lambda, type,
+                 svd_tol, loss_tuning, delta, mu, conv_tol, max_iter,
+                 L, Z, Theta, objective, converged, nb_iter);
+  }
+  
+  // return list of results
+  return Rcpp::List::create(Rcpp::Named("lambda") = lambda,
+                            Rcpp::Named("L") = L,
+                            Rcpp::Named("Z") = Z,
+                            Rcpp::Named("Theta") = Theta,
+                            Rcpp::Named("objective") = objective,
+                            Rcpp::Named("converged") = converged,
+                            Rcpp::Named("nb_iter") = nb_iter);
   
 }
 

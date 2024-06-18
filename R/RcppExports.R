@@ -5,3 +5,7 @@ rdmc_cpp <- function(X, is_NA, values, lambda, type, loss, svd_tol, loss_tuning,
     .Call(`_rdmc_rdmc_cpp`, X, is_NA, values, lambda, type, loss, svd_tol, loss_tuning, delta, mu, conv_tol, max_iter)
 }
 
+rdmc_opt_cpp <- function(X, is_NA, values, lambda, type, loss, svd_tol, loss_tuning, delta, mu, conv_tol, max_iter, L, Z, Theta) {
+    .Call(`_rdmc_rdmc_opt_cpp`, X, is_NA, values, lambda, type, loss, svd_tol, loss_tuning, delta, mu, conv_tol, max_iter, L, Z, Theta)
+}
+
