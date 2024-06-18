@@ -16,6 +16,9 @@ rdmc_tune <- function(X, values, lambda,
   # check arguments
   values <- sort(values)          # ensure values of rating scale are sorted
   lambda <- sort(unique(lambda))  # ensure values of tuning parameter are sorted
+  if (length(lambda) == 1L) {
+    stop("only one value of 'lambda'; use function rdmc() instead")
+  }
   loss <- match.arg(loss)
   
   # check bound in case bounded loss function
@@ -24,10 +27,6 @@ rdmc_tune <- function(X, values, lambda,
                           pseudo_huber = 1,
                           absolute = NA_real_,
                           bounded = (max(values) - min(values)) / 2)
-  }
-  
-  if (length(lambda) == 1L) {
-    stop("only one value of 'lambda'; use function rdmc() instead")
   }
   
   # create splits for tuning parameter validation
