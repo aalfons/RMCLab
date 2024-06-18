@@ -7,8 +7,8 @@
 #' @export
 
 rdmc_tune <- function(X, values, lambda, 
-                    loss = c("pseudo_huber", "absolute", "bounded"), 
-                    loss_tuning = NULL, splits = holdout_control(), ...) {
+                      loss = c("pseudo_huber", "absolute", "bounded"), 
+                      loss_tuning = NULL, splits = holdout_control(), ...) {
   
   # initializations
   X <- as.matrix(X)
@@ -35,7 +35,7 @@ rdmc_tune <- function(X, values, lambda,
   if (inherits(splits, "split_control")) {
     splits <- create_splits(observed, control = splits)
   }
-
+  
   # # perform tuning parameter validation
   # tuning_loss <- lapply(splits, function(indices, ...) {
   #   # extract elements from test set as a vector
@@ -113,7 +113,7 @@ rdmc_tune <- function(X, values, lambda,
   # apply robust discrete matrix completion with optimal tuning parameter
   fit_opt <- rdmc(X, values = values, lambda = lambda_opt, loss = loss,
                   loss_tuning = loss_tuning, ..., L = L, Z = Z, Theta = Theta)
-
+  
   # construct list of relevant output
   out <- list(lambda = lambda, tuning_loss = tuning_loss, 
               lambda_opt = lambda_opt, final = fit_opt)
@@ -123,7 +123,8 @@ rdmc_tune <- function(X, values, lambda,
 }
 
 
-# function to compute mode (for starting value of L in fit with optimal lambda)
+## function to compute mode (for starting value of L in fit with optimal lambda)
+#' @importFrom DescTools Mode
 local_mode <- function(x) {
   out <- DescTools::Mode(x)  # TODO: avoid this dependency
   if (length(out) > 1) sample(out, 1)
