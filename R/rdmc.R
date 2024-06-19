@@ -1,13 +1,13 @@
-# **************************************
+# ************************************
 # Author: Andreas Alfons
-#         Erasmus Universiteit Rotterdam
-# **************************************
+#         Erasmus University Rotterdam
+# ************************************
 
 #' @useDynLib rdmc, .registration = TRUE
 #' @importFrom Rcpp evalCpp
 #' @export
 
-rdmc <- function(X, values, lambda, type = "svd", 
+rdmc <- function(X, values = NULL, lambda, type = "svd", 
                  loss = c("pseudo_huber", "absolute", "bounded"), 
                  svd_tol = 1e-05, loss_tuning = NULL, delta = 1.05, 
                  mu = 0.1, conv_tol = 1e-02, max_iter = 10, 
@@ -19,7 +19,11 @@ rdmc <- function(X, values, lambda, type = "svd",
   # initializations
   X <- as.matrix(X)
   
+  # construct indicator matrix of missing values
+  is_NA <- is.na(X)
+  
   # check arguments
+  if (is.null(values)) values <- unique(X[!is_NA])
   values <- sort(values)         # ensure values of rating scale are sorted
   nb_values <- length(values)    # number of values in rating scale (categories)
   lambda <- sort(unique(lambda)) # ensure values of tuning parameter are sorted
@@ -34,16 +38,13 @@ rdmc <- function(X, values, lambda, type = "svd",
                           bounded = (max(values) - min(values)) / 2)
   }
 
-  # construct indicator matrix of missing values (as integers)
-  is_NA <- is.na(X)
-  storage.mode(is_NA) <- "integer"
-
   # center data matrix with midpoint of rating scale
   midpoint <- mean(values[c(1, nb_values)])
   X <- X - midpoint
   values <- values - midpoint
   
-  # call C++ function
+  # call C++ function (requires indicator matrix as integers)
+  storage.mode(is_NA) <- "integer"
   if (length(lambda) == 1L && !is.null(L) & !is.null(Z) && !is.null(Theta)) {
     out <- rdmc_opt_cpp(X, is_NA = is_NA, values = values, lambda = lambda, 
                         type = type, loss = loss, svd_tol = svd_tol, 

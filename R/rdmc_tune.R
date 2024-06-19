@@ -1,19 +1,23 @@
-# **************************************
+# ************************************
 # Author: Andreas Alfons
-#         Erasmus Universiteit Rotterdam
-# **************************************
+#         Erasmus University Rotterdam
+# ************************************
 
 ## function for tuning the penalty parameter via data splitting strategies
 #' @export
 
-rdmc_tune <- function(X, values, lambda, 
+rdmc_tune <- function(X, values = NULL, lambda, 
                       loss = c("pseudo_huber", "absolute", "bounded"), 
                       loss_tuning = NULL, splits = holdout_control(), ...) {
   
   # initializations
   X <- as.matrix(X)
   
+  # construct index vector of observed values
+  observed <- which(!is.na(X))
+  
   # check arguments
+  if (is.null(values)) values <- unique(X[observed])
   values <- sort(values)          # ensure values of rating scale are sorted
   lambda <- sort(unique(lambda))  # ensure values of tuning parameter are sorted
   if (length(lambda) == 1L) {
@@ -30,34 +34,9 @@ rdmc_tune <- function(X, values, lambda,
   }
   
   # create splits for tuning parameter validation
-  observed <- which(!is.na(X))  # returns vector, which is what we need
   if (inherits(splits, "split_control")) {
     splits <- create_splits(observed, control = splits)
   }
-  
-  # # perform tuning parameter validation
-  # tuning_loss <- lapply(splits, function(indices, ...) {
-  #   # extract elements from test set as a vector
-  #   X_test <- X[indices]
-  #   # create training data where elements from test set are set to NA
-  #   X_train <- X
-  #   X_train[indices] <- NA_real_
-  #   # apply robust discrete matrix completion to training data
-  #   fit_train <- rdmc(X_train, values = values, lambda = lambda, loss = loss,
-  #                     loss_tuning = loss_tuning, ...)
-  #   # extract predictions for the elements in the test set and compute 
-  #   # prediction loss
-  #   sapply(fit_train$X, function(X_hat) {
-  #     if (loss == "pseudo_huber") {
-  #       pseudo_huber(X_test - X_hat[indices], delta = loss_tuning)
-  #     } else if (loss == "absolute") {
-  #       abs(X_test - X_hat[indices])
-  #     } else {
-  #       bounded(X_test - X_hat[indices], bound = loss_tuning)
-  #     }
-  #   })
-  # })
-  
   
   # fit robust discrete matrix completion to the different training data sets
   fit_train <- lapply(splits, function(indices, ...) {
@@ -86,7 +65,7 @@ rdmc_tune <- function(X, values, lambda,
     })
     
   }, indices = splits, fit = fit_train, SIMPLIFY = FALSE, USE.NAMES = FALSE)
-  # combine results for tuning parameter validation into one data frame
+  # combine results for tuning parameter validation into one matrix
   # (each column holds the prediction losses for the corresponding lambda)
   tuning_loss <- do.call(rbind, tuning_loss)
   # compute column means

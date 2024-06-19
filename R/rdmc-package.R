@@ -1,7 +1,7 @@
-# **************************************
+# ************************************
 # Author: Andreas Alfons
-#         Erasmus Universiteit Rotterdam
-# **************************************
+#         Erasmus University Rotterdam
+# ************************************
 
 #' @name rdmc-package
 #'

@@ -1,7 +1,7 @@
-# **************************************
+# ************************************
 # Author: Andreas Alfons
-#         Erasmus Universiteit Rotterdam
-# **************************************
+#         Erasmus University Rotterdam
+# ************************************
 
 ## pseudo-Huber loss
 pseudo_huber <- function(x, delta = 1) {

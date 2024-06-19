@@ -10,7 +10,8 @@ Depends:
     R (>= 3.5.0)
 Imports:
     DescTools,
-    Rcpp
+    Rcpp,
+    softImpute
 LinkingTo: 
     Rcpp, 
     RcppArmadillo
