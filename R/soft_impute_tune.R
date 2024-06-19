@@ -33,7 +33,7 @@ soft_impute_tune <- function(X, lambda, ..., splits = holdout_control(),
     X_train[indices] <- NA_real_
     # apply soft_impute() to training data
     fit_train <- soft_impute(X_train, lambda = lambda, ...)
-  })
+  }, ...)
 
   # extract predictions for the elements in the different test sets and compute 
   # prediction loss

@@ -46,7 +46,7 @@ rdmc_tune <- function(X, values = NULL, lambda,
     # apply robust discrete matrix completion to training data
     fit_train <- rdmc(X_train, values = values, lambda = lambda, loss = loss,
                       loss_tuning = loss_tuning, ...)
-  })
+  }, ...)
   
   # extract predictions for the elements in the different test sets and compute 
   # prediction loss
