@@ -9,7 +9,6 @@ Encoding: UTF-8
 Depends:
     R (>= 3.5.0)
 Imports:
-    DescTools,
     Rcpp,
     softImpute
 LinkingTo: 

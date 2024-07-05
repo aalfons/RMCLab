@@ -101,10 +101,21 @@ rdmc_tune <- function(X, values = NULL, lambda,
 }
 
 
-## function to compute mode (for starting value of L in fit with optimal lambda)
-#' @importFrom DescTools Mode
+## function to compute mode for starting value of L in fit with optimal lambda
+## @importFrom DescTools Mode
+# local_mode <- function(x) {
+#   out <- DescTools::Mode(x)  # TODO: avoid this dependency
+#   if (length(out) > 1) sample(out, 1)
+#   else out
+# }
 local_mode <- function(x) {
-  out <- DescTools::Mode(x)  # TODO: avoid this dependency
+  # compute contingency table
+  tab <- table(x)
+  # determine the maximum frequency
+  max <- max(tab)
+  # keep all values that occur with the maximum frequency
+  out <- as.numeric(names(tab)[tab == max])
+  # if there are multiple modes, randomly select one to be returned
   if (length(out) > 1) sample(out, 1)
   else out
 }
