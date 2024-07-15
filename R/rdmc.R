@@ -37,22 +37,31 @@ rdmc <- function(X, values = NULL, lambda, type = "svd",
                           absolute = NA_real_,
                           bounded = (max(values) - min(values)) / 2)
   }
-
-  # center data matrix with midpoint of rating scale
-  midpoint <- mean(values[c(1, nb_values)])
-  X <- X - midpoint
-  values <- values - midpoint
+  
+  # # center data matrix with midpoint of rating scale
+  # midpoint <- mean(values[c(1, nb_values)])
+  # X <- X - midpoint
+  # values <- values - midpoint
+  # center data with columnwise median of observed data
+  # TODO: there is potential for optimization, as this can be computed in 
+  # rdmc_tune() and passed down. In addition, since we compute the medians 
+  # already in R, they can be passed down to C++ to initialize the starting 
+  # values for the first value of lambda.
+  medians <- apply(X, 2, median, na.rm = TRUE)
+  X <- sweep(X, 2, medians, FUN = "-")
+  # update discrete candidate values for each column
+  value_mat <- sapply(medians, function(m) values - m)
   
   # call C++ function (requires indicator matrix as integers)
   storage.mode(is_NA) <- "integer"
   if (length(lambda) == 1L && !is.null(L) & !is.null(Z) && !is.null(Theta)) {
-    out <- rdmc_opt_cpp(X, is_NA = is_NA, values = values, lambda = lambda, 
+    out <- rdmc_opt_cpp(X, is_NA = is_NA, values = value_mat, lambda = lambda, 
                         type = type, loss = loss, svd_tol = svd_tol, 
                         loss_tuning = loss_tuning, delta = delta, mu = mu, 
                         conv_tol = conv_tol, max_iter = max_iter, L = L, 
                         Z = Z, Theta = Theta)
   } else {
-    out <- rdmc_cpp(X, is_NA = is_NA, values = values, lambda = lambda, 
+    out <- rdmc_cpp(X, is_NA = is_NA, values = value_mat, lambda = lambda, 
                     type = type, loss = loss, svd_tol = svd_tol, 
                     loss_tuning = loss_tuning, delta = delta, mu = mu, 
                     conv_tol = conv_tol, max_iter = max_iter)
@@ -62,7 +71,8 @@ rdmc <- function(X, values = NULL, lambda, type = "svd",
   storage.mode(is_NA) <- "logical"
   if (length(lambda) == 1L) {
     X[is_NA] <- out$L[is_NA]
-    out$X <- X + midpoint
+    # out$X <- X + midpoint
+    out$X <- sweep(X, 2, medians, FUN = "+")
   } else {
     # restructure output from C++
     out <- list(
@@ -77,7 +87,8 @@ rdmc <- function(X, values = NULL, lambda, type = "svd",
     # add completed matrix on original rating scale
     out$X <- lapply(out$L, function(L) {
       X[is_NA] <- L[is_NA]
-      X + midpoint
+      # X + midpoint
+      sweep(X, 2, medians, FUN = "+")
     })
   }
   

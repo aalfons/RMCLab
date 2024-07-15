@@ -12,14 +12,14 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // rdmc_cpp
-Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA, const arma::vec& values, const arma::vec& lambda, const std::string& type, const std::string& loss, const double& svd_tol, const double& loss_tuning, const double& delta, double mu, const double& conv_tol, const arma::uword& max_iter);
+Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA, const arma::mat& values, const arma::vec& lambda, const std::string& type, const std::string& loss, const double& svd_tol, const double& loss_tuning, const double& delta, double mu, const double& conv_tol, const arma::uword& max_iter);
 RcppExport SEXP _rdmc_rdmc_cpp(SEXP XSEXP, SEXP is_NASEXP, SEXP valuesSEXP, SEXP lambdaSEXP, SEXP typeSEXP, SEXP lossSEXP, SEXP svd_tolSEXP, SEXP loss_tuningSEXP, SEXP deltaSEXP, SEXP muSEXP, SEXP conv_tolSEXP, SEXP max_iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const arma::umat& >::type is_NA(is_NASEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type values(valuesSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type values(valuesSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type lambda(lambdaSEXP);
     Rcpp::traits::input_parameter< const std::string& >::type type(typeSEXP);
     Rcpp::traits::input_parameter< const std::string& >::type loss(lossSEXP);
@@ -34,14 +34,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // rdmc_opt_cpp
-Rcpp::List rdmc_opt_cpp(const arma::mat& X, const arma::umat& is_NA, const arma::vec& values, const double& lambda, const std::string& type, const std::string& loss, const double& svd_tol, const double& loss_tuning, const double& delta, double mu, const double& conv_tol, const arma::uword& max_iter, arma::mat L, arma::mat Z, arma::mat Theta);
+Rcpp::List rdmc_opt_cpp(const arma::mat& X, const arma::umat& is_NA, const arma::mat& values, const double& lambda, const std::string& type, const std::string& loss, const double& svd_tol, const double& loss_tuning, const double& delta, double mu, const double& conv_tol, const arma::uword& max_iter, arma::mat L, arma::mat Z, arma::mat Theta);
 RcppExport SEXP _rdmc_rdmc_opt_cpp(SEXP XSEXP, SEXP is_NASEXP, SEXP valuesSEXP, SEXP lambdaSEXP, SEXP typeSEXP, SEXP lossSEXP, SEXP svd_tolSEXP, SEXP loss_tuningSEXP, SEXP deltaSEXP, SEXP muSEXP, SEXP conv_tolSEXP, SEXP max_iterSEXP, SEXP LSEXP, SEXP ZSEXP, SEXP ThetaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const arma::umat& >::type is_NA(is_NASEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type values(valuesSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type values(valuesSEXP);
     Rcpp::traits::input_parameter< const double& >::type lambda(lambdaSEXP);
     Rcpp::traits::input_parameter< const std::string& >::type type(typeSEXP);
     Rcpp::traits::input_parameter< const std::string& >::type loss(lossSEXP);

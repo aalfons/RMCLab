@@ -32,7 +32,7 @@ double pseudo_huber(const double& x, const double& delta) {
 // workhorse function for a single value of the regularization parameter lambda
 void rdmc_pseudo_huber(const arma::mat& X, const arma::uword& n, 
                        const arma::uword& p, const arma::uvec& ind_NA, 
-                       const arma::uvec& ind_not_NA, const arma::vec& values, 
+                       const arma::uvec& ind_not_NA, const arma::mat& values, 
                        const double& lambda, const std::string& type, 
                        const double& svd_tol, const double& loss_tuning, 
                        const double& delta, double mu, const double& conv_tol, 
@@ -48,7 +48,7 @@ void rdmc_pseudo_huber(const arma::mat& X, const arma::uword& n,
   nb_iter = 0;
   
   // iterate update steps of Z, L, and Theta
-  arma::uword rank, i, j, k, replace_i, nb_values = values.n_elem, which_min;
+  arma::uword rank, i, j, k, replace_i, nb_values = values.n_rows, which_min;
   arma::mat U, V, L_minus_Z;
   arma::vec d;
   double nuclear_norm, tmp, objective_step2, objective_step2_min,
@@ -93,6 +93,10 @@ void rdmc_pseudo_huber(const arma::mat& X, const arma::uword& n,
     for (i = 0; i < ind_NA.n_elem; i++) {
       // index of current cell to be updated
       replace_i = ind_NA(i);
+      // column of current cell to be updated
+      // TODO: this should be avoided by passing down indices (i, j) 
+      // for which cells are missing
+      j = replace_i / n;
       // save some computation time in loop
       tmp = -Z(replace_i) + Theta(replace_i)/mu;
       // initialize the minimum
@@ -104,14 +108,14 @@ void rdmc_pseudo_huber(const arma::mat& X, const arma::uword& n,
         // The paper says to take the argmin of the squared expression. But
         // this is equivalent to taking the argmin of the absolute value,
         // which is faster to compute.
-        objective_step2 = std::abs(values(k) + tmp);
+        objective_step2 = std::abs(values(k, j) + tmp);
         if (objective_step2 < objective_step2_min) {
           which_min = k;
           objective_step2_min = objective_step2;
         }
       }
       // update the element of L with the argmin of the objective function
-      L(replace_i) = values(which_min);
+      L(replace_i) = values(which_min, j);
     }
     
     // update L for cells with observed values in X
@@ -119,6 +123,10 @@ void rdmc_pseudo_huber(const arma::mat& X, const arma::uword& n,
     for (i = 0; i < ind_not_NA.n_elem; i++) {
       // index of current cell to be updated
       replace_i = ind_not_NA(i);
+      // column of current cell to be updated
+      // TODO: this should be avoided by passing down indices (i, j) 
+      // for which cells are missing
+      j = replace_i / n;
       // save some computation time in loop
       tmp = -Z(replace_i) + Theta(replace_i)/mu;
       // initialize the minimum
@@ -127,8 +135,8 @@ void rdmc_pseudo_huber(const arma::mat& X, const arma::uword& n,
       // loop over the different values and choose the one that minimizes the
       // objective function
       for (k = 0; k < nb_values; k++) {
-        loss = pseudo_huber(values(k) - X(replace_i), loss_tuning);
-        objective_step2 = loss + mu * std::pow(values(k) + tmp, 2.0)/2.0;
+        loss = pseudo_huber(values(k, j) - X(replace_i), loss_tuning);
+        objective_step2 = loss + mu * std::pow(values(k, j) + tmp, 2.0)/2.0;
         if (objective_step2 < objective_step2_min) {
           which_min = k;
           loss_min = loss;
@@ -136,7 +144,7 @@ void rdmc_pseudo_huber(const arma::mat& X, const arma::uword& n,
         }
       }
       // update the element of L with the argmin of the objective function
-      L(replace_i) = values(which_min);
+      L(replace_i) = values(which_min, j);
       // update the norm given by loss function
       loss_norm += loss_min;
     }
@@ -170,33 +178,33 @@ void rdmc_pseudo_huber(const arma::mat& X, const arma::uword& n,
 // -------------
 
 // workhorse function for a single value of the regularization parameter lambda
-void rdmc_absolute(const arma::mat& X, const arma::uword& n, 
-                  const arma::uword& p, const arma::uvec& ind_NA, 
-                  const arma::uvec& ind_not_NA, const arma::vec& values, 
-                  const double& lambda, const std::string& type, 
-                  const double& svd_tol, const double& delta, double mu, 
+void rdmc_absolute(const arma::mat& X, const arma::uword& n,
+                  const arma::uword& p, const arma::uvec& ind_NA,
+                  const arma::uvec& ind_not_NA, const arma::mat& values,
+                  const double& lambda, const std::string& type,
+                  const double& svd_tol, const double& delta, double mu,
                   const double& conv_tol, const arma::uword& max_iter,
                   // output to be returned through arguments
                    arma::mat& L, arma::mat& Z, arma::mat& Theta,
-                   double& objective, bool& converged, 
+                   double& objective, bool& converged,
                    arma::uword& nb_iter) {
 
   // initializations
   objective = R_PosInf;
   converged = false;
   nb_iter = 0;
-  
+
   // iterate update steps of Z, L, and Theta
-  arma::uword rank, i, j, k, replace_i, nb_values = values.n_elem, which_min;
+  arma::uword rank, i, j, k, replace_i, nb_values = values.n_rows, which_min;
   arma::mat U, V, L_minus_Z;
   arma::vec d;
   double nuclear_norm, tmp, objective_step2, objective_step2_min,
   loss_norm, loss, loss_min, previous_objective, change;
   while (!converged && nb_iter < max_iter) {
-    
+
     // step 1: update Z keeping L fixed
     // soft-thresholding of L + 1/mu * Theta
-    
+
     // compute SVD
     // TODO: add option to use SVD-ALS or softImpute-ALS instead of the SVD
     arma::svd(U, d, V, L + Theta/mu);
@@ -224,14 +232,18 @@ void rdmc_absolute(const arma::mat& X, const arma::uword& n,
         }
       }
     }
-    
+
     // step 2: update L keeping Z fixed
     // separable problem for missing and observed values in X
-    
+
     // update L for cells with missing values in X
     for (i = 0; i < ind_NA.n_elem; i++) {
       // index of current cell to be updated
       replace_i = ind_NA(i);
+      // column of current cell to be updated
+      // TODO: this should be avoided by passing down indices (i, j) 
+      // for which cells are missing
+      j = replace_i / n;
       // save some computation time in loop
       tmp = -Z(replace_i) + Theta(replace_i)/mu;
       // initialize the minimum
@@ -243,21 +255,25 @@ void rdmc_absolute(const arma::mat& X, const arma::uword& n,
         // The paper says to take the argmin of the squared expression. But
         // this is equivalent to taking the argmin of the absolute value,
         // which is faster to compute.
-        objective_step2 = std::abs(values(k) + tmp);
+        objective_step2 = std::abs(values(k, j) + tmp);
         if (objective_step2 < objective_step2_min) {
           which_min = k;
           objective_step2_min = objective_step2;
         }
       }
       // update the element of L with the argmin of the objective function
-      L(replace_i) = values(which_min);
+      L(replace_i) = values(which_min, j);
     }
-    
+
     // update L for cells with observed values in X
     loss_norm = 0;
     for (i = 0; i < ind_not_NA.n_elem; i++) {
       // index of current cell to be updated
       replace_i = ind_not_NA(i);
+      // column of current cell to be updated
+      // TODO: this should be avoided by passing down indices (i, j) 
+      // for which cells are missing
+      j = replace_i / n;
       // save some computation time in loop
       tmp = -Z(replace_i) + Theta(replace_i)/mu;
       // initialize the minimum
@@ -266,8 +282,8 @@ void rdmc_absolute(const arma::mat& X, const arma::uword& n,
       // loop over the different values and choose the one that minimizes the
       // objective function
       for (k = 0; k < nb_values; k++) {
-        loss = std::abs(values(k) - X(replace_i));
-        objective_step2 = loss + mu * std::pow(values(k) + tmp, 2.0)/2.0;
+        loss = std::abs(values(k, j) - X(replace_i));
+        objective_step2 = loss + mu * std::pow(values(k, j) + tmp, 2.0)/2.0;
         if (objective_step2 < objective_step2_min) {
           which_min = k;
           loss_min = loss;
@@ -275,16 +291,16 @@ void rdmc_absolute(const arma::mat& X, const arma::uword& n,
         }
       }
       // update the element of L with the argmin of the objective function
-      L(replace_i) = values(which_min);
+      L(replace_i) = values(which_min, j);
       // update the norm given by loss function
       loss_norm += loss_min;
     }
-    
+
     // step 3: update Lagrange multiplier Theta and parameter mu
     L_minus_Z = L - Z;
     Theta = Theta + mu * L_minus_Z;
     mu = delta * mu;
-    
+
     // update iteration counter
     nb_iter++;
     // update objective function for convergence criterion
@@ -298,9 +314,9 @@ void rdmc_absolute(const arma::mat& X, const arma::uword& n,
       change = std::abs((objective - previous_objective) / previous_objective);
       converged = change < conv_tol;
     }
-    
+
   }
-  
+
 }
 
 
@@ -314,34 +330,34 @@ double bounded(const double& x, const double& bound) {
 }
 
 // workhorse function for a single value of the regularization parameter lambda
-void rdmc_bounded(const arma::mat& X, const arma::uword& n, 
-                  const arma::uword& p, const arma::uvec& ind_NA, 
-                  const arma::uvec& ind_not_NA, const arma::vec& values, 
-                  const double& lambda, const std::string& type, 
-                  const double& svd_tol, const double& loss_tuning, 
-                  const double& delta, double mu, const double& conv_tol, 
+void rdmc_bounded(const arma::mat& X, const arma::uword& n,
+                  const arma::uword& p, const arma::uvec& ind_NA,
+                  const arma::uvec& ind_not_NA, const arma::mat& values,
+                  const double& lambda, const std::string& type,
+                  const double& svd_tol, const double& loss_tuning,
+                  const double& delta, double mu, const double& conv_tol,
                   const arma::uword& max_iter,
                   // output to be returned through arguments
                   arma::mat& L, arma::mat& Z, arma::mat& Theta,
-                  double& objective, bool& converged, 
+                  double& objective, bool& converged,
                   arma::uword& nb_iter) {
 
   // initializations
   objective = R_PosInf;
   converged = false;
   nb_iter = 0;
-  
+
   // iterate update steps of Z, L, and Theta
-  arma::uword rank, i, j, k, replace_i, nb_values = values.n_elem, which_min;
+  arma::uword rank, i, j, k, replace_i, nb_values = values.n_rows, which_min;
   arma::mat U, V, L_minus_Z;
   arma::vec d;
   double nuclear_norm, tmp, objective_step2, objective_step2_min,
   loss_norm, loss, loss_min, previous_objective, change;
   while (!converged && nb_iter < max_iter) {
-    
+
     // step 1: update Z keeping L fixed
     // soft-thresholding of L + 1/mu * Theta
-    
+
     // compute SVD
     // TODO: add option to use SVD-ALS or softImpute-ALS instead of the SVD
     arma::svd(U, d, V, L + Theta/mu);
@@ -369,14 +385,18 @@ void rdmc_bounded(const arma::mat& X, const arma::uword& n,
         }
       }
     }
-    
+
     // step 2: update L keeping Z fixed
     // separable problem for missing and observed values in X
-    
+
     // update L for cells with missing values in X
     for (i = 0; i < ind_NA.n_elem; i++) {
       // index of current cell to be updated
       replace_i = ind_NA(i);
+      // column of current cell to be updated
+      // TODO: this should be avoided by passing down indices (i, j) 
+      // for which cells are missing
+      j = replace_i / n;
       // save some computation time in loop
       tmp = -Z(replace_i) + Theta(replace_i)/mu;
       // initialize the minimum
@@ -388,21 +408,25 @@ void rdmc_bounded(const arma::mat& X, const arma::uword& n,
         // The paper says to take the argmin of the squared expression. But
         // this is equivalent to taking the argmin of the absolute value,
         // which is faster to compute.
-        objective_step2 = std::abs(values(k) + tmp);
+        objective_step2 = std::abs(values(k, j) + tmp);
         if (objective_step2 < objective_step2_min) {
           which_min = k;
           objective_step2_min = objective_step2;
         }
       }
       // update the element of L with the argmin of the objective function
-      L(replace_i) = values(which_min);
+      L(replace_i) = values(which_min, j);
     }
-    
+
     // update L for cells with observed values in X
     loss_norm = 0;
     for (i = 0; i < ind_not_NA.n_elem; i++) {
       // index of current cell to be updated
       replace_i = ind_not_NA(i);
+      // column of current cell to be updated
+      // TODO: this should be avoided by passing down indices (i, j) 
+      // for which cells are missing
+      j = replace_i / n;
       // save some computation time in loop
       tmp = -Z(replace_i) + Theta(replace_i)/mu;
       // initialize the minimum
@@ -411,8 +435,8 @@ void rdmc_bounded(const arma::mat& X, const arma::uword& n,
       // loop over the different values and choose the one that minimizes the
       // objective function
       for (k = 0; k < nb_values; k++) {
-        loss = bounded(values(k) - X(replace_i), loss_tuning);
-        objective_step2 = loss + mu * std::pow(values(k) + tmp, 2.0)/2.0;
+        loss = bounded(values(k, j) - X(replace_i), loss_tuning);
+        objective_step2 = loss + mu * std::pow(values(k, j) + tmp, 2.0)/2.0;
         if (objective_step2 < objective_step2_min) {
           which_min = k;
           loss_min = loss;
@@ -420,16 +444,16 @@ void rdmc_bounded(const arma::mat& X, const arma::uword& n,
         }
       }
       // update the element of L with the argmin of the objective function
-      L(replace_i) = values(which_min);
+      L(replace_i) = values(which_min, j);
       // update the norm given by loss function
       loss_norm += loss_min;
     }
-    
+
     // step 3: update Lagrange multiplier Theta and parameter mu
     L_minus_Z = L - Z;
     Theta = Theta + mu * L_minus_Z;
     mu = delta * mu;
-    
+
     // update iteration counter
     nb_iter++;
     // update objective function for convergence criterion
@@ -443,9 +467,9 @@ void rdmc_bounded(const arma::mat& X, const arma::uword& n,
       change = std::abs((objective - previous_objective) / previous_objective);
       converged = change < conv_tol;
     }
-    
+
   }
-  
+
 }
 
 
@@ -455,7 +479,7 @@ void rdmc_bounded(const arma::mat& X, const arma::uword& n,
 
 // [[Rcpp::export]]
 Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA,
-                    const arma::vec& values, const arma::vec& lambda,
+                    const arma::mat& values, const arma::vec& lambda,
                     const std::string& type, const std::string& loss, 
                     const double& svd_tol, const double& loss_tuning, 
                     const double& delta, double mu, const double& conv_tol, 
@@ -513,7 +537,7 @@ Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA,
                     objective, converged, nb_iter);
     } else {
       rdmc_bounded(X, n, p, ind_NA, ind_not_NA, values, lambda(0), type,
-                   svd_tol, loss_tuning, delta, mu, conv_tol, max_iter, 
+                   svd_tol, loss_tuning, delta, mu, conv_tol, max_iter,
                    L, Z, Theta, objective, converged, nb_iter);
     }
     // return list of results
@@ -543,7 +567,7 @@ Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA,
                       objective, converged, nb_iter);
       } else {
         rdmc_bounded(X, n, p, ind_NA, ind_not_NA, values, lambda(l), type,
-                     svd_tol, loss_tuning, delta, mu, conv_tol, max_iter, 
+                     svd_tol, loss_tuning, delta, mu, conv_tol, max_iter,
                      L, Z, Theta, objective, converged, nb_iter);
       }
       // add list of results for current value of lambda: note that a copy of
@@ -577,7 +601,7 @@ Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA,
 // so that a copy is created that can safely be modified
 // [[Rcpp::export]]
 Rcpp::List rdmc_opt_cpp(const arma::mat& X, const arma::umat& is_NA,
-                        const arma::vec& values, const double& lambda,
+                        const arma::mat& values, const double& lambda,
                         const std::string& type, const std::string& loss, 
                         const double& svd_tol, const double& loss_tuning, 
                         const double& delta, double mu, const double& conv_tol, 
