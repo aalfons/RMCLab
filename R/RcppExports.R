@@ -5,7 +5,15 @@ rdmc_cpp <- function(X, is_NA, values, lambda, type, loss, svd_tol, loss_tuning,
     .Call(`_rdmc_rdmc_cpp`, X, is_NA, values, lambda, type, loss, svd_tol, loss_tuning, delta, mu, conv_tol, max_iter)
 }
 
+rdmc_rank_max_cpp <- function(X, is_NA, values, lambda, rank_max, type, loss, svd_tol, loss_tuning, delta, mu, conv_tol, max_iter) {
+    .Call(`_rdmc_rdmc_rank_max_cpp`, X, is_NA, values, lambda, rank_max, type, loss, svd_tol, loss_tuning, delta, mu, conv_tol, max_iter)
+}
+
 rdmc_opt_cpp <- function(X, is_NA, values, lambda, type, loss, svd_tol, loss_tuning, delta, mu, conv_tol, max_iter, L, Z, Theta) {
     .Call(`_rdmc_rdmc_opt_cpp`, X, is_NA, values, lambda, type, loss, svd_tol, loss_tuning, delta, mu, conv_tol, max_iter, L, Z, Theta)
+}
+
+rdmc_opt_rank_max_cpp <- function(X, is_NA, values, lambda, rank_max, type, loss, svd_tol, loss_tuning, delta, mu, conv_tol, max_iter, L, Z, Theta) {
+    .Call(`_rdmc_rdmc_opt_rank_max_cpp`, X, is_NA, values, lambda, rank_max, type, loss, svd_tol, loss_tuning, delta, mu, conv_tol, max_iter, L, Z, Theta)
 }
 

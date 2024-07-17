@@ -7,7 +7,7 @@
 #' @importFrom Rcpp evalCpp
 #' @export
 
-rdmc <- function(X, values = NULL, lambda, type = "svd", 
+rdmc <- function(X, values = NULL, lambda, rank_max = NULL, type = "svd", 
                  loss = c("pseudo_huber", "absolute", "bounded"), 
                  svd_tol = 1e-05, loss_tuning = NULL, delta = 1.05, 
                  mu = 0.1, conv_tol = 1e-02, max_iter = 10, 
@@ -27,6 +27,7 @@ rdmc <- function(X, values = NULL, lambda, type = "svd",
   values <- sort(values)         # ensure values of rating scale are sorted
   nb_values <- length(values)    # number of values in rating scale (categories)
   lambda <- sort(unique(lambda)) # ensure values of tuning parameter are sorted
+  if (!is.null(rank_max)) rank_max <- as.integer(rank_max)
   type <- match.arg(type)
   loss <- match.arg(loss)
   
@@ -55,16 +56,35 @@ rdmc <- function(X, values = NULL, lambda, type = "svd",
   # call C++ function (requires indicator matrix as integers)
   storage.mode(is_NA) <- "integer"
   if (length(lambda) == 1L && !is.null(L) & !is.null(Z) && !is.null(Theta)) {
-    out <- rdmc_opt_cpp(X, is_NA = is_NA, values = value_mat, lambda = lambda, 
-                        type = type, loss = loss, svd_tol = svd_tol, 
-                        loss_tuning = loss_tuning, delta = delta, mu = mu, 
-                        conv_tol = conv_tol, max_iter = max_iter, L = L, 
-                        Z = Z, Theta = Theta)
+    if (is.null(rank_max)) {
+      out <- rdmc_opt_cpp(X, is_NA = is_NA, values = value_mat, lambda = lambda, 
+                          type = type, loss = loss, svd_tol = svd_tol, 
+                          loss_tuning = loss_tuning, delta = delta, mu = mu, 
+                          conv_tol = conv_tol, max_iter = max_iter, L = L, 
+                          Z = Z, Theta = Theta)
+    } else {
+      out <- rdmc_opt_rank_max_cpp(X, is_NA = is_NA, values = value_mat, 
+                                   lambda = lambda, rank_max = rank_max,
+                                   type = type, loss = loss, svd_tol = svd_tol, 
+                                   loss_tuning = loss_tuning, delta = delta, 
+                                   mu = mu, conv_tol = conv_tol, 
+                                   max_iter = max_iter, L = L, 
+                                   Z = Z, Theta = Theta)
+    }
   } else {
-    out <- rdmc_cpp(X, is_NA = is_NA, values = value_mat, lambda = lambda, 
-                    type = type, loss = loss, svd_tol = svd_tol, 
-                    loss_tuning = loss_tuning, delta = delta, mu = mu, 
-                    conv_tol = conv_tol, max_iter = max_iter)
+    if (is.null(rank_max)) {
+      out <- rdmc_cpp(X, is_NA = is_NA, values = value_mat, lambda = lambda, 
+                      type = type, loss = loss, svd_tol = svd_tol, 
+                      loss_tuning = loss_tuning, delta = delta, mu = mu, 
+                      conv_tol = conv_tol, max_iter = max_iter)
+    } else {
+      out <- rdmc_rank_max_cpp(X, is_NA = is_NA, values = value_mat, 
+                               lambda = lambda, rank_max = rank_max,
+                               type = type, loss = loss, svd_tol = svd_tol, 
+                               loss_tuning = loss_tuning, delta = delta, 
+                               mu = mu, conv_tol = conv_tol, 
+                               max_iter = max_iter)
+    }
   }
   
   # obtain completed matrix on original rating scale
