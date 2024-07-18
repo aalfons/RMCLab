@@ -173,9 +173,6 @@ void rdmc_pseudo_huber(const arma::mat& X, const arma::uword& n,
 }
 
 
-
-
-
 // workhorse function for a single value of the regularization parameter lambda
 void rdmc_pseudo_huber_rank_max(const arma::mat& X, const arma::uword& n, 
                                 const arma::uword& p, const arma::uvec& ind_NA, 
@@ -327,9 +324,6 @@ void rdmc_pseudo_huber_rank_max(const arma::mat& X, const arma::uword& n,
   }
   
 }
-
-
-
 
 
 // -------------
@@ -749,8 +743,6 @@ Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& is_NA,
 }
 
 
-
-
 // [[Rcpp::export]]
 Rcpp::List rdmc_rank_max_cpp(const arma::mat& X, const arma::umat& is_NA,
                              const arma::mat& values, const arma::vec& lambda, 
@@ -865,9 +857,6 @@ Rcpp::List rdmc_rank_max_cpp(const arma::mat& X, const arma::umat& is_NA,
   }
   
 }
-
-
-
 
 
 // ------------------------------------------------------------------------
