@@ -109,7 +109,7 @@ rdmc_tune <- function(X, values = NULL, lambda, splits = holdout_control(),
     # from the different training data
     L <- sapply(fit_train, function(fit) fit$L[[which_opt]], 
                 simplify = "array")
-    L <- apply(L, 1:2, local_mode)
+    L <- apply(L, 1:2, median)
     Theta <- sapply(fit_train, function(fit) fit$Theta[[which_opt]], 
                     simplify = "array")
     Theta <- apply(Theta, 1:2, mean)
@@ -131,17 +131,15 @@ rdmc_tune <- function(X, values = NULL, lambda, splits = holdout_control(),
 }
 
 
-## function to compute mode for starting value of L in fit with optimal lambda
-local_mode <- function(x) {
-  # compute contingency table
-  tab <- table(x)
-  # determine the maximum frequency
-  max <- max(tab)
-  # keep all values that occur with the maximum frequency
-  out <- as.numeric(names(tab)[tab == max])
-  # if there are multiple modes, randomly select one to be returned
-  # if (length(out) > 1) sample(out, 1)
-  # if there are multiple modes, take the mean of the modes
-  if (length(out) > 1) mean(out)
-  else out
-}
+# ## function to compute mode for starting value of L in fit with optimal lambda
+# local_mode <- function(x) {
+#   # compute contingency table
+#   tab <- table(x)
+#   # determine the maximum frequency
+#   max <- max(tab)
+#   # keep all values that occur with the maximum frequency
+#   out <- as.numeric(names(tab)[tab == max])
+#   # if there are multiple modes, randomly select one to be returned
+#   if (length(out) > 1) sample(out, 1)
+#   else out
+# }
