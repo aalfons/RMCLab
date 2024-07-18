@@ -1,5 +1,8 @@
 library("rdmc")
 
+# set seed of random number generator for reproducibility
+set.seed(1234)
+
 # generate data
 n <- 20
 p <- 5
@@ -14,7 +17,15 @@ X_NA[runif(n * p) < 0.6] <- NA_real_
 # is_NA <- is.na(X_NA)
 # storage.mode(is_NA) <- "integer"
 type <- "svd"
-lambda <- c(0.2, 0.4, 0.6, 0.8, 1)
+lambda <- c(0.01, 0.2, 0.4, 0.6, 0.8)
+
+# single lambda
+fit <- rdmc(X_NA, values = 1:nb_cat, lambda = 0.1, 
+            type = type, loss = "pseudo_huber")
+fit$nb_iter
+fit$L
+fit$X
+
 
 # pseudo-Huber loss
 fit_pseudo_huber <- rdmc_tune(X_NA, values = 1:nb_cat, lambda = lambda, 

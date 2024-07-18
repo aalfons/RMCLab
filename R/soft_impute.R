@@ -42,7 +42,7 @@ soft_impute <- function(X, lambda, rank.max = 2, type = "svd", thresh = 1e-05,
                                   trace.it = trace.it, 
                                   final.svd = final.svd)
     # note that function complete() requires to use the data matrix on the 
-    # original scale, only the predicted values for the missing cells are 
+    # original scale, only the predicted values for the missing elements are 
     # transformed back with argument 'unscale'
     X_imputed <- softImpute::complete(X, fit, unscale = TRUE)
   } else {
@@ -58,7 +58,7 @@ soft_impute <- function(X, lambda, rank.max = 2, type = "svd", thresh = 1e-05,
                                          warm.start = warm_start, 
                                          final.svd = final.svd)
       # note that function complete() requires to use the data matrix on the 
-      # original scale, only the predicted values for the missing cells are 
+      # original scale, only the predicted values for the missing elements are 
       # transformed back with argument 'unscale'
       X_imputed[[l]] <- softImpute::complete(X, fit[[l]], unscale = TRUE)
       # update starting values for next iteration

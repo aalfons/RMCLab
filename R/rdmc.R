@@ -7,92 +7,66 @@
 #' @importFrom Rcpp evalCpp
 #' @export
 
-rdmc <- function(X, values = NULL, lambda, rank_max = NULL, type = "svd", 
-                 loss = c("pseudo_huber", "absolute", "bounded"), 
-                 svd_tol = 1e-05, loss_tuning = NULL, delta = 1.05, 
-                 mu = 0.1, conv_tol = 1e-02, max_iter = 10, 
-                 # starting values: only used for fitting the algorithm for 
-                 # the optimal lambda after tuning, but they are currently 
-                 # ignored if a vector of lambda is supplied
-                 L = NULL, Z = NULL, Theta = NULL) {
+rdmc <- function(X, values = NULL, lambda, rank_max = NULL, 
+                 type = "svd", svd_tol = 1e-05, 
+                 loss = c("bounded", "absolute", "pseudo_huber"),
+                 loss_const = NULL, delta = 1.05, mu = 0.1, 
+                 conv_tol = 1e-02, max_iter = 10, 
+                 # starting values
+                 L = NULL, Theta = NULL) {
   
   # initializations
   X <- as.matrix(X)
+  d <- dim(X)
   
   # construct indicator matrix of missing values
   is_NA <- is.na(X)
   
   # check arguments
   if (is.null(values)) values <- unique(X[!is_NA])
-  values <- sort(values)         # ensure values of rating scale are sorted
-  nb_values <- length(values)    # number of values in rating scale (categories)
-  lambda <- sort(unique(lambda)) # ensure values of tuning parameter are sorted
-  if (!is.null(rank_max)) rank_max <- as.integer(rank_max)
-  type <- match.arg(type)
+  values <- sort(values)          # ensure values of rating scale are sorted
+  lambda <- sort(unique(lambda))  # ensure values of tuning parameter are sorted
+  if (is.null(rank_max)) rank_max <- min(dim(X))
   loss <- match.arg(loss)
-  
-  # check bound in case bounded loss function
-  if (is.null(loss_tuning)) {
-    loss_tuning <- switch(loss, 
-                          pseudo_huber = 1,
-                          absolute = NA_real_,
-                          bounded = (max(values) - min(values)) / 2)
+  if (is.null(loss_const)) {
+    # set default constant for loss function (if applicable)
+    loss_const <- switch(loss, bounded = (max(values) - min(values)) / 2, 
+                         absolute = NA_real_, pseudo_huber = 1)
   }
   
-  # # center data matrix with midpoint of rating scale
-  # midpoint <- mean(values[c(1, nb_values)])
-  # X <- X - midpoint
-  # values <- values - midpoint
-  # center data with columnwise median of observed data
-  # TODO: there is potential for optimization, as this can be computed in 
-  # rdmc_tune() and passed down. In addition, since we compute the medians 
-  # already in R, they can be passed down to C++ to initialize the starting 
-  # values for the first value of lambda.
-  medians <- apply(X, 2, median, na.rm = TRUE)
+  # center data matrix with columnwise median of observed data
+  medians <- apply(X, 2L, median, na.rm = TRUE)
   X <- sweep(X, 2, medians, FUN = "-")
   # update discrete candidate values for each column
-  value_mat <- sapply(medians, function(m) values - m)
+  values <- sapply(medians, function(m) values - m)
   
-  # call C++ function (requires indicator matrix as integers)
-  storage.mode(is_NA) <- "integer"
-  if (length(lambda) == 1L && !is.null(L) & !is.null(Z) && !is.null(Theta)) {
-    if (is.null(rank_max)) {
-      out <- rdmc_opt_cpp(X, is_NA = is_NA, values = value_mat, lambda = lambda, 
-                          type = type, loss = loss, svd_tol = svd_tol, 
-                          loss_tuning = loss_tuning, delta = delta, mu = mu, 
-                          conv_tol = conv_tol, max_iter = max_iter, L = L, 
-                          Z = Z, Theta = Theta)
-    } else {
-      out <- rdmc_opt_rank_max_cpp(X, is_NA = is_NA, values = value_mat, 
-                                   lambda = lambda, rank_max = rank_max,
-                                   type = type, loss = loss, svd_tol = svd_tol, 
-                                   loss_tuning = loss_tuning, delta = delta, 
-                                   mu = mu, conv_tol = conv_tol, 
-                                   max_iter = max_iter, L = L, 
-                                   Z = Z, Theta = Theta)
-    }
-  } else {
-    if (is.null(rank_max)) {
-      out <- rdmc_cpp(X, is_NA = is_NA, values = value_mat, lambda = lambda, 
-                      type = type, loss = loss, svd_tol = svd_tol, 
-                      loss_tuning = loss_tuning, delta = delta, mu = mu, 
-                      conv_tol = conv_tol, max_iter = max_iter)
-    } else {
-      out <- rdmc_rank_max_cpp(X, is_NA = is_NA, values = value_mat, 
-                               lambda = lambda, rank_max = rank_max,
-                               type = type, loss = loss, svd_tol = svd_tol, 
-                               loss_tuning = loss_tuning, delta = delta, 
-                               mu = mu, conv_tol = conv_tol, 
-                               max_iter = max_iter)
-    }
+  # initialize starting values if not supplied
+  # (only use user-supplied starting values if both are supplied)
+  if (is.null(L) || is.null(Theta)) {
+    # since X is median-centered, we can initialize missing values in L with 0
+    L <- X
+    L[is_NA] <- 0
+    # initialize Theta with 0
+    Theta <- matrix(0, nrow = d[1], ncol = d[2])
   }
+
+  # convert indicator matrix of missing values to matrix of row and column 
+  # indices of missing and observed elements
+  idx_NA <- which(is_NA, arr.ind = TRUE, useNames = FALSE)
+  idx_observed <- which(!is_NA, arr.ind = TRUE, useNames = FALSE)
   
+  # call C++ function
+  out <- rdmc_cpp(X, idx_NA = idx_NA - 1L, idx_observed = idx_observed - 1L, 
+                  values = values, lambda = lambda, rank_max = rank_max, 
+                  type = type, svd_tol = svd_tol, loss = loss, 
+                  loss_const = loss_const, delta = delta, mu = mu, 
+                  conv_tol = conv_tol, max_iter = max_iter,  L = L, 
+                  Theta = Theta)
+
   # obtain completed matrix on original rating scale
-  storage.mode(is_NA) <- "logical"
   if (length(lambda) == 1L) {
     X[is_NA] <- out$L[is_NA]
-    # out$X <- X + midpoint
-    out$X <- sweep(X, 2, medians, FUN = "+")
+    out$X <- sweep(X, 2L, medians, FUN = "+")
   } else {
     # restructure output from C++
     out <- list(
@@ -107,8 +81,7 @@ rdmc <- function(X, values = NULL, lambda, rank_max = NULL, type = "svd",
     # add completed matrix on original rating scale
     out$X <- lapply(out$L, function(L) {
       X[is_NA] <- L[is_NA]
-      # X + midpoint
-      sweep(X, 2, medians, FUN = "+")
+      sweep(X, 2L, medians, FUN = "+")
     })
   }
   
