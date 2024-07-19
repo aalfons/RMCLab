@@ -37,11 +37,11 @@ void rdmc_bounded(const arma::mat& X, const arma::uword& n,
                   const std::string& type, const double& svd_tol, 
                   const double& loss_const, const double& delta, 
                   double mu, const double& conv_tol, 
-                  const arma::uword& max_iter,
+                  const int& max_iter,
                   // output to be returned through arguments
                   arma::mat& L, arma::mat& Z, arma::mat& Theta,
                   double& objective, bool& converged, 
-                  arma::uword& nb_iter) {
+                  int& nb_iter) {
   
   // initializations
   objective = R_PosInf;
@@ -181,11 +181,11 @@ void rdmc_absolute(const arma::mat& X, const arma::uword& n,
                    const double& lambda, const arma::uword& rank_max, 
                    const std::string& type, const double& svd_tol, 
                    const double& delta, double mu, const double& conv_tol, 
-                   const arma::uword& max_iter,
+                   const int& max_iter,
                    // output to be returned through arguments
                    arma::mat& L, arma::mat& Z, arma::mat& Theta,
                    double& objective, bool& converged, 
-                   arma::uword& nb_iter) {
+                   int& nb_iter) {
   
   // initializations
   objective = R_PosInf;
@@ -331,11 +331,11 @@ void rdmc_pseudo_huber(const arma::mat& X, const arma::uword& n,
                        const std::string& type, const double& svd_tol, 
                        const double& loss_const, const double& delta, 
                        double mu, const double& conv_tol, 
-                       const arma::uword& max_iter,
+                       const int& max_iter,
                        // output to be returned through arguments
                        arma::mat& L, arma::mat& Z, arma::mat& Theta,
                        double& objective, bool& converged, 
-                       arma::uword& nb_iter) {
+                       int& nb_iter) {
   
   // initializations
   objective = R_PosInf;
@@ -469,27 +469,35 @@ void rdmc_pseudo_huber(const arma::mat& X, const arma::uword& n,
 // ----------------------------------------------------------------
 
 // [[Rcpp::export]]
-Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& idx_NA,
-                    const arma::umat& idx_observed, const arma::mat& values, 
-                    const arma::vec& lambda, const arma::uword& rank_max, 
-                    const std::string& type, const double& svd_tol, 
-                    const std::string& loss, const double& loss_const, 
-                    const double& delta, double mu, const double& conv_tol, 
-                    const arma::uword& max_iter, arma::mat L, arma::mat Theta) {
+Rcpp::List rdmc_cpp(const arma::mat& X, 
+                    const arma::umat& idx_NA,
+                    const arma::umat& idx_observed, 
+                    const arma::mat& values, 
+                    const Rcpp::NumericVector& lambda, 
+                    const arma::uword& rank_max, 
+                    const std::string& type, 
+                    const double& svd_tol, 
+                    const std::string& loss, 
+                    const double& loss_const, 
+                    const double& delta, 
+                    double mu, 
+                    const double& conv_tol, 
+                    const int& max_iter, 
+                    arma::mat L, arma::mat Theta) {
   
   // extract number of rows and columns
-  arma::uword n = X.n_rows, p = X.n_cols;
+  arma::uword n = X.n_rows, p = X.n_cols, nb_lambda = lambda.length();
 
   // initialize Z matrix and variables related to convergence
   // (to be updated by workhorse function)
   arma::mat Z(n, p);
   double objective;
   bool converged;
-  arma::uword nb_iter;
+  int nb_iter;
   
   // different behavior depending on whether we have one value of the
   // regularization parameter lambda or multiple values
-  if (lambda.n_elem == 1) {
+  if (nb_lambda == 1) {
     
     // call workhorse function with initial values
     if (loss == "bounded") {
@@ -520,10 +528,10 @@ Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& idx_NA,
     
     // loop over values of the regularization parameter lambda
     Rcpp::List L_list, Z_list, Theta_list;
-    Rcpp::NumericVector objective_vec(lambda.n_elem);
-    Rcpp::LogicalVector converged_vec(lambda.n_elem);
-    Rcpp::IntegerVector nb_iter_vec(lambda.n_elem);
-    for (arma::uword l = 0; l < lambda.n_elem; l++) {
+    Rcpp::NumericVector objective_vec(nb_lambda);
+    Rcpp::LogicalVector converged_vec(nb_lambda);
+    Rcpp::IntegerVector nb_iter_vec(nb_lambda);
+    for (arma::uword l = 0; l < nb_lambda; l++) {
       // call workhorse function with starting values: note that solutions
       // for previous value of lambda are used as starting values
       if (loss == "bounded") {
@@ -554,7 +562,7 @@ Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& idx_NA,
     }
     // return list of results
     return Rcpp::List::create(
-      Rcpp::Named("lambda") = Rcpp::NumericVector(lambda.begin(), lambda.end()),
+      Rcpp::Named("lambda") = lambda,
       Rcpp::Named("L") = L_list,
       Rcpp::Named("Z") = Z_list,
       Rcpp::Named("Theta") = Theta_list,
