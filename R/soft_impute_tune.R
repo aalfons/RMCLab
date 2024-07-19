@@ -25,8 +25,10 @@ fraction_control <- function(start = 0.01, end = 1, nb_lambda = 10L) {
 
 ## obtain grid of tuning parameter values
 
+#' @noRd
 get_grid <- function(object, ...) UseMethod("get_grid")
 
+#' @noRd
 get_grid.fraction_control <- function(object, ...) {
   seq_log <- seq(from = log(object$start), to = log(object$end), 
                  length.out = object$nb_lambda)

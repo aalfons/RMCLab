@@ -582,6 +582,7 @@ Rcpp::List rdmc_cpp(const arma::mat& X,
   
 }
 
+
 // -----------------------------------------------------------------
 // function to be called from R with automatic grid of lambda values
 // -----------------------------------------------------------------
