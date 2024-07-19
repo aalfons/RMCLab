@@ -3,6 +3,21 @@
 #         Erasmus University Rotterdam
 # ************************************
 
+
+#' @export
+autotune_control <- function(start = 0.05, factor = 1.5) {
+  if (start <= 0) {
+    stop("starting value of the tuning parameter must be greater than 0")
+  }
+  if (factor <= 1) {
+    stop("multiplication factor for the tuning parameter must be greater than 1")
+  }
+  out <- list(start = start, factor = factor)
+  class(out) <- "autotune_control"
+  out
+}
+
+
 #' @useDynLib rdmc, .registration = TRUE
 #' @importFrom Rcpp evalCpp
 #' @export
@@ -22,11 +37,18 @@ rdmc <- function(X, values = NULL, lambda, rank_max = NULL,
   # construct indicator matrix of missing values
   is_NA <- is.na(X)
   
-  # check arguments
+  # check values of rating scale
   if (is.null(values)) values <- unique(X[!is_NA])
-  values <- sort(values)          # ensure values of rating scale are sorted
-  lambda <- sort(unique(lambda))  # ensure values of tuning parameter are sorted
+  values <- sort(values)  # ensure values of rating scale are sorted
+  # check values of tuning parameter
+  have_autotune <- inherits(lambda, "autotune_control")
+  if (!have_autotune) {
+    # ensure values of tuning parameter are sorted
+    lambda <- sort(unique(lambda))
+  }
+  # check maximum rank
   if (is.null(rank_max)) rank_max <- min(dim(X))
+  # check loss function
   loss <- match.arg(loss)
   if (is.null(loss_const)) {
     # set default constant for loss function (if applicable)
@@ -56,12 +78,31 @@ rdmc <- function(X, values = NULL, lambda, rank_max = NULL,
   idx_observed <- which(!is_NA, arr.ind = TRUE, useNames = FALSE)
   
   # call C++ function
-  out <- rdmc_cpp(X, idx_NA = idx_NA - 1L, idx_observed = idx_observed - 1L, 
-                  values = values, lambda = lambda, rank_max = rank_max, 
-                  type = type, svd_tol = svd_tol, loss = loss, 
-                  loss_const = loss_const, delta = delta, mu = mu, 
-                  conv_tol = conv_tol, max_iter = max_iter,  L = L, 
-                  Theta = Theta)
+  if (have_autotune) {
+    out <- rdmc_autotune_cpp(X, idx_NA = idx_NA - 1L, 
+                             idx_observed = idx_observed - 1L, 
+                             values = values, 
+                             lambda_start = lambda$start, 
+                             lambda_factor = lambda$factor,
+                             rank_max = rank_max, 
+                             type = type, 
+                             svd_tol = svd_tol, 
+                             loss = loss, 
+                             loss_const = loss_const, 
+                             delta = delta, 
+                             mu = mu, 
+                             conv_tol = conv_tol, 
+                             max_iter = max_iter,  
+                             L = L, 
+                             Theta = Theta)
+  } else {
+    out <- rdmc_cpp(X, idx_NA = idx_NA - 1L, idx_observed = idx_observed - 1L, 
+                    values = values, lambda = lambda, rank_max = rank_max, 
+                    type = type, svd_tol = svd_tol, loss = loss, 
+                    loss_const = loss_const, delta = delta, mu = mu, 
+                    conv_tol = conv_tol, max_iter = max_iter,  L = L, 
+                    Theta = Theta)
+  }
 
   # obtain completed matrix on original rating scale
   if (length(lambda) == 1L) {

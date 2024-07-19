@@ -4,14 +4,6 @@
 # ************************************
 
 
-#' @export
-autotune_control <- function(start = 0.01, step = 0.01, factor = 2) {
-  out <- list(start = start, step = step, factor = factor)
-  class(out) <- "autotune_control"
-  out
-}
-
-
 ## function for tuning the penalty parameter via data splitting strategies
 #' @export
 
@@ -56,7 +48,10 @@ rdmc_tune <- function(X, values = NULL, lambda = autotune_control(),
     # iteratively fit robust discrete matrix completion with increasing values
     # until tuning parameter is large enough so that first soft-thresholded SVD 
     # step results in all singular values being zero
-    stop("not implemented yet")
+    fit <- rdmc(X, values = values, lambda = lambda, loss = loss,
+                loss_const = loss_const, ...)
+    # extract values of tuning parameter
+    lambda <- fit$lambda
   }
 
   # fit robust discrete matrix completion to the different training data sets
@@ -97,8 +92,15 @@ rdmc_tune <- function(X, values = NULL, lambda = autotune_control(),
   which_opt <- rev(seq_along(lambda))[which.min(rev(tuning_loss))]
   lambda_opt <- lambda[which_opt]
   
+  # prepare output
   if (have_autotune) {
-    stop("not implemented yet")
+    
+    # construct list of relevant output
+    out <- list(lambda = lambda, tuning_loss = tuning_loss, 
+                which_opt = which_opt, lambda_opt = lambda_opt, 
+                fit = fit)
+    class(out) <- c("rdmc_autotuned", "rdmc_tuned")
+    
   } else {
     
     # Note: It's possible that on different training sets, we get different 
@@ -130,7 +132,7 @@ rdmc_tune <- function(X, values = NULL, lambda = autotune_control(),
     
     # construct list of relevant output
     out <- list(lambda = lambda, tuning_loss = tuning_loss, 
-                lambda_opt = lambda_opt, final = fit_opt)
+                lambda_opt = lambda_opt, fit = fit_opt)
     class(out) <- "rdmc_tuned"
   
   }

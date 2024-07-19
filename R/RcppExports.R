@@ -5,3 +5,7 @@ rdmc_cpp <- function(X, idx_NA, idx_observed, values, lambda, rank_max, type, sv
     .Call(`_rdmc_rdmc_cpp`, X, idx_NA, idx_observed, values, lambda, rank_max, type, svd_tol, loss, loss_const, delta, mu, conv_tol, max_iter, L, Theta)
 }
 
+rdmc_autotune_cpp <- function(X, idx_NA, idx_observed, values, lambda_start, lambda_factor, rank_max, type, svd_tol, loss, loss_const, delta, mu, conv_tol, max_iter, L, Theta) {
+    .Call(`_rdmc_rdmc_autotune_cpp`, X, idx_NA, idx_observed, values, lambda_start, lambda_factor, rank_max, type, svd_tol, loss, loss_const, delta, mu, conv_tol, max_iter, L, Theta)
+}
+
