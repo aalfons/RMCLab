@@ -464,9 +464,9 @@ void rdmc_pseudo_huber(const arma::mat& X, const arma::uword& n,
 }
 
 
-// ----------------------------
-// function to be called from R
-// ----------------------------
+// ----------------------------------------------------------------
+// function to be called from R with supplied grid of lambda values
+// ----------------------------------------------------------------
 
 // [[Rcpp::export]]
 Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& idx_NA,
@@ -519,7 +519,10 @@ Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& idx_NA,
   } else {
     
     // loop over values of the regularization parameter lambda
-    Rcpp::List out(lambda.n_elem);
+    Rcpp::List L_list, Z_list, Theta_list;
+    Rcpp::NumericVector objective_vec(lambda.n_elem);
+    Rcpp::LogicalVector converged_vec(lambda.n_elem);
+    Rcpp::IntegerVector nb_iter_vec(lambda.n_elem);
     for (arma::uword l = 0; l < lambda.n_elem; l++) {
       // call workhorse function with starting values: note that solutions
       // for previous value of lambda are used as starting values
@@ -538,20 +541,27 @@ Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& idx_NA,
                           conv_tol, max_iter, L, Z, Theta, objective, 
                           converged, nb_iter);
       } else Rcpp::stop("loss function not implemented");  // shouldn't happen
-      // add list of results for current value of lambda: note that a copy of
-      // the objects that are stored in the list so that they are not modified
-      // in future calls to rdmc_cpp()
-      out[l] = Rcpp::List::create(Rcpp::Named("lambda") = lambda(l),
-                                  Rcpp::Named("L") = L,
-                                  Rcpp::Named("Z") = Z,
-                                  Rcpp::Named("Theta") = Theta,
-                                  Rcpp::Named("objective") = objective,
-                                  Rcpp::Named("converged") = converged,
-                                  Rcpp::Named("nb_iter") = nb_iter);
+      // add results for current value of the regularization parameter:
+      // note that a copy of the objects that are stored in the list so that 
+      // they are not modified in future calls to rdmc_cpp()
+      L_list.push_back(L);
+      Z_list.push_back(Z);
+      Theta_list.push_back(Theta);
+      objective_vec(l) = objective;
+      converged_vec(l) = converged;
+      nb_iter_vec(l) = nb_iter;
+      
     }
-    
-    // return list of results for all values of lambda
-    return out;
+    // return list of results
+    return Rcpp::List::create(
+      Rcpp::Named("lambda") = Rcpp::NumericVector(lambda.begin(), lambda.end()),
+      Rcpp::Named("L") = L_list,
+      Rcpp::Named("Z") = Z_list,
+      Rcpp::Named("Theta") = Theta_list,
+      Rcpp::Named("objective") = objective_vec,
+      Rcpp::Named("converged") = converged_vec,
+      Rcpp::Named("nb_iter") = nb_iter_vec
+    );
     
   }
   

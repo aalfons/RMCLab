@@ -68,17 +68,6 @@ rdmc <- function(X, values = NULL, lambda, rank_max = NULL,
     X[is_NA] <- out$L[is_NA]
     out$X <- sweep(X, 2L, medians, FUN = "+")
   } else {
-    # restructure output from C++
-    out <- list(
-      lambda = sapply(out, "[[", "lambda"),
-      L = lapply(out, "[[", "L"),
-      Z = lapply(out, "[[", "Z"),
-      Theta = lapply(out, "[[", "Theta"),
-      objective = sapply(out, "[[", "objective"),
-      converged = sapply(out, "[[", "converged"),
-      nb_iter = sapply(out, "[[", "nb_iter")
-    )
-    # add completed matrix on original rating scale
     out$X <- lapply(out$L, function(L) {
       X[is_NA] <- L[is_NA]
       sweep(X, 2L, medians, FUN = "+")
