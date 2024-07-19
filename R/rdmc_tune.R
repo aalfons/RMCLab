@@ -4,10 +4,19 @@
 # ************************************
 
 
+#' @export
+autotune_control <- function(start = 0.01, step = 0.01, factor = 2) {
+  out <- list(start = start, step = step, factor = factor)
+  class(out) <- "autotune_control"
+  out
+}
+
+
 ## function for tuning the penalty parameter via data splitting strategies
 #' @export
 
-rdmc_tune <- function(X, values = NULL, lambda, splits = holdout_control(), 
+rdmc_tune <- function(X, values = NULL, lambda = autotune_control(), 
+                      splits = holdout_control(), 
                       loss = c("bounded", "absolute", "pseudo_huber"),
                       loss_const = NULL, ...) {
   
@@ -98,9 +107,10 @@ rdmc_tune <- function(X, values = NULL, lambda, splits = holdout_control(),
     # (L doesn't even have to satisfy any discrete constraint), as we simply 
     # use L and Theta for the first soft-thresholding SVD step to update Z, 
     # and subsequently L is updated to satisfy the discrete constrains using 
-    # the medians on the full data set. Hence we could just take the mean over 
-    # the training sets for L rather than the mode. Specifically, we apply the 
-    # soft-thresholding SVD step to L + Theta/mu, so it may even be smoother to 
+    # the medians on the full data set. Hence we could just take the mean or 
+    # median over the training sets for L rather than the mode (which currently 
+    # uses random sampling in case of multiple modes). Specifically, we apply 
+    # the soft-thresholding SVD step to L + Theta/mu, so it may be smoother to 
     # use the linearity of the mean to compute both starting values for L and 
     # Theta, rather than destroying the linear relationship by using the mode 
     # for L and the mean for Theta.

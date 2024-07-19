@@ -2,6 +2,7 @@
 
 S3method(create_splits,fold_control)
 S3method(create_splits,holdout_control)
+export(autotune_control)
 export(create_splits)
 export(cv_folds)
 export(fold_control)
