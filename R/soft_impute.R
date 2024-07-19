@@ -11,8 +11,10 @@
 ## predictions for a vector of values for the regularization parameter
 #' @importFrom softImpute biScale complete softImpute
 #' @export
-soft_impute <- function(X, lambda, rank.max = 2, type = "svd", thresh = 1e-05, 
-                        maxit = 100, trace.it = FALSE, final.svd = TRUE, 
+
+soft_impute <- function(X, lambda, rank.max = NULL, type = c("svd", "als"), 
+                        thresh = 1e-05, maxit = 100L, trace.it = FALSE, 
+                        final.svd = TRUE, 
                         # discretization of the imputed matrix is only done for 
                         # fitting the algorithm for the optimal lambda after 
                         # tuning, but it is currently ignored if a vector of 
@@ -23,8 +25,17 @@ soft_impute <- function(X, lambda, rank.max = 2, type = "svd", thresh = 1e-05,
   X <- as.matrix(X)
   
   # check arguments
-  lambda <- sort(unique(lambda)) # ensure values of tuning parameter are sorted
-  n_lambda <- length(lambda)
+  lambda <- sort(unique(lambda))  # ensure values of tuning parameter are sorted
+  nb_lambda <- length(lambda)
+  type <- match.arg(type)
+  if (is.null(rank.max)) {
+    # For the SVD algorithm, don't apply a rank restriction by default so that 
+    # the solution solves the nuclear-norm convex matrix-completion problem. 
+    # For the ALS algorithm, use the default of softImpute() (which is 2), as
+    # this algorithm anyway only gives a local minimum of the nuclear-norm 
+    # convex matrix-completion problem.
+    rank.max <- if (type == "svd") min(dim(X)) - 1L else 2L
+  }
   
   # center the data matrix
   X_centered <- softImpute::biScale(X, 
@@ -34,7 +45,7 @@ soft_impute <- function(X, lambda, rank.max = 2, type = "svd", thresh = 1e-05,
                                     col.scale = FALSE)
   
   # apply softImpute
-  if (n_lambda == 1L) {
+  if (nb_lambda == 1L) {
     # apply softImpute with centered incomplete data matrix
     fit <- softImpute::softImpute(X_centered, rank.max = rank.max, 
                                   lambda = lambda, type = type, 
@@ -71,7 +82,7 @@ soft_impute <- function(X, lambda, rank.max = 2, type = "svd", thresh = 1e-05,
   
   # if requested, add discretized imputed matrix 
   # (only for fitting the algorithm for the optimal lambda after tuning)
-  if (n_lambda == 1L && isTRUE(discretize)) {
+  if (nb_lambda == 1L && isTRUE(discretize)) {
     # if not supplied, obtain values of rating scale (categories)
     if (is.null(values)) values <- unique(X[!is.na(X)])
     # obtain minimum and maximum value for discretization

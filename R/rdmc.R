@@ -4,7 +4,9 @@
 # ************************************
 
 
+## control object for automatic selection of tuning paramter
 #' @export
+
 autotune_control <- function(start = 0.05, factor = 1.5) {
   if (start <= 0) {
     stop("starting value of the tuning parameter must be greater than 0")
@@ -26,7 +28,7 @@ rdmc <- function(X, values = NULL, lambda, rank_max = NULL,
                  type = "svd", svd_tol = 1e-05, 
                  loss = c("bounded", "absolute", "pseudo_huber"),
                  loss_const = NULL, delta = 1.05, mu = 0.1, 
-                 conv_tol = 1e-02, max_iter = 10, 
+                 conv_tol = 1e-02, max_iter = 10L, 
                  # starting values
                  L = NULL, Theta = NULL) {
   
