@@ -25,7 +25,7 @@ soft_impute <- function(X, lambda, rank.max = NULL, type = c("svd", "als"),
   X <- as.matrix(X)
   
   # check arguments
-  lambda <- sort(unique(lambda))  # ensure values of tuning parameter are sorted
+  lambda <- sort(unique(lambda), decreasing = TRUE)
   nb_lambda <- length(lambda)
   type <- match.arg(type)
   if (is.null(rank.max)) {

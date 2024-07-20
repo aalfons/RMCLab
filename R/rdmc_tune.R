@@ -7,10 +7,10 @@
 ## function for tuning the penalty parameter via data splitting strategies
 #' @export
 
-rdmc_tune <- function(X, values = NULL, lambda = autotune_control(), 
+rdmc_tune <- function(X, values = NULL, lambda = rel_lambda_control(), 
                       splits = holdout_control(), 
                       loss = c("bounded", "absolute", "pseudo_huber"),
-                      loss_const = NULL, ...) {
+                      loss_const = NULL, mu = 0.1, ...) {
   
   # initializations
   X <- as.matrix(X)
@@ -22,14 +22,33 @@ rdmc_tune <- function(X, values = NULL, lambda = autotune_control(),
   if (is.null(values)) values <- unique(X[observed])
   values <- sort(values)  # ensure values of rating scale are sorted
   # check values of tuning parameter
-  have_autotune <- inherits(lambda, "autotune_control")
-  if (!have_autotune) {
+  if (inherits(lambda, "rel_lambda_control")) {
+    # obtain grid of relative values for the tuning parameter
+    rel_lambda <- get_grid(lambda)
+    # center data matrix with columnwise median of observed data
+    medians <- apply(X, 2L, median, na.rm = TRUE)
+    X_centered <- sweep(X, 2, medians, FUN = "-")
+    # obtain the final grid of tuning parameter values relative to the largest 
+    # singular value of the centered data matrix with missing values replaced 
+    # by 0 (note that in this case, this is not an estimate of the smallest 
+    # lambda that sets everything to 0, but we use it here simply to relate 
+    # the grid of lambda values to the specific data at hand)
+    lambda <- rel_lambda * mu * softImpute::lambda0(X_centered)
+  } else {
     # ensure values of tuning parameter are sorted
-    lambda <- sort(unique(lambda))
-    if (length(lambda) == 1L) {
-      stop("only one value of 'lambda'; use function rdmc() instead")
-    }
+    lambda <- sort(unique(lambda), decreasing = FALSE)
   }
+  if (length(lambda) == 1L) {
+    stop("only one value of 'lambda'; use function rdmc() instead")
+  }
+  # have_autotune <- inherits(lambda, "autotune_control")
+  # if (!have_autotune) {
+  #   # ensure values of tuning parameter are sorted
+  #   lambda <- sort(unique(lambda), decreasing = TRUE)
+  #   if (length(lambda) == 1L) {
+  #     stop("only one value of 'lambda'; use function rdmc() instead")
+  #   }
+  # }
   # check loss function
   loss <- match.arg(loss)
   if (is.null(loss_const)) {
@@ -43,16 +62,16 @@ rdmc_tune <- function(X, values = NULL, lambda = autotune_control(),
     splits <- create_splits(observed, control = splits)
   }
   
-  # if requested, automatically determine values of tuning parameter
-  if (have_autotune) {
-    # iteratively fit robust discrete matrix completion with increasing values
-    # until tuning parameter is large enough so that first soft-thresholded SVD 
-    # step results in all singular values being zero
-    fit <- rdmc(X, values = values, lambda = lambda, loss = loss,
-                loss_const = loss_const, ...)
-    # extract values of tuning parameter
-    lambda <- fit$lambda
-  }
+  # # if requested, automatically determine values of tuning parameter
+  # if (have_autotune) {
+  #   # iteratively fit robust discrete matrix completion with increasing values
+  #   # until tuning parameter is large enough so that first soft-thresholded SVD 
+  #   # step results in all singular values being zero
+  #   fit <- rdmc(X, values = values, lambda = lambda, loss = loss,
+  #               loss_const = loss_const, ...)
+  #   # extract values of tuning parameter
+  #   lambda <- fit$lambda
+  # }
 
   # fit robust discrete matrix completion to the different training data sets
   fit_train <- lapply(splits, function(indices, ...) {
@@ -61,7 +80,7 @@ rdmc_tune <- function(X, values = NULL, lambda = autotune_control(),
     X_train[indices] <- NA_real_
     # apply robust discrete matrix completion to training data
     fit_train <- rdmc(X_train, values = values, lambda = lambda, loss = loss,
-                      loss_const = loss_const, ...)
+                      loss_const = loss_const, mu = mu, ...)
   }, ...)
   
   # extract predictions for the elements in the different test sets and compute 
@@ -87,21 +106,21 @@ rdmc_tune <- function(X, values = NULL, lambda = autotune_control(),
   # compute column means
   tuning_loss <- colMeans(tuning_loss)
   
-  # select the optimal lambda: revert the vectors so that in the unlikely 
-  # case of ties, we select the lambda with stronger penalization
-  which_opt <- rev(seq_along(lambda))[which.min(rev(tuning_loss))]
+  # select the optimal lambda: in the unlikely case of ties, we select the 
+  # lambda with stronger penalization
+  which_opt <- seq_along(lambda)[which.min(tuning_loss)]
   lambda_opt <- lambda[which_opt]
   
-  # prepare output
-  if (have_autotune) {
-    
-    # construct list of relevant output
-    out <- list(lambda = lambda, tuning_loss = tuning_loss, 
-                which_opt = which_opt, lambda_opt = lambda_opt, 
-                fit = fit)
-    class(out) <- c("rdmc_autotuned", "rdmc_tuned")
-    
-  } else {
+  # # prepare output
+  # if (have_autotune) {
+  #   
+  #   # construct list of relevant output
+  #   out <- list(lambda = lambda, tuning_loss = tuning_loss, 
+  #               which_opt = which_opt, lambda_opt = lambda_opt, 
+  #               fit = fit)
+  #   class(out) <- c("rdmc_autotuned", "rdmc_tuned")
+  #   
+  # } else {
     
     # Note: It's possible that on different training sets, we get different 
     # medians in some variables so that the discrete constraint is different 
@@ -127,15 +146,18 @@ rdmc_tune <- function(X, values = NULL, lambda = autotune_control(),
     Theta <- apply(Theta, 1:2, mean)
     
     # apply robust discrete matrix completion with optimal tuning parameter
+    # TODO: this could be made more efficient by adding arguments to rdmc() 
+    #       in case the data matrix is already centered
     fit_opt <- rdmc(X, values = values, lambda = lambda_opt, loss = loss,
-                    loss_const = loss_const, ..., L = L, Theta = Theta)
+                    loss_const = loss_const, mu = mu, ..., L = L, 
+                    Theta = Theta)
     
     # construct list of relevant output
     out <- list(lambda = lambda, tuning_loss = tuning_loss, 
                 lambda_opt = lambda_opt, fit = fit_opt)
     class(out) <- "rdmc_tuned"
   
-  }
+  # }
   
   # return output
   out
