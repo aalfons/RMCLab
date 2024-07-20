@@ -106,9 +106,9 @@ rdmc_tune <- function(X, values = NULL, lambda = rel_lambda_control(),
   # compute column means
   tuning_loss <- colMeans(tuning_loss)
   
-  # select the optimal lambda: in the unlikely case of ties, we select the 
-  # lambda with stronger penalization
-  which_opt <- seq_along(lambda)[which.min(tuning_loss)]
+  # select the optimal lambda: reverse vectors so that in the unlikely case of 
+  # ties, we select the lambda with stronger penalization
+  which_opt <- rev(seq_along(lambda))[which.min(rev(tuning_loss))]
   lambda_opt <- lambda[which_opt]
   
   # # prepare output
