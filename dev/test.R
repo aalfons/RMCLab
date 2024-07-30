@@ -22,8 +22,6 @@ lambda <- c(0.01, 0.2, 0.4, 0.6, 0.8)
 # single lambda
 fit <- rdmc(X_NA, values = 1:nb_cat, lambda = lambda,
             type = type, loss = "pseudo_huber")
-fit <- rdmc_tune(X_NA, values = 1:nb_cat, lambda = lambda,
-                 type = type, loss = "pseudo_huber")
 fit$lambda
 fit$d_max
 fit$nb_iter
