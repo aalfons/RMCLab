@@ -15,14 +15,39 @@ get_X.rdmc_tuned <- function(object, ...) {
 }
 
 #' @export
-get_X.rdmc_autotuned <- function(object, ...) {
-  object$fit$X[[object$which_opt]]
-}
-
-#' @export
 get_X.soft_impute_tuned <- function(object, discretized = FALSE, ...) {
   if (isTRUE(discretized)) object$fit$X_discretized
   else object$fit$X
+}
+
+
+## extract value of the tuning parameter
+
+#' @export
+get_lambda <- function(object, ...) UseMethod("get_lambda")
+
+#' @export
+get_lambda.rdmc <- function(object, relative = TRUE, ...) {
+  lambda <- object$lambda
+  if (isTRUE(relative)) lambda 
+  else lambda * object$d_max
+}
+
+#' @export
+get_lambda.rdmc_tuned <- function(object, ...) {
+  get_lambda(object$fit, ...)
+}
+
+#' @export
+get_lambda.soft_impute <- function(object, relative = TRUE, ...) {
+  lambda <- object$lambda
+  if (isTRUE(relative)) lambda 
+  else lambda * object$lambda0
+}
+
+#' @export
+get_lambda.soft_impute_tuned <- function(object, ...) {
+  get_lambda(object$fit, ...)
 }
 
 
@@ -34,9 +59,4 @@ get_nb_iter <- function(object, ...) UseMethod("get_nb_iter")
 #' @export
 get_nb_iter.rdmc_tuned <- function(object, ...) {
   object$fit$nb_iter
-}
-
-#' @export
-get_nb_iter.rdmc_autotuned <- function(object, ...) {
-  object$fit$nb_iter[[object$which_opt]]
 }

@@ -12,8 +12,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // rdmc_cpp
-Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& idx_NA, const arma::umat& idx_observed, const arma::mat& values, const Rcpp::NumericVector& lambda, const arma::uword& rank_max, const std::string& type, const double& svd_tol, const std::string& loss, const double& loss_const, const double& delta, double mu, const double& conv_tol, const int& max_iter, arma::mat L, arma::mat Theta);
-RcppExport SEXP _rdmc_rdmc_cpp(SEXP XSEXP, SEXP idx_NASEXP, SEXP idx_observedSEXP, SEXP valuesSEXP, SEXP lambdaSEXP, SEXP rank_maxSEXP, SEXP typeSEXP, SEXP svd_tolSEXP, SEXP lossSEXP, SEXP loss_constSEXP, SEXP deltaSEXP, SEXP muSEXP, SEXP conv_tolSEXP, SEXP max_iterSEXP, SEXP LSEXP, SEXP ThetaSEXP) {
+Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& idx_NA, const arma::umat& idx_observed, const arma::mat& values, const Rcpp::NumericVector& lambda, const double& d_max, const arma::uword& rank_max, const std::string& type, const double& svd_tol, const std::string& loss, const double& loss_const, const double& delta, double mu, const double& conv_tol, const int& max_iter, arma::mat L, arma::mat Theta);
+RcppExport SEXP _rdmc_rdmc_cpp(SEXP XSEXP, SEXP idx_NASEXP, SEXP idx_observedSEXP, SEXP valuesSEXP, SEXP lambdaSEXP, SEXP d_maxSEXP, SEXP rank_maxSEXP, SEXP typeSEXP, SEXP svd_tolSEXP, SEXP lossSEXP, SEXP loss_constSEXP, SEXP deltaSEXP, SEXP muSEXP, SEXP conv_tolSEXP, SEXP max_iterSEXP, SEXP LSEXP, SEXP ThetaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -22,6 +22,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::umat& >::type idx_observed(idx_observedSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type values(valuesSEXP);
     Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type d_max(d_maxSEXP);
     Rcpp::traits::input_parameter< const arma::uword& >::type rank_max(rank_maxSEXP);
     Rcpp::traits::input_parameter< const std::string& >::type type(typeSEXP);
     Rcpp::traits::input_parameter< const double& >::type svd_tol(svd_tolSEXP);
@@ -33,13 +34,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const int& >::type max_iter(max_iterSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type L(LSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type Theta(ThetaSEXP);
-    rcpp_result_gen = Rcpp::wrap(rdmc_cpp(X, idx_NA, idx_observed, values, lambda, rank_max, type, svd_tol, loss, loss_const, delta, mu, conv_tol, max_iter, L, Theta));
+    rcpp_result_gen = Rcpp::wrap(rdmc_cpp(X, idx_NA, idx_observed, values, lambda, d_max, rank_max, type, svd_tol, loss, loss_const, delta, mu, conv_tol, max_iter, L, Theta));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_rdmc_rdmc_cpp", (DL_FUNC) &_rdmc_rdmc_cpp, 16},
+    {"_rdmc_rdmc_cpp", (DL_FUNC) &_rdmc_rdmc_cpp, 17},
     {NULL, NULL, 0}
 };
 

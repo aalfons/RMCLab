@@ -12,7 +12,8 @@
 #' @importFrom softImpute biScale complete softImpute
 #' @export
 
-soft_impute <- function(X, lambda, rank.max = NULL, type = c("svd", "als"), 
+soft_impute <- function(X, lambda = fraction_grid(), relative = TRUE, 
+                        rank.max = NULL, type = c("svd", "als"), 
                         thresh = 1e-05, maxit = 100L, trace.it = FALSE, 
                         final.svd = TRUE, 
                         # discretization of the imputed matrix is only done for 
@@ -27,6 +28,7 @@ soft_impute <- function(X, lambda, rank.max = NULL, type = c("svd", "als"),
   # check arguments
   lambda <- sort(unique(lambda), decreasing = TRUE)
   nb_lambda <- length(lambda)
+  relative <- isTRUE(relative)
   type <- match.arg(type)
   if (is.null(rank.max)) {
     # For the SVD algorithm, don't apply a rank restriction by default so that 
@@ -44,11 +46,17 @@ soft_impute <- function(X, lambda, rank.max = NULL, type = c("svd", "als"),
                                     col.center = TRUE, 
                                     col.scale = FALSE)
   
+  # if relative grid of tuning parameter values is requested, estimate the 
+  # smallest value that sets all imputed values to 0 in the centered matrix
+  if (relative) {
+    d_max <- softImpute::lambda0(X_centered)  # largest singular value
+  } else d_max <- 1
+  
   # apply softImpute
   if (nb_lambda == 1L) {
     # apply softImpute with centered incomplete data matrix
     fit <- softImpute::softImpute(X_centered, rank.max = rank.max, 
-                                  lambda = lambda, type = type, 
+                                  lambda = lambda * d_max, type = type, 
                                   thresh = thresh, maxit = maxit, 
                                   trace.it = trace.it, 
                                   final.svd = final.svd)
@@ -59,13 +67,13 @@ soft_impute <- function(X, lambda, rank.max = NULL, type = c("svd", "als"),
   } else {
     # loop over values of the regularization parameter
     warm_start <- NULL
-    X_imputed <- fit <- vector("list", length = length(lambda))
+    X_imputed <- fit <- vector("list", length = nb_lambda)
     for (l in seq_along(lambda)) {
       # apply softImpute with centered incomplete data matrix
       fit[[l]] <- softImpute::softImpute(X_centered, rank.max = rank.max, 
-                                         lambda = lambda[l], type = type, 
-                                         thresh = thresh, maxit = maxit,
-                                         trace.it = trace.it, 
+                                         lambda = lambda[l] * d_max, 
+                                         type = type, thresh = thresh, 
+                                         maxit = maxit, trace.it = trace.it, 
                                          warm.start = warm_start, 
                                          final.svd = final.svd)
       # note that function complete() requires to use the data matrix on the 
@@ -78,7 +86,7 @@ soft_impute <- function(X, lambda, rank.max = NULL, type = c("svd", "als"),
   }
   
   # construct object to be returned
-  out <- list(lambda = lambda, svd = fit, X = X_imputed)
+  out <- list(lambda = lambda, lambda0 = d_max, svd = fit, X = X_imputed)
   
   # if requested, add discretized imputed matrix 
   # (only for fitting the algorithm for the optimal lambda after tuning)

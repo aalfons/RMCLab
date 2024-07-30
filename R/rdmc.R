@@ -4,29 +4,13 @@
 # ************************************
 
 
-# ## control object for automatic selection of tuning paramter
-# #' @export
-# 
-# autotune_control <- function(start = 0.05, factor = 1.5) {
-#   if (start <= 0) {
-#     stop("starting value of the tuning parameter must be greater than 0")
-#   }
-#   if (factor <= 1) {
-#     stop("multiplication factor for the tuning parameter must be greater than 1")
-#   }
-#   out <- list(start = start, factor = factor)
-#   class(out) <- "autotune_control"
-#   out
-# }
-
-
 #' @useDynLib rdmc, .registration = TRUE
 #' @importFrom Rcpp evalCpp
 #' @export
 
-rdmc <- function(X, values = NULL, lambda, rank_max = NULL, 
-                 type = "svd", svd_tol = 1e-05, 
-                 loss = c("bounded", "absolute", "pseudo_huber"),
+rdmc <- function(X, values = NULL, lambda = mult_grid(), relative = TRUE, 
+                 rank_max = NULL, type = "svd", svd_tol = 1e-05, 
+                 loss = c("pseudo_huber", "absolute", "bounded"),
                  loss_const = NULL, delta = 1.05, mu = 0.1, 
                  conv_tol = 1e-02, max_iter = 10L, 
                  # starting values
@@ -42,22 +26,17 @@ rdmc <- function(X, values = NULL, lambda, rank_max = NULL,
   # check values of rating scale
   if (is.null(values)) values <- unique(X[!is_NA])
   values <- sort(values)  # ensure values of rating scale are sorted
-  # # check values of tuning parameter
-  # have_autotune <- inherits(lambda, "autotune_control")
-  # if (!have_autotune) {
-  #   # ensure values of tuning parameter are sorted
-  #   lambda <- sort(unique(lambda), decreasing = TRUE)
-  # }
-  # ensure values of tuning parameter are sorted
-  lambda <- sort(unique(lambda), decreasing = FALSE)
+  # check values of tuning parameter
+  lambda <- sort(unique(lambda))  # ensure values of tuning parameter are sorted
+  relative <- isTRUE(relative)
   # check maximum rank
   if (is.null(rank_max)) rank_max <- min(dim(X))
   # check loss function
   loss <- match.arg(loss)
   if (is.null(loss_const)) {
     # set default constant for loss function (if applicable)
-    loss_const <- switch(loss, bounded = (max(values) - min(values)) / 2, 
-                         absolute = NA_real_, pseudo_huber = 1)
+    loss_const <- switch(loss, pseudo_huber = 1, absolute = NA_real_, 
+                         bounded = (max(values) - min(values)) / 2)
   }
   
   # center data matrix with columnwise median of observed data
@@ -66,12 +45,23 @@ rdmc <- function(X, values = NULL, lambda, rank_max = NULL,
   # update discrete candidate values for each column
   values <- sapply(medians, function(m) values - m)
   
+  # if relative grid of tuning parameter values is requested, compute the 
+  # largest singular value of the median-imputed matrix
+  if (relative) {
+    X_zeros <- X
+    X_zeros[is_NA] <- 0
+    d_max <- svd(X_zeros)$d[1L]  # largest singular value
+  } else d_max <- 1
+  
   # initialize starting values if not supplied
   # (only use user-supplied starting values if both are supplied)
   if (is.null(L) || is.null(Theta)) {
     # since X is median-centered, we can initialize missing values in L with 0
-    L <- X
-    L[is_NA] <- 0
+    if (relative) L <- X_zeros
+    else {
+      L <- X
+      L[is_NA] <- 0
+    }
     # initialize Theta with 0
     Theta <- matrix(0, nrow = d[1], ncol = d[2])
   }
@@ -82,37 +72,12 @@ rdmc <- function(X, values = NULL, lambda, rank_max = NULL,
   idx_observed <- which(!is_NA, arr.ind = TRUE, useNames = FALSE)
   
   # call C++ function
-  # if (have_autotune) {
-  #   out <- rdmc_autotune_cpp(X, idx_NA = idx_NA - 1L, 
-  #                            idx_observed = idx_observed - 1L, 
-  #                            values = values, 
-  #                            lambda_start = lambda$start, 
-  #                            lambda_factor = lambda$factor,
-  #                            rank_max = rank_max, 
-  #                            type = type, 
-  #                            svd_tol = svd_tol, 
-  #                            loss = loss, 
-  #                            loss_const = loss_const, 
-  #                            delta = delta, 
-  #                            mu = mu, 
-  #                            conv_tol = conv_tol, 
-  #                            max_iter = max_iter,  
-  #                            L = L, 
-  #                            Theta = Theta)
-  # } else {
-  #   out <- rdmc_cpp(X, idx_NA = idx_NA - 1L, idx_observed = idx_observed - 1L, 
-  #                   values = values, lambda = lambda, rank_max = rank_max, 
-  #                   type = type, svd_tol = svd_tol, loss = loss, 
-  #                   loss_const = loss_const, delta = delta, mu = mu, 
-  #                   conv_tol = conv_tol, max_iter = max_iter,  L = L, 
-  #                   Theta = Theta)
-  # }
   out <- rdmc_cpp(X, idx_NA = idx_NA - 1L, idx_observed = idx_observed - 1L, 
-                  values = values, lambda = lambda, rank_max = rank_max, 
-                  type = type, svd_tol = svd_tol, loss = loss, 
-                  loss_const = loss_const, delta = delta, mu = mu, 
-                  conv_tol = conv_tol, max_iter = max_iter,  L = L, 
-                  Theta = Theta)
+                  values = values, lambda = lambda, d_max = d_max, 
+                  rank_max = rank_max, type = type, svd_tol = svd_tol, 
+                  loss = loss, loss_const = loss_const, delta = delta, 
+                  mu = mu, conv_tol = conv_tol, max_iter = max_iter,  
+                  L = L, Theta = Theta)
   
   # obtain completed matrix on original rating scale
   if (length(lambda) == 1L) {

@@ -20,12 +20,21 @@ type <- "svd"
 lambda <- c(0.01, 0.2, 0.4, 0.6, 0.8)
 
 # single lambda
-fit <- rdmc(X_NA, values = 1:nb_cat, lambda = 0.1, 
+fit <- rdmc(X_NA, values = 1:nb_cat, lambda = lambda,
             type = type, loss = "pseudo_huber")
+fit <- rdmc_tune(X_NA, values = 1:nb_cat, lambda = lambda,
+                 type = type, loss = "pseudo_huber")
+fit$lambda
+fit$d_max
 fit$nb_iter
 fit$L
 fit$X
 
+foo <- rdmc(X_NA, values = 1:nb_cat, lambda = lambda * fit$d_max, 
+            relative = FALSE, type = type, loss = "pseudo_huber")
+foo$lambda
+foo$d_max
+identical(fit$X, foo$X)
 
 # pseudo-Huber loss
 fit_pseudo_huber <- rdmc_tune(X_NA, values = 1:nb_cat, lambda = lambda, 

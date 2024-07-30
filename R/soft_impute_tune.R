@@ -7,33 +7,19 @@
 ## function for tuning the penalty parameter via data splitting strategies
 #' @export
 
-soft_impute_tune <- function(X, lambda = fraction_control(), 
+soft_impute_tune <- function(X, lambda = mult_grid(), relative = TRUE, 
                              splits = holdout_control(), ..., 
                              discretize = TRUE, values = NULL) {
   
   # initializations
   X <- as.matrix(X)
   
-  # # check values of tuning parameter
-  if (inherits(lambda, "fraction_control")) {
-    # obtain grid of fractions for the tuning parameter
-    pct_lambda <- get_grid(lambda)
-    # center the data matrix
-    X_centered <- softImpute::biScale(X,
-                                      row.center = FALSE,
-                                      row.scale = FALSE,
-                                      col.center = TRUE,
-                                      col.scale = FALSE)
-    # estimate the smallest lambda that sets everything to zero and
-    # obtain the final grid of tuning parameter values
-    lambda <- pct_lambda * softImpute::lambda0(X_centered)
-  } else {
-    # ensure values of tuning parameter are sorted
-    lambda <- sort(unique(lambda), decreasing = TRUE)
-  }
+  # check values of tuning parameter
+  lambda <- sort(unique(lambda), decreasing = TRUE)
   if (length(lambda) == 1L) {
     stop("only one value of 'lambda'; use function soft_impute() instead")
   }
+  relative <- isTRUE(relative)
   
   # construct index vector of observed values
   observed <- which(!is.na(X))
@@ -49,7 +35,7 @@ soft_impute_tune <- function(X, lambda = fraction_control(),
     X_train <- X
     X_train[indices] <- NA_real_
     # apply soft_impute() to training data
-    fit_train <- soft_impute(X_train, lambda = lambda, ...)
+    fit_train <- soft_impute(X_train, lambda = lambda, relative = relative, ...)
   }, ...)
 
   # extract predictions for the elements in the different test sets and compute 
@@ -72,10 +58,8 @@ soft_impute_tune <- function(X, lambda = fraction_control(),
   lambda_opt <- lambda[which_opt]
   
   # apply soft_impute() with optimal tuning parameter
-  # TODO: this could be made more efficient by adding arguments to soft_impute() 
-  #       in case the data matrix is already centered
-  fit_opt <- soft_impute(X, lambda = lambda_opt, ..., discretize = discretize, 
-                         values = values)
+  fit_opt <- soft_impute(X, lambda = lambda_opt, relative = relative, ..., 
+                         discretize = discretize, values = values)
 
   ## construct list of relevant output
   out <- list(lambda = lambda, tuning_loss = tuning_loss, 
