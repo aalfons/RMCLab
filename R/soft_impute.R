@@ -97,6 +97,7 @@ soft_impute <- function(X, lambda = fraction_grid(), relative = TRUE,
     min_value <- min(values)
     max_value <- max(values)
     # discretize the imputed matrix
+    # FIXME: this only works for integer sequence from min_value to max_value
     out$X_discretized <- pmin(pmax(round(X_imputed), min_value), max_value)
   }
   
