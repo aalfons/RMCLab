@@ -20,6 +20,17 @@ get_X.soft_impute_tuned <- function(object, discretized = FALSE, ...) {
   else object$fit$X
 }
 
+#' @export
+get_X.median_impute <- function(object, discretized = FALSE, ...) {
+  if (isTRUE(discretized)) object$X_discretized
+  else object$X
+}
+
+#' @export
+get_X.mode_impute <- function(object, ...) {
+  object$X
+}
+
 
 ## extract value of the tuning parameter
 
