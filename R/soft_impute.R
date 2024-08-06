@@ -12,9 +12,10 @@
 #' @importFrom softImpute biScale complete softImpute
 #' @export
 
-soft_impute <- function(X, lambda = fraction_grid(), relative = TRUE, 
-                        rank.max = NULL, type = c("svd", "als"), 
-                        thresh = 1e-05, maxit = 100L, trace.it = FALSE, 
+soft_impute <- function(X, lambda = fraction_grid(reverse = TRUE), 
+                        relative = TRUE, rank.max = NULL, 
+                        type = c("svd", "als"), thresh = 1e-05, 
+                        maxit = 100L, trace.it = FALSE, 
                         final.svd = TRUE, 
                         # discretization of the imputed matrix is only done for 
                         # fitting the algorithm for the optimal lambda after 

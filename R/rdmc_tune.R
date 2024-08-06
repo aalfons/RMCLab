@@ -7,7 +7,7 @@
 ## function for tuning the penalty parameter via data splitting strategies
 #' @export
 
-rdmc_tune <- function(X, values = NULL, lambda = mult_grid(), 
+rdmc_tune <- function(X, values = NULL, lambda = fraction_grid(), 
                       relative = TRUE, splits = holdout_control(), 
                       loss = c("pseudo_huber", "absolute", "bounded"),
                       loss_const = NULL, ...) {

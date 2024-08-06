@@ -7,8 +7,8 @@
 ## grid of increasing tuning parameters where the previous value is multiplied 
 ## with a certain factor to exponentially grow the grid: intended for rdmc()
 #' @export
-mult_grid <- function(smallest = 0.05, factor = 1.5, nb_lambda = 10L) {
-  if (smallest <= 0) {
+mult_grid <- function(min = 0.05, factor = 1.5, nb_lambda = 10L) {
+  if (min <= 0) {
     stop("smallest value of tuning parameter must be greater than 0")
   }
   if (factor <= 1) {
@@ -18,7 +18,7 @@ mult_grid <- function(smallest = 0.05, factor = 1.5, nb_lambda = 10L) {
     stop("number of tuning parameter values must be greater than 0")
   }
   seq_exponent <- seq(from = 0L, to = nb_lambda - 1L)
-  smallest * factor^seq_exponent
+  min * factor^seq_exponent
 }
 
 
@@ -26,20 +26,23 @@ mult_grid <- function(smallest = 0.05, factor = 1.5, nb_lambda = 10L) {
 ## spaced on a logarithmic or linear scale: intended for soft_impute() as 
 ## fractions of softImpute::lambda0()
 #' @export
-fraction_grid <- function(start = 1, end = 0.01, nb_lambda = 10L, log = TRUE) {
-  if (start <= 0 && start > 1) {
-    stop("starting fraction of tuning parameter must be in interval (0, 1]")
+fraction_grid <- function(min = 0.01, max = 1, nb_lambda = 10L, 
+                          log = TRUE, reverse = FALSE) {
+  if (min <= 0 || min >= 1) {
+    stop("smallest fraction of tuning parameter must be in interval (0, 1)")
   }
-  if (end <= 0 && end >= start) {
-    stop("ending fraction of tuning parameter must be in interval (0, start)")
+  if (max <= min || max > 1) {
+    stop("largest fraction of tuning parameter must be in interval (min, 1]")
   }
   if (nb_lambda <= 0) {
     stop("number of tuning parameter values must be greater than 0")
   }
   if (isTRUE(log)) {
-    seq_log <- seq(from = log(start), to = log(end), length.out = nb_lambda)
-    exp(seq_log)
+    seq_log <- seq(from = log(min), to = log(max), length.out = nb_lambda)
+    grid <- exp(seq_log)
   } else {
-    seq(from = start, to = end, length.out = nb_lambda)
+    grid <- seq(from = min, to = max, length.out = nb_lambda)
   }
+  if (isTRUE(reverse)) rev(grid)
+  else grid
 }

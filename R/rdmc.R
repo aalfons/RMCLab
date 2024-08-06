@@ -8,7 +8,7 @@
 #' @importFrom Rcpp evalCpp
 #' @export
 
-rdmc <- function(X, values = NULL, lambda = mult_grid(), relative = TRUE, 
+rdmc <- function(X, values = NULL, lambda = fraction_grid(), relative = TRUE, 
                  rank_max = NULL, type = "svd", svd_tol = 1e-05, 
                  loss = c("pseudo_huber", "absolute", "bounded"),
                  loss_const = NULL, delta = 1.05, mu = 0.1, 

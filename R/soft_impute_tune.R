@@ -7,9 +7,9 @@
 ## function for tuning the penalty parameter via data splitting strategies
 #' @export
 
-soft_impute_tune <- function(X, lambda = fraction_grid(), relative = TRUE, 
-                             splits = holdout_control(), ..., 
-                             discretize = TRUE, values = NULL) {
+soft_impute_tune <- function(X, lambda = fraction_grid(reverse = TRUE), 
+                             relative = TRUE, splits = holdout_control(), 
+                             ..., discretize = TRUE, values = NULL) {
   
   # initializations
   X <- as.matrix(X)
