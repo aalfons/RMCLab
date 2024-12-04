@@ -4,15 +4,75 @@
 # ************************************
 
 
+#' Robust discrete matrix completion
+#' 
+#' Perform robust discrete matrix completion with a low-rank constraint on a 
+#' latent continuous matrix, implemented via an ADMM algorithm.
+#' 
+#' @param X  a matrix or data frame of discrete, ordinal ratings with missing 
+#' values.
+#' @param values  an optional numeric vector giving the possible values of the 
+#' ratings.  Currently, these are assumed to be the same for all columns.  If 
+#' \code{NULL}, the unique values of the observed parts of \code{X} are used.
+#' @param lambda  a numeric vector giving values of the regularization 
+#' parameter.  See \code{\link{fraction_grid}()} for the default values.
+#' @param relative  a logical indicating whether the values of the 
+#' regularization parameter should be considered relative to a certain 
+#' reference value computed from the given data.  If \code{TRUE} (the default), 
+#' the values of \code{lambda} are multiplied with the largest singular value 
+#' of the median-centered data matrix with missing values replaced by zeros.
+#' @param type  a character string specifying the type of algorithm for the 
+#' low-rank latent continuous matrix.  Currently only \code{"svd"} is 
+#' implemented for a soft-thresholded SVD step.
+#' @param loss  a character string specifying the robust loss function for the 
+#' loss part of the objective function.  Possible values are 
+#' \code{"pseudo_huber"} (the default) for the pseudo-Huber loss, 
+#' \code{"absolute"} for the absolute loss, and \code{"bounded"} for the 
+#' bounded absolute loss.
+#' @param loss_const  tuning constant for the loss function.  For the 
+#' pseudo-Huber loss, the default value is 1.  For the bounded absolute loss, 
+#' the default is \code{(max(values) - min(values)) / 2}.  This is ignored for 
+#' the absolute loss, which does not have a tuning parameter.
+#' @param svd_tol  numeric tolerance for the soft-thresholded SVD step.  Only 
+#' singular values larger than \code{svd_tol} are kept to construct the 
+#' low-rank latent continuous matrix.
+#' @param rank_max  a positive integer giving a rank constraint in the 
+#' soft-thresholded SVD step for the latent continuous matrix. The default is 
+#' to use the minimum of the number of rows and columns.
+#' @param mu  numeric; penalty parameter for the discrepancy between the 
+#' discrete rating matrix and the latent low-rank continuous matrix.  It is 
+#' not recommended to change the default value of 0.1.
+#' @param delta  numeric; update factor for penalty parameter \code{mu} applied 
+#' after each iteration to increase the strength of the penalty.  It is not 
+#' recommended to change the default value of 1.05.
+#' @param conv_tol  numeric; convergence tolerance for the relative change in 
+#' the objective function.
+#' @param max_iter  a positive integer specifying the maximum number of 
+#' iterations.  In practice, large gains can often be had in the first few 
+#' iterations, with subsequent iterations yielding relatively small gains until 
+#' convergence.  Hence the default is to perform at most 10 iterations.
+#' @param L,Theta  starting values for the algorithm.  These are not expected 
+#' to be set by the user.  Instead, it is recommended to call this function 
+#' with a grid of values for the regularization parameter \code{lambda} so that 
+#' the implementation automatically takes advantage of warm starts.
+#' 
+#' @return An object of class \code{"rdmc"}.
+#' 
+#' @author Andreas Alfons and Aurore Archimbaud
+#' 
+#' @seealso \code{\link{rdmc_tune}()}, \code{\link{fraction_grid}()}
+#' 
+#' @keywords multivariate
+#' 
 #' @useDynLib rdmc, .registration = TRUE
 #' @importFrom Rcpp evalCpp
 #' @export
 
 rdmc <- function(X, values = NULL, lambda = fraction_grid(), relative = TRUE, 
-                 rank_max = NULL, type = "svd", svd_tol = 1e-05, 
                  loss = c("pseudo_huber", "absolute", "bounded"),
-                 loss_const = NULL, delta = 1.05, mu = 0.1, 
-                 conv_tol = 1e-02, max_iter = 10L, 
+                 loss_const = NULL, type = "svd", svd_tol = 1e-05, 
+                 rank_max = NULL, mu = 0.1, delta = 1.05, 
+                 conv_tol = 1e-04, max_iter = 10L, 
                  # starting values
                  L = NULL, Theta = NULL) {
   

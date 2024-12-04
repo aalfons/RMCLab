@@ -2,8 +2,8 @@ Package: rdmc
 Type: Package
 Title: Robust Discrete Matrix Completion 
 Version: 0.1.0
-Date: 2024-06-02
-Description: Robust low-rank matrix completion for discrete rating-scale data.
+Date: 2024-12-04
+Description: Robust matrix completion for discrete rating-scale data with a low-rank constraint on a latent continuous matrix, implemented via an ADMM algorithm. For the loss part of the objective function, several robust loss functions are implemented. In addition, the package provides wrapper function for softImpute (Mazumder, Hastie, and Tibshirani, 2010, <https://www.jmlr.org/papers/v11/mazumder10a.html>; Hastie, Mazumder, Lee, Zadeh, 2015, <https://www.jmlr.org/papers/v16/hastie15a.html>) for easy tuning of the regularization parameter.
 License: GPL (>= 3)
 Encoding: UTF-8
 Depends:
@@ -29,4 +29,4 @@ Author:
     Aurore Archimbaud [aut] (<https://orcid.org/0000-0002-6511-9091>)
 Maintainer: Andreas Alfons <alfons@ese.eur.nl>
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2

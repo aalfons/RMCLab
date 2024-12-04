@@ -2,7 +2,6 @@
 % Please edit documentation in R/rdmc-package.R
 \docType{package}
 \name{rdmc-package}
-\alias{rdmc}
 \alias{rdmc-package}
 \title{\packageTitle{rdmc}}
 \description{
