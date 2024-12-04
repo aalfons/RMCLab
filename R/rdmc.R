@@ -18,9 +18,10 @@
 #' parameter.  See \code{\link{fraction_grid}()} for the default values.
 #' @param relative  a logical indicating whether the values of the 
 #' regularization parameter should be considered relative to a certain 
-#' reference value computed from the given data.  If \code{TRUE} (the default), 
-#' the values of \code{lambda} are multiplied with the largest singular value 
-#' of the median-centered data matrix with missing values replaced by zeros.
+#' reference value computed from the data at hand.  If \code{TRUE} (the 
+#' default), the values of \code{lambda} are multiplied with the largest 
+#' singular value of the median-centered data matrix with missing values 
+#' replaced by zeros.
 #' @param type  a character string specifying the type of algorithm for the 
 #' low-rank latent continuous matrix.  Currently only \code{"svd"} is 
 #' implemented for a soft-thresholded SVD step.
