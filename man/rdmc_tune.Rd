@@ -48,7 +48,7 @@ pseudo-Huber loss, the default value is 1.  For the bounded absolute loss,
 the default is \code{(max(values) - min(values)) / 2}.  This is ignored for
 the absolute loss, which does not have a tuning parameter.}
 
-\item{dots}{additional arguments to be passed down to \code{\link{rdmc}()}.}
+\item{\dots}{additional arguments to be passed down to \code{\link{rdmc}()}.}
 }
 \value{
 An object of class \code{"rdmc_tuned"}.
