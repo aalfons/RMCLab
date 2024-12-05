@@ -4,7 +4,36 @@
 # ************************************
 
 
+#' Mode imputation
+#' 
+#' Perform mode imputation for discrete data.  In case of multiple modes in a 
+#' given column, one of them is selected at random for each missing cell.
+#' 
+#' @param X  a matrix or data frame of discrete data with missing values.
+#' @param values  an optional numeric vector giving the possible values.  
+#' Currently, the possible values are assumed to be the same for all columns.  
+#' If \code{NULL}, the unique values of the observed parts of \code{X} are 
+#' used.
+#' 
+#' @return 
+#' An object of class \code{"mode_impute"}.
+#' 
+#' The class structure is still experimental and may change.  Use the accessor 
+#' function \code{\link{get_X}()} to extract the imputed data matrix.
+#' 
+#' @note  
+#' The mode is computed as the most frequent value, hence this function is only 
+#' suitable for discrete data.  It does not estimate the mode of a continuous 
+#' density.
+#' 
+#' @author Andreas Alfons
+#' 
+#' @seealso \code{\link{median_impute}()}
+#' 
+#' @keywords multivariate
+#' 
 #' @export
+
 mode_impute <- function(X, values = NULL) {
   
   # initializations

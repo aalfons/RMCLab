@@ -18,8 +18,7 @@
 #' and the bounded absolute loss (\code{loss = "bounded"}) is defined as
 #' \deqn{\rho(x) = \min (|x|, \code{loss\_const}).}{rho(x) = min(|x|, \code{loss_const}).}
 #' 
-#' @param X  a matrix or data frame of discrete, ordinal ratings with missing 
-#' values.
+#' @param X  a matrix or data frame of discrete ratings with missing values.
 #' @param values  an optional numeric vector giving the possible values of the 
 #' ratings.  Currently, these are assumed to be the same for all columns.  If 
 #' \code{NULL}, the unique values of the observed parts of \code{X} are used.
@@ -67,7 +66,9 @@
 #' with a grid of values for the regularization parameter \code{lambda} so that 
 #' the implementation automatically takes advantage of warm starts.
 #' 
-#' @return An object of class \code{"rdmc"}.
+#' @return 
+#' An object of class \code{"rdmc"}.  The class structure is still experimental 
+#' and may change.  
 #' 
 #' @author Andreas Alfons and Aurore Archimbaud
 #' 

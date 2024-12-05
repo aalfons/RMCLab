@@ -16,8 +16,7 @@ rdmc_tune(
 )
 }
 \arguments{
-\item{X}{a matrix or data frame of discrete, ordinal ratings with missing
-values.}
+\item{X}{a matrix or data frame of discrete ratings with missing values.}
 
 \item{values}{an optional numeric vector giving the possible values of the
 ratings.  Currently, these are assumed to be the same for all columns.  If
@@ -56,13 +55,24 @@ the absolute loss, which does not have a tuning parameter.  See
 \item{\dots}{additional arguments to be passed down to \code{\link{rdmc}()}.}
 }
 \value{
-An object of class \code{"rdmc_tuned"}.
+An object of class \code{"rdmc_tuned"}.  The class structure is still
+experimental and may change.
+
+The following accessor functions are available:
+\itemize{
+\item \code{\link{get_X}()} to extract the imputed data matrix (with the
+optimal value of the regularization parameter),
+\item \code{\link{get_lambda}()} to extract the optimal value of the
+regularization parameter,
+\item \code{\link{get_nb_iter}()} to extract the number of iterations (with
+the optimal value of the regularization parameter).
+}
 }
 \description{
 Perform robust discrete matrix completion with a low-rank constraint on a
 latent continuous matrix, implemented via an ADMM algorithm.  The
-regularization parameter is thereby selected via holdout validation or
-cross-validation.
+regularization parameter is thereby selected via repeated holdout validation
+or cross-validation.
 }
 \details{
 For the loss part of the objective function, the pseudo-Huber loss

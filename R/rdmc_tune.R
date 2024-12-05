@@ -8,8 +8,8 @@
 #' 
 #' Perform robust discrete matrix completion with a low-rank constraint on a 
 #' latent continuous matrix, implemented via an ADMM algorithm.  The 
-#' regularization parameter is thereby selected via holdout validation or 
-#' cross-validation.
+#' regularization parameter is thereby selected via repeated holdout validation 
+#' or cross-validation.
 #' 
 #' @inherit rdmc details
 #' 
@@ -23,7 +23,19 @@
 #' observed cells.
 #' @param \dots  additional arguments to be passed down to \code{\link{rdmc}()}.
 #' 
-#' @return An object of class \code{"rdmc_tuned"}.
+#' @return 
+#' An object of class \code{"rdmc_tuned"}.  The class structure is still 
+#' experimental and may change.  
+#' 
+#' The following accessor functions are available:
+#' \itemize{
+#'   \item \code{\link{get_X}()} to extract the imputed data matrix (with the 
+#'   optimal value of the regularization parameter),
+#'   \item \code{\link{get_lambda}()} to extract the optimal value of the 
+#'   regularization parameter,
+#'   \item \code{\link{get_nb_iter}()} to extract the number of iterations (with 
+#'   the optimal value of the regularization parameter).
+#' }
 #' 
 #' @author Andreas Alfons
 #' 

@@ -3,7 +3,39 @@
 #         Erasmus University Rotterdam
 # ************************************
 
-
+#' Median imputation
+#' 
+#' Perform median imputation.  In case of discrete rating-scale data, a 
+#' discretization step can be carried out afterwards to make sure that the 
+#' imputed values are mapped to the rating scale of the observed values (as 
+#' the median of a given column may lie in between two answer categories in 
+#' case of an even number of observed values).  This is done by randomly 
+#' sampling from the largest answer category smaller than the median and the 
+#' smallest answer category larger than the median (for each missing cell).
+#' 
+#' @param X  a matrix or data frame with missing values.
+#' @param discretize  a logical indicating whether to include a discretization 
+#' step after median imputation (defaults to \code{TRUE}).  In case of 
+#' discrete rating-scale data, this can be used to ensure that the imputed 
+#' values are mapped to the discrete rating scale of the observed values.
+#' @param values  an optional numeric vector giving the possible values of 
+#' discrete ratings.  This is ignored if \code{discretize} is \code{FALSE}.  
+#' Currently, the possible values are assumed to be the same for all columns.  
+#' If \code{NULL}, the unique values of the observed parts of \code{X} are 
+#' used.
+#' 
+#' @return 
+#' An object of class \code{"median_impute"}.
+#' 
+#' The class structure is still experimental and may change.  Use the accessor 
+#' function \code{\link{get_X}()} to extract the imputed data matrix.
+#' 
+#' @author Andreas Alfons
+#' 
+#' @seealso \code{\link{mode_impute}()}
+#' 
+#' @keywords multivariate
+#' 
 #' @importFrom stats median
 #' @export
 median_impute <- function(X, discretize = TRUE, values = NULL) {
