@@ -4,9 +4,9 @@
 # ************************************
 
 
-#' @name tuning_grid
+#' @name lambda_grid
 #'
-#' @title Construct grid of tuning parameter values
+#' @title Construct grid of values for the regularization parameter
 #' 
 #' @description Construct a grid of values for the regularization parameter in 
 #' \code{\link{rdmc}()} or \code{\link{soft_impute}()}.
@@ -47,7 +47,7 @@ NULL
 ## grid of decreasing tuning parameters in interval (0, 1], either equally 
 ## spaced on a logarithmic or linear scale: intended for soft_impute() as 
 ## fractions of softImpute::lambda0()
-#' @rdname tuning_grid
+#' @rdname lambda_grid
 #' @export
 fraction_grid <- function(min = 0.01, max = 1, nb_lambda = 10L, 
                           log = TRUE, reverse = FALSE) {
@@ -73,7 +73,7 @@ fraction_grid <- function(min = 0.01, max = 1, nb_lambda = 10L,
 
 ## grid of increasing tuning parameters where the previous value is multiplied 
 ## with a certain factor to exponentially grow the grid: intended for rdmc()
-#' @rdname tuning_grid
+#' @rdname lambda_grid
 #' @export
 mult_grid <- function(min = 0.05, factor = 1.5, nb_lambda = 10L) {
   if (min <= 0) {

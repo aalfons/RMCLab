@@ -44,12 +44,13 @@ replaced by zeros.}
 loss part of the objective function.  Possible values are
 \code{"pseudo_huber"} (the default) for the pseudo-Huber loss,
 \code{"absolute"} for the absolute loss, and \code{"bounded"} for the
-bounded absolute loss.}
+bounded absolute loss.  See \sQuote{Details} for more information.}
 
 \item{loss_const}{tuning constant for the loss function.  For the
 pseudo-Huber loss, the default value is 1.  For the bounded absolute loss,
 the default is \code{(max(values) - min(values)) / 2}.  This is ignored for
-the absolute loss, which does not have a tuning parameter.}
+the absolute loss, which does not have a tuning parameter.  See
+\sQuote{Details} for more information.}
 
 \item{type}{a character string specifying the type of algorithm for the
 low-rank latent continuous matrix.  Currently only \code{"svd"} is
@@ -90,6 +91,16 @@ An object of class \code{"rdmc"}.
 \description{
 Perform robust discrete matrix completion with a low-rank constraint on a
 latent continuous matrix, implemented via an ADMM algorithm.
+}
+\details{
+For the loss part of the objective function, the pseudo-Huber loss
+(\code{loss = "pseudo_huber"}) is given by
+\deqn{\rho(x) = \code{loss\_const}^2 (\sqrt{1 + (x/\code{loss\_const})^2} - 1).}{rho(x) = \code{loss_const}^2 (sqrt(1 + (x/\code{loss_const})^2) - 1).}
+The absolute loss
+(\code{loss = "absolute"}) is given by
+\deqn{\rho(x) = |x|,}{rho(x) = |x|,}
+and the bounded absolute loss (\code{loss = "bounded"}) is defined as
+\deqn{\rho(x) = \min (|x|, \code{loss\_const}).}{rho(x) = min(|x|, \code{loss_const}).}
 }
 \seealso{
 \code{\link{rdmc_tune}()}, \code{\link{fraction_grid}()}
