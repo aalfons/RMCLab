@@ -35,7 +35,7 @@ completion algorithm.
 }
 \seealso{
 \code{\link{rdmc_tune}()}, \code{\link{soft_impute_tune}()},
-\code{\link{median_impute}()}, \code{\link{median_impute}()}
+\code{\link{median_impute}()}, \code{\link{mode_impute}()}
 }
 \author{
 Andreas Alfons
