@@ -39,10 +39,11 @@
 #' \code{"absolute"} for the absolute loss, and \code{"bounded"} for the 
 #' bounded absolute loss.  See \sQuote{Details} for more information.
 #' @param loss_const  tuning constant for the loss function.  For the 
-#' pseudo-Huber loss, the default value is 1.  For the bounded absolute loss, 
-#' the default is \code{(max(values) - min(values)) / 2}.  This is ignored for 
-#' the absolute loss, which does not have a tuning parameter.  See 
-#' \sQuote{Details} for more information.
+#' pseudo-Huber loss, the default value is the average step size between the 
+#' rating categories in \code{values}.  For the bounded absolute loss, 
+#' the default is half the range of the rating categories in \code{values}.  
+#' This is ignored for the absolute loss, which does not have a tuning 
+#' parameter.  See \sQuote{Details} for more information.
 #' @param svd_tol  numeric tolerance for the soft-thresholded SVD step.  Only 
 #' singular values larger than \code{svd_tol} are kept to construct the 
 #' low-rank latent continuous matrix.
@@ -107,7 +108,9 @@ rdmc <- function(X, values = NULL, lambda = fraction_grid(), relative = TRUE,
   loss <- match.arg(loss)
   if (is.null(loss_const)) {
     # set default constant for loss function (if applicable)
-    loss_const <- switch(loss, pseudo_huber = 1, absolute = NA_real_, 
+    loss_const <- switch(loss, 
+                         pseudo_huber = mean(diff(values)), 
+                         absolute = NA_real_, 
                          bounded = (max(values) - min(values)) / 2)
   }
   

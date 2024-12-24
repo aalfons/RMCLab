@@ -46,10 +46,11 @@ loss part of the objective function.  Possible values are
 bounded absolute loss.  See \sQuote{Details} for more information.}
 
 \item{loss_const}{tuning constant for the loss function.  For the
-pseudo-Huber loss, the default value is 1.  For the bounded absolute loss,
-the default is \code{(max(values) - min(values)) / 2}.  This is ignored for
-the absolute loss, which does not have a tuning parameter.  See
-\sQuote{Details} for more information.}
+pseudo-Huber loss, the default value is the average step size between the
+rating categories in \code{values}.  For the bounded absolute loss,
+the default is half the range of the rating categories in \code{values}.
+This is ignored for the absolute loss, which does not have a tuning
+parameter.  See \sQuote{Details} for more information.}
 
 \item{type}{a character string specifying the type of algorithm for the
 low-rank latent continuous matrix.  Currently only \code{"svd"} is
