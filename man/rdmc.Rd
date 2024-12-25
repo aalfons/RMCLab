@@ -12,12 +12,12 @@ rdmc(
   loss = c("pseudo_huber", "absolute", "bounded"),
   loss_const = NULL,
   type = "svd",
-  svd_tol = 1e-05,
+  svd_tol = 1e-04,
   rank_max = NULL,
   mu = 0.1,
   delta = 1.05,
   conv_tol = 1e-04,
-  max_iter = 10L,
+  max_iter = 100L,
   L = NULL,
   Theta = NULL
 )
