@@ -73,10 +73,12 @@ rdmc_tune <- function(X, values = NULL, lambda = fraction_grid(),
   loss <- match.arg(loss)
   if (is.null(loss_const)) {
     # set default constant for loss function (if applicable)
-    loss_const <- switch(loss, 
-                         pseudo_huber = mean(diff(values)), 
-                         absolute = NA_real_, 
-                         bounded = (max(values) - min(values)) / 2)
+    loss_const <- switch(
+      loss, 
+      pseudo_huber = (max(values) - min(values)) / (length(values) - 1), 
+      absolute = NA_real_, 
+      bounded = (max(values) - min(values)) / 2
+    )
   }
   
   # create splits for tuning parameter validation

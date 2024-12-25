@@ -108,10 +108,12 @@ rdmc <- function(X, values = NULL, lambda = fraction_grid(), relative = TRUE,
   loss <- match.arg(loss)
   if (is.null(loss_const)) {
     # set default constant for loss function (if applicable)
-    loss_const <- switch(loss, 
-                         pseudo_huber = mean(diff(values)), 
-                         absolute = NA_real_, 
-                         bounded = (max(values) - min(values)) / 2)
+    loss_const <- switch(
+      loss, 
+      pseudo_huber = (max(values) - min(values)) / (length(values) - 1), 
+      absolute = NA_real_, 
+      bounded = (max(values) - min(values)) / 2
+    )
   }
   
   # center data matrix with columnwise median of observed data
