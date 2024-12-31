@@ -1,6 +1,10 @@
 # rdmc: Robust Discrete Matrix Completion
 
-Robust matrix completion for discrete rating-scale data with a low-rank constraint on a latent continuous matrix, implemented via an ADMM algorithm. For the loss part of the objective function, several robust loss functions are implemented. In addition, the package provides wrapper functions for `softImpute` ([Mazumder, Hastie, and Tibshirani, 2010](https://www.jmlr.org/papers/v11/mazumder10a.html); [Hastie, Mazumder, Lee, Zadeh, 2015](https://www.jmlr.org/papers/v16/hastie15a.html)) for easy tuning of the regularization parameter, as well as benchmark methods such as median imputation and mode imputation.
+Robust matrix completion for discrete rating-scale data with a low-rank constraint on a latent continuous matrix, implemented via an ADMM algorithm. For the loss part of the objective function, several robust loss functions are implemented. More information can be found in our paper:
+
+Archimbaud, A., Alfons, A., and Wilms, I. (2024). Robust Matrix Completion for Discrete Rating-Scale Data. arXiv:2412.20802. doi:[10.48550/arXiv.2412.20802](https://doi.org/10.48550/arXiv.2412.20802).
+
+In addition, the package provides wrapper functions for `softImpute` ([Mazumder, Hastie, and Tibshirani, 2010](https://www.jmlr.org/papers/v11/mazumder10a.html); [Hastie, Mazumder, Lee, Zadeh, 2015](https://www.jmlr.org/papers/v16/hastie15a.html)) for easy tuning of the regularization parameter, as well as benchmark methods such as median imputation and mode imputation.
 
 
 ## Installation

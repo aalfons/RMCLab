@@ -41,6 +41,8 @@
 #' 
 #' @author Andreas Alfons
 #' 
+#' @inherit soft_impute references
+#' 
 #' @seealso 
 #' \code{\link{soft_impute}()}, \code{\link{fraction_grid}()}, 
 #' 

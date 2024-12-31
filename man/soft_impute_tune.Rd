@@ -67,6 +67,15 @@ is thereby selected via repeated holdout validation or cross-validation.
 Note that this uses the convenience wrapper \code{\link{soft_impute}()},
 whose default behavior is different from that of the original function.
 }
+\references{
+Hastie, T., Mazumder, R., Lee, J. D. and Zadeh, R. (2015) Matrix Completion
+and Low-Rank SVD via Fast Alternating Least Squares. \emph{Journal of
+Machine Learning Research}, \bold{16}(104), 3367--3402.
+
+Mazumder, R., Hastie, T. and Tibshirani, R. (2010) Spectral Regularization
+Algorithms for Learning Large Incomplete Matrices. \emph{Journal of Machine
+Learning Research}, \bold{11}(80), 2287--2322.
+}
 \seealso{
 \code{\link{soft_impute}()}, \code{\link{fraction_grid}()},
 

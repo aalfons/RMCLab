@@ -68,6 +68,15 @@ of discrete rating-scale data, the wrapper function allows to include a
 discretization step after fitting the algorithm to map the imputed values to
 the rating scale of the observed values.
 }
+\references{
+Hastie, T., Mazumder, R., Lee, J. D. and Zadeh, R. (2015) Matrix Completion
+and Low-Rank SVD via Fast Alternating Least Squares. \emph{Journal of
+Machine Learning Research}, \bold{16}(104), 3367--3402.
+
+Mazumder, R., Hastie, T. and Tibshirani, R. (2010) Spectral Regularization
+Algorithms for Learning Large Incomplete Matrices. \emph{Journal of Machine
+Learning Research}, \bold{11}(80), 2287--2322.
+}
 \seealso{
 \code{\link{soft_impute_tune}()}, \code{\link{fraction_grid}()}
 }

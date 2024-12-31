@@ -39,6 +39,8 @@
 #' 
 #' @author Andreas Alfons
 #' 
+#' @inherit rdmc references
+#' 
 #' @seealso 
 #' \code{\link{rdmc}()}, \code{\link{fraction_grid}()}, 
 #' 

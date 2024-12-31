@@ -73,6 +73,11 @@
 #' 
 #' @author Andreas Alfons and Aurore Archimbaud
 #' 
+#' @references
+#' Archimbaud, A., Alfons, A., and Wilms, I. (2024) Robust Matrix Completion 
+#' for Discrete Rating-Scale Data. arXiv:2412.20802. 
+#' \doi{10.48550/arXiv.2412.20802}.
+#' 
 #' @seealso \code{\link{rdmc_tune}()}, \code{\link{fraction_grid}()}
 #' 
 #' @keywords multivariate
