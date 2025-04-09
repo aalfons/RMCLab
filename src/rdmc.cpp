@@ -69,9 +69,9 @@ void rdmc_pseudo_huber(const arma::mat& X, const arma::uword& n,
     rank = 0;
     nuclear_norm = 0;
     while ((j < d.n_elem) & (rank < rank_max)) {
-      if (d(j) > svd_tol) {
+      if (d.at(j) > svd_tol) {
         rank++;
-        nuclear_norm += d(j);
+        nuclear_norm += d.at(j);
       }
       j++;
     }
@@ -84,7 +84,9 @@ void rdmc_pseudo_huber(const arma::mat& X, const arma::uword& n,
       for (i = 0; i < n; i++) {
         for (j = 0; j < p; j++) {
           // add contributions from the different rows of U and columns of V'
-          for (k = 0; k < rank; k++) Z(i, j) += U(i, k) * d(k) * V(j, k);
+          for (k = 0; k < rank; k++) {
+            Z.at(i, j) += U.at(i, k) * d.at(k) * V.at(j, k);
+          }
         }
       }
     }
@@ -95,10 +97,10 @@ void rdmc_pseudo_huber(const arma::mat& X, const arma::uword& n,
     // update L for cells with missing values in X
     for (l = 0; l < idx_NA.n_rows; l++) {
       // row and column indices of current cell to be updated
-      i = idx_NA(l, 0);
-      j = idx_NA(l, 1);
+      i = idx_NA.at(l, 0);
+      j = idx_NA.at(l, 1);
       // save some computation time in loop
-      tmp = -Z(i, j) + Theta(i, j)/mu;
+      tmp = -Z.at(i, j) + Theta.at(i, j)/mu;
       // initialize the minimum
       which_min = 0;
       objective_step2_min = R_PosInf;
@@ -108,32 +110,32 @@ void rdmc_pseudo_huber(const arma::mat& X, const arma::uword& n,
         // The paper says to take the argmin of the squared expression. But
         // this is equivalent to taking the argmin of the absolute value,
         // which is faster to compute.
-        objective_step2 = std::abs(values(k, j) + tmp);
+        objective_step2 = std::abs(values.at(k, j) + tmp);
         if (objective_step2 < objective_step2_min) {
           which_min = k;
           objective_step2_min = objective_step2;
         }
       }
       // update the element of L with the argmin of the objective function
-      L(i, j) = values(which_min, j);
+      L.at(i, j) = values.at(which_min, j);
     }
     
     // update L for cells with observed values in X
     loss_norm = 0;
     for (l = 0; l < idx_observed.n_rows; l++) {
       // row and column indices of current cell to be updated
-      i = idx_observed(l, 0);
-      j = idx_observed(l, 1);
+      i = idx_observed.at(l, 0);
+      j = idx_observed.at(l, 1);
       // save some computation time in loop
-      tmp = -Z(i, j) + Theta(i, j)/mu;
+      tmp = -Z.at(i, j) + Theta.at(i, j)/mu;
       // initialize the minimum
       which_min = 0;
       objective_step2_min = R_PosInf;
       // loop over the different values and choose the one that minimizes the
       // objective function
       for (k = 0; k < nb_values; k++) {
-        loss = pseudo_huber(values(k, j) - X(i, j), loss_const);
-        objective_step2 = loss + mu * std::pow(values(k, j) + tmp, 2.0)/2.0;
+        loss = pseudo_huber(values.at(k, j) - X.at(i, j), loss_const);
+        objective_step2 = loss + mu * std::pow(values.at(k, j) + tmp, 2.0)/2.0;
         if (objective_step2 < objective_step2_min) {
           which_min = k;
           loss_min = loss;
@@ -141,7 +143,7 @@ void rdmc_pseudo_huber(const arma::mat& X, const arma::uword& n,
         }
       }
       // update the element of L with the argmin of the objective function
-      L(i, j) = values(which_min, j);
+      L.at(i, j) = values.at(which_min, j);
       // update the norm given by loss function
       loss_norm += loss_min;
     }
@@ -213,9 +215,9 @@ void rdmc_absolute(const arma::mat& X, const arma::uword& n,
     rank = 0;
     nuclear_norm = 0;
     while ((j < d.n_elem) & (rank < rank_max)) {
-      if (d(j) > svd_tol) {
+      if (d.at(j) > svd_tol) {
         rank++;
-        nuclear_norm += d(j);
+        nuclear_norm += d.at(j);
       }
       j++;
     }
@@ -228,7 +230,9 @@ void rdmc_absolute(const arma::mat& X, const arma::uword& n,
       for (i = 0; i < n; i++) {
         for (j = 0; j < p; j++) {
           // add contributions from the different rows of U and columns of V'
-          for (k = 0; k < rank; k++) Z(i, j) += U(i, k) * d(k) * V(j, k);
+          for (k = 0; k < rank; k++) {
+            Z.at(i, j) += U.at(i, k) * d.at(k) * V.at(j, k);
+          }
         }
       }
     }
@@ -239,10 +243,10 @@ void rdmc_absolute(const arma::mat& X, const arma::uword& n,
     // update L for cells with missing values in X
     for (l = 0; l < idx_NA.n_rows; l++) {
       // row and column indices of current cell to be updated
-      i = idx_NA(l, 0);
-      j = idx_NA(l, 1);
+      i = idx_NA.at(l, 0);
+      j = idx_NA.at(l, 1);
       // save some computation time in loop
-      tmp = -Z(i, j) + Theta(i, j)/mu;
+      tmp = -Z.at(i, j) + Theta.at(i, j)/mu;
       // initialize the minimum
       which_min = 0;
       objective_step2_min = R_PosInf;
@@ -252,32 +256,32 @@ void rdmc_absolute(const arma::mat& X, const arma::uword& n,
         // The paper says to take the argmin of the squared expression. But
         // this is equivalent to taking the argmin of the absolute value,
         // which is faster to compute.
-        objective_step2 = std::abs(values(k, j) + tmp);
+        objective_step2 = std::abs(values.at(k, j) + tmp);
         if (objective_step2 < objective_step2_min) {
           which_min = k;
           objective_step2_min = objective_step2;
         }
       }
       // update the element of L with the argmin of the objective function
-      L(i, j) = values(which_min, j);
+      L.at(i, j) = values.at(which_min, j);
     }
     
     // update L for cells with observed values in X
     loss_norm = 0;
     for (l = 0; l < idx_observed.n_rows; l++) {
       // row and column indices of current cell to be updated
-      i = idx_observed(l, 0);
-      j = idx_observed(l, 1);
+      i = idx_observed.at(l, 0);
+      j = idx_observed.at(l, 1);
       // save some computation time in loop
-      tmp = -Z(i, j) + Theta(i, j)/mu;
+      tmp = -Z.at(i, j) + Theta.at(i, j)/mu;
       // initialize the minimum
       which_min = 0;
       objective_step2_min = R_PosInf;
       // loop over the different values and choose the one that minimizes the
       // objective function
       for (k = 0; k < nb_values; k++) {
-        loss = std::abs(values(k, j) - X(i, j));
-        objective_step2 = loss + mu * std::pow(values(k, j) + tmp, 2.0)/2.0;
+        loss = std::abs(values.at(k, j) - X.at(i, j));
+        objective_step2 = loss + mu * std::pow(values.at(k, j) + tmp, 2.0)/2.0;
         if (objective_step2 < objective_step2_min) {
           which_min = k;
           loss_min = loss;
@@ -285,7 +289,7 @@ void rdmc_absolute(const arma::mat& X, const arma::uword& n,
         }
       }
       // update the element of L with the argmin of the objective function
-      L(i, j) = values(which_min, j);
+      L.at(i, j) = values.at(which_min, j);
       // update the norm given by loss function
       loss_norm += loss_min;
     }
@@ -363,9 +367,9 @@ void rdmc_bounded(const arma::mat& X, const arma::uword& n,
     rank = 0;
     nuclear_norm = 0;
     while ((j < d.n_elem) & (rank < rank_max)) {
-      if (d(j) > svd_tol) {
+      if (d.at(j) > svd_tol) {
         rank++;
-        nuclear_norm += d(j);
+        nuclear_norm += d.at(j);
       }
       j++;
     }
@@ -378,7 +382,9 @@ void rdmc_bounded(const arma::mat& X, const arma::uword& n,
       for (i = 0; i < n; i++) {
         for (j = 0; j < p; j++) {
           // add contributions from the different rows of U and columns of V'
-          for (k = 0; k < rank; k++) Z(i, j) += U(i, k) * d(k) * V(j, k);
+          for (k = 0; k < rank; k++) {
+            Z.at(i, j) += U.at(i, k) * d.at(k) * V.at(j, k);
+          }
         }
       }
     }
@@ -389,10 +395,10 @@ void rdmc_bounded(const arma::mat& X, const arma::uword& n,
     // update L for cells with missing values in X
     for (l = 0; l < idx_NA.n_rows; l++) {
       // row and column indices of current cell to be updated
-      i = idx_NA(l, 0);
-      j = idx_NA(l, 1);
+      i = idx_NA.at(l, 0);
+      j = idx_NA.at(l, 1);
       // save some computation time in loop
-      tmp = -Z(i, j) + Theta(i, j)/mu;
+      tmp = -Z.at(i, j) + Theta.at(i, j)/mu;
       // initialize the minimum
       which_min = 0;
       objective_step2_min = R_PosInf;
@@ -402,22 +408,22 @@ void rdmc_bounded(const arma::mat& X, const arma::uword& n,
         // The paper says to take the argmin of the squared expression. But
         // this is equivalent to taking the argmin of the absolute value,
         // which is faster to compute.
-        objective_step2 = std::abs(values(k, j) + tmp);
+        objective_step2 = std::abs(values.at(k, j) + tmp);
         if (objective_step2 < objective_step2_min) {
           which_min = k;
           objective_step2_min = objective_step2;
         }
       }
       // update the element of L with the argmin of the objective function
-      L(i, j) = values(which_min, j);
+      L.at(i, j) = values.at(which_min, j);
     }
     
     // update L for cells with observed values in X
     loss_norm = 0;
     for (l = 0; l < idx_observed.n_rows; l++) {
       // row and column indices of current cell to be updated
-      i = idx_observed(l, 0);
-      j = idx_observed(l, 1);
+      i = idx_observed.at(l, 0);
+      j = idx_observed.at(l, 1);
       // save some computation time in loop
       tmp = -Z(i, j) + Theta(i, j)/mu;
       // initialize the minimum
@@ -426,8 +432,8 @@ void rdmc_bounded(const arma::mat& X, const arma::uword& n,
       // loop over the different values and choose the one that minimizes the
       // objective function
       for (k = 0; k < nb_values; k++) {
-        loss = bounded(values(k, j) - X(i, j), loss_const);
-        objective_step2 = loss + mu * std::pow(values(k, j) + tmp, 2.0)/2.0;
+        loss = bounded(values.at(k, j) - X.at(i, j), loss_const);
+        objective_step2 = loss + mu * std::pow(values.at(k, j) + tmp, 2.0)/2.0;
         if (objective_step2 < objective_step2_min) {
           which_min = k;
           loss_min = loss;
@@ -435,7 +441,7 @@ void rdmc_bounded(const arma::mat& X, const arma::uword& n,
         }
       }
       // update the element of L with the argmin of the objective function
-      L(i, j) = values(which_min, j);
+      L.at(i, j) = values.at(which_min, j);
       // update the norm given by loss function
       loss_norm += loss_min;
     }
@@ -503,21 +509,21 @@ Rcpp::List rdmc_cpp(const arma::mat& X,
     // call workhorse function with initial values
     if (loss == "pseudo_huber") {
       rdmc_pseudo_huber(X, n, p, idx_NA, idx_observed, values, 
-                        lambda(0) * d_max, rank_max, type, svd_tol, 
+                        lambda.at(0) * d_max, rank_max, type, svd_tol, 
                         loss_const, delta, mu, conv_tol, max_iter, 
                         L, Z, Theta, objective, converged, nb_iter);
     } else if (loss == "absolute") {
-      rdmc_absolute(X, n, p, idx_NA, idx_observed, values, lambda(0) * d_max,
+      rdmc_absolute(X, n, p, idx_NA, idx_observed, values, lambda.at(0) * d_max,
                     rank_max, type, svd_tol, delta, mu, conv_tol, max_iter,
                     L, Z, Theta, objective, converged, nb_iter);
     } else if (loss == "bounded") {
-      rdmc_bounded(X, n, p, idx_NA, idx_observed, values, lambda(0) * d_max,
+      rdmc_bounded(X, n, p, idx_NA, idx_observed, values, lambda.at(0) * d_max,
                    rank_max, type, svd_tol, loss_const, delta, mu,
                    conv_tol, max_iter, L, Z, Theta, objective,
                    converged, nb_iter);
     } else Rcpp::stop("loss function not implemented");  // shouldn't happen
     // return list of results
-    return Rcpp::List::create(Rcpp::Named("lambda") = lambda(0),
+    return Rcpp::List::create(Rcpp::Named("lambda") = lambda.at(0),
                               Rcpp::Named("d_max") = d_max,
                               Rcpp::Named("L") = L,
                               Rcpp::Named("Z") = Z,
@@ -538,15 +544,15 @@ Rcpp::List rdmc_cpp(const arma::mat& X,
       // for previous value of lambda are used as starting values
       if (loss == "pseudo_huber") {
         rdmc_pseudo_huber(X, n, p, idx_NA, idx_observed, values, 
-                          lambda(l) * d_max, rank_max, type, svd_tol, 
+                          lambda.at(l) * d_max, rank_max, type, svd_tol, 
                           loss_const, delta, mu, conv_tol, max_iter, 
                           L, Z, Theta, objective, converged, nb_iter);
       } else if (loss == "absolute") {
-        rdmc_absolute(X, n, p, idx_NA, idx_observed, values, lambda(l) * d_max,
+        rdmc_absolute(X, n, p, idx_NA, idx_observed, values, lambda.at(l) * d_max,
                       rank_max, type, svd_tol, delta, mu, conv_tol, max_iter,
                       L, Z, Theta, objective, converged, nb_iter);
       } else if (loss == "bounded") {
-        rdmc_bounded(X, n, p, idx_NA, idx_observed, values, lambda(l) * d_max,
+        rdmc_bounded(X, n, p, idx_NA, idx_observed, values, lambda.at(l) * d_max,
                      rank_max, type, svd_tol, loss_const, delta, mu,
                      conv_tol, max_iter, L, Z, Theta, objective,
                      converged, nb_iter);
@@ -557,9 +563,9 @@ Rcpp::List rdmc_cpp(const arma::mat& X,
       L_list.push_back(L);
       Z_list.push_back(Z);
       Theta_list.push_back(Theta);
-      objective_vec(l) = objective;
-      converged_vec(l) = converged;
-      nb_iter_vec(l) = nb_iter;
+      objective_vec.at(l) = objective;
+      converged_vec.at(l) = converged;
+      nb_iter_vec.at(l) = nb_iter;
       
     }
     // return list of results

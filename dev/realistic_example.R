@@ -116,6 +116,20 @@ set_NA <- unlist(lapply(
 X_NA <- X
 X_NA[set_NA] <- NA_real_
 
+
+# check computation time
+library("microbenchmark")
+cpu_time <- microbenchmark(
+  rdmc(X_NA, values = values, loss = loss, type = type, svd_tol = svd_tol, 
+       delta = delta, mu = mu, conv_tol = conv_tol, max_iter = max_iter_RDMC), 
+  times = 5
+)
+fit <- rdmc(X_NA, values = values, loss = loss, 
+            type = type, svd_tol = svd_tol, delta = delta, mu = mu, 
+            conv_tol = conv_tol, max_iter = max_iter_RDMC)
+# save(cpu_time, fit, file = "dev/test_without_bounds_check.RData")
+
+
 # set up training-test splits for holdout validation
 is_NA <- is.na(X_NA)
 observed <- which(!is_NA)
