@@ -127,7 +127,7 @@ cpu_time <- microbenchmark(
 fit <- rdmc(X_NA, values = values, loss = loss, 
             type = type, svd_tol = svd_tol, delta = delta, mu = mu, 
             conv_tol = conv_tol, max_iter = max_iter_RDMC)
-# save(cpu_time, fit, file = "dev/test_without_bounds_check.RData")
+save(cpu_time, fit, file = "dev/test_without_bounds_check.RData")
 
 
 # set up training-test splits for holdout validation
