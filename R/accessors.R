@@ -4,17 +4,21 @@
 # ************************************
 
 
-#' Extract the imputed data matrix
+#' Extract the completed (imputed) data matrix
 #' 
-#' Extract the imputed data matrix from an object returned by a matrix 
-#' completion algorithm.
+#' Extract the completed (i.e., imputed) data matrix from an object returned by 
+#' a matrix completion algorithm. 
 #' 
 #' @param object  an object returned by a matrix completion algorithm.
 #' @param discretized  a logical indicating if the imputed data matrix with or 
 #' without the discretization step should be extracted.
 #' @param \dots  additional arguments to be passed down to methods.
 #' 
-#' @return  The imputed data matrix.
+#' @return  The completed (i.e., imputed) data matrix.
+#' 
+#' @note Matrix completion and imputation are synonymous terms used in 
+#' different streams of the literature, hence \code{get_imputed()} is an 
+#' alias for \code{get_completed()} with the same functionality.
 #' 
 #' @author Andreas Alfons
 #' 
@@ -25,34 +29,39 @@
 #' 
 #' @export
 
-get_X <- function(object, ...) UseMethod("get_X")
+get_completed <- function(object, ...) UseMethod("get_completed")
 
 
-#' @rdname get_X
+#' @rdname get_completed
 #' @export
-get_X.rdmc_tuned <- function(object, ...) {
+get_completed.rdmc_tuned <- function(object, ...) {
   object$fit$X
 }
 
-#' @rdname get_X
+#' @rdname get_completed
 #' @export
-get_X.soft_impute_tuned <- function(object, discretized = FALSE, ...) {
+get_completed.soft_impute_tuned <- function(object, discretized = FALSE, ...) {
   if (isTRUE(discretized)) object$fit$X_discretized
   else object$fit$X
 }
 
-#' @rdname get_X
+#' @rdname get_completed
 #' @export
-get_X.median_impute <- function(object, discretized = FALSE, ...) {
+get_completed.median_impute <- function(object, discretized = FALSE, ...) {
   if (isTRUE(discretized)) object$X_discretized
   else object$X
 }
 
-#' @rdname get_X
+#' @rdname get_completed
 #' @export
-get_X.mode_impute <- function(object, ...) {
+get_completed.mode_impute <- function(object, ...) {
   object$X
 }
+
+
+#' @rdname get_completed
+#' @export
+get_imputed <- get_completed
 
 
 #' Extract the optimal value of the regularization parameter
