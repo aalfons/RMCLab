@@ -53,7 +53,7 @@
 
 rdmc_tune <- function(X, values = NULL, lambda = fraction_grid(), 
                       relative = TRUE, splits = holdout_control(), 
-                      loss = c("pseudo_huber", "absolute", "bounded"),
+                      loss = c("pseudo_huber", "absolute", "truncated"),
                       loss_const = NULL, ...) {
   
   # initializations
@@ -72,14 +72,25 @@ rdmc_tune <- function(X, values = NULL, lambda = fraction_grid(),
   }
   relative <- isTRUE(relative)
   # check loss function
-  loss <- match.arg(loss)
+  # loss <- match.arg(loss)
+  loss <- match.arg(loss, choices = c("pseudo_huber", "absolute", 
+                                      "truncated", "bounded"))
+  if (loss == "bounded") {
+    loss <- "truncated"
+    .Deprecated(
+      msg = c("argument value \"bounded\" is deprecated.\n", 
+              "Use 'loss = \"truncated\"' instead.\n",
+              "See help(\"rdmc_tune\").")
+    )
+    
+  }
   if (is.null(loss_const)) {
     # set default constant for loss function (if applicable)
     loss_const <- switch(
       loss, 
       pseudo_huber = (max(values) - min(values)) / (length(values) - 1), 
       absolute = NA_real_, 
-      bounded = (max(values) - min(values)) / 2
+      truncated = (max(values) - min(values)) / 2
     )
   }
   
@@ -107,11 +118,11 @@ rdmc_tune <- function(X, values = NULL, lambda = fraction_grid(),
     # compute prediction loss
     sapply(fit$X, function(X_hat) {
       if (loss == "pseudo_huber") {
-        pseudo_huber(X_test - X_hat[indices], delta = loss_const)
+        pseudo_huber(X_test - X_hat[indices], const = loss_const)
       } else if (loss == "absolute") {
         abs(X_test - X_hat[indices])
       } else {
-        bounded(X_test - X_hat[indices], bound = loss_const)
+        truncated(X_test - X_hat[indices], const = loss_const)
       }
     })
     

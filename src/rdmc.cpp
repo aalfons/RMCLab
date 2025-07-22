@@ -25,8 +25,8 @@
 // -----------------
 
 // loss function
-double pseudo_huber(const double& x, const double& delta) {
-  return std::pow(delta, 2.0) * (sqrt(1 + std::pow(x/delta, 2.0)) - 1);
+double pseudo_huber(const double& x, const double& tau) {
+  return std::pow(tau, 2.0) * (sqrt(1 + std::pow(x/tau, 2.0)) - 1);
 }
 
 // workhorse function for a single value of the regularization parameter lambda
@@ -318,28 +318,28 @@ void rdmc_absolute(const arma::mat& X, const arma::uword& n,
 }
 
 
-// ---------------------
-// bounded absolute loss
-// ---------------------
+// -----------------------
+// truncated absolute loss
+// -----------------------
 
 // loss function
-double bounded(const double& x, const double& bound) {
-  return std::min(std::abs(x), bound);
+double truncated(const double& x, const double& tau) {
+  return std::min(std::abs(x), tau);
 }
 
 // workhorse function for a single value of the regularization parameter lambda
-void rdmc_bounded(const arma::mat& X, const arma::uword& n, 
-                  const arma::uword& p, const arma::umat& idx_NA, 
-                  const arma::umat& idx_observed, const arma::mat& values, 
-                  const double& lambda, const arma::uword& rank_max, 
-                  const std::string& type, const double& svd_tol, 
-                  const double& loss_const, const double& delta, 
-                  double mu, const double& conv_tol, 
-                  const int& max_iter,
-                  // output to be returned through arguments (passed on to R)
-                  arma::mat& L, arma::mat& Z, arma::mat& Theta,
-                  double& objective, bool& converged, 
-                  int& nb_iter) {
+void rdmc_truncated(const arma::mat& X, const arma::uword& n, 
+                    const arma::uword& p, const arma::umat& idx_NA, 
+                    const arma::umat& idx_observed, const arma::mat& values, 
+                    const double& lambda, const arma::uword& rank_max, 
+                    const std::string& type, const double& svd_tol, 
+                    const double& loss_const, const double& delta, 
+                    double mu, const double& conv_tol, 
+                    const int& max_iter,
+                    // output to be returned through arguments (passed on to R)
+                    arma::mat& L, arma::mat& Z, arma::mat& Theta,
+                    double& objective, bool& converged, 
+                    int& nb_iter) {
   
   // initializations
   objective = R_PosInf;
@@ -432,7 +432,7 @@ void rdmc_bounded(const arma::mat& X, const arma::uword& n,
       // loop over the different values and choose the one that minimizes the
       // objective function
       for (k = 0; k < nb_values; k++) {
-        loss = bounded(values.at(k, j) - X.at(i, j), loss_const);
+        loss = truncated(values.at(k, j) - X.at(i, j), loss_const);
         objective_step2 = loss + mu * std::pow(values.at(k, j) + tmp, 2.0)/2.0;
         if (objective_step2 < objective_step2_min) {
           which_min = k;
@@ -501,7 +501,7 @@ Rcpp::List rdmc_cpp(const arma::mat& X,
   double objective;
   bool converged;
   int nb_iter;
-
+  
   // different behavior depending on whether we have one value of the
   // regularization parameter lambda or multiple values
   if (nb_lambda == 1) {
@@ -516,11 +516,11 @@ Rcpp::List rdmc_cpp(const arma::mat& X,
       rdmc_absolute(X, n, p, idx_NA, idx_observed, values, lambda.at(0) * d_max,
                     rank_max, type, svd_tol, delta, mu, conv_tol, max_iter,
                     L, Z, Theta, objective, converged, nb_iter);
-    } else if (loss == "bounded") {
-      rdmc_bounded(X, n, p, idx_NA, idx_observed, values, lambda.at(0) * d_max,
-                   rank_max, type, svd_tol, loss_const, delta, mu,
-                   conv_tol, max_iter, L, Z, Theta, objective,
-                   converged, nb_iter);
+    } else if (loss == "truncated") {
+      rdmc_truncated(X, n, p, idx_NA, idx_observed, values, lambda.at(0) * d_max,
+                     rank_max, type, svd_tol, loss_const, delta, mu,
+                     conv_tol, max_iter, L, Z, Theta, objective,
+                     converged, nb_iter);
     } else Rcpp::stop("loss function not implemented");  // shouldn't happen
     // return list of results
     return Rcpp::List::create(Rcpp::Named("lambda") = lambda.at(0),
@@ -551,11 +551,11 @@ Rcpp::List rdmc_cpp(const arma::mat& X,
         rdmc_absolute(X, n, p, idx_NA, idx_observed, values, lambda.at(l) * d_max,
                       rank_max, type, svd_tol, delta, mu, conv_tol, max_iter,
                       L, Z, Theta, objective, converged, nb_iter);
-      } else if (loss == "bounded") {
-        rdmc_bounded(X, n, p, idx_NA, idx_observed, values, lambda.at(l) * d_max,
-                     rank_max, type, svd_tol, loss_const, delta, mu,
-                     conv_tol, max_iter, L, Z, Theta, objective,
-                     converged, nb_iter);
+      } else if (loss == "truncated") {
+        rdmc_truncated(X, n, p, idx_NA, idx_observed, values, lambda.at(l) * d_max,
+                       rank_max, type, svd_tol, loss_const, delta, mu,
+                       conv_tol, max_iter, L, Z, Theta, objective,
+                       converged, nb_iter);
       } else Rcpp::stop("loss function not implemented");  // shouldn't happen
       // add results for current value of the regularization parameter:
       // note that a copy of the objects that are stored in the list so that 

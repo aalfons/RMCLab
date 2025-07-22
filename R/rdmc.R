@@ -15,7 +15,7 @@
 #' The absolute loss
 #' (\code{loss = "absolute"}) is given by
 #' \deqn{\rho(x) = |x|,}{rho(x) = |x|,}
-#' and the bounded absolute loss (\code{loss = "bounded"}) is defined as
+#' and the truncated absolute loss (\code{loss = "truncated"}) is defined as
 #' \deqn{\rho(x) = \min (|x|, \code{loss\_const}).}{rho(x) = min(|x|, \code{loss_const}).}
 #' 
 #' @param X  a matrix or data frame of discrete ratings with missing values.
@@ -36,11 +36,11 @@
 #' @param loss  a character string specifying the robust loss function for the 
 #' loss part of the objective function.  Possible values are 
 #' \code{"pseudo_huber"} (the default) for the pseudo-Huber loss, 
-#' \code{"absolute"} for the absolute loss, and \code{"bounded"} for the 
-#' bounded absolute loss.  See \sQuote{Details} for more information.
+#' \code{"absolute"} for the absolute loss, and \code{"truncated"} for the 
+#' truncated absolute loss.  See \sQuote{Details} for more information.
 #' @param loss_const  tuning constant for the loss function.  For the 
 #' pseudo-Huber loss, the default value is the average step size between the 
-#' rating categories in \code{values}.  For the bounded absolute loss, 
+#' rating categories in \code{values}.  For the truncated absolute loss, 
 #' the default is half the range of the rating categories in \code{values}.  
 #' This is ignored for the absolute loss, which does not have a tuning 
 #' parameter.  See \sQuote{Details} for more information.
@@ -87,7 +87,7 @@
 #' @export
 
 rdmc <- function(X, values = NULL, lambda = fraction_grid(), relative = TRUE, 
-                 loss = c("pseudo_huber", "absolute", "bounded"),
+                 loss = c("pseudo_huber", "absolute", "truncated"),
                  loss_const = NULL, type = "svd", svd_tol = 1e-04, 
                  rank_max = NULL, mu = 0.1, delta = 1.05, 
                  conv_tol = 1e-04, max_iter = 100L, 
@@ -110,14 +110,25 @@ rdmc <- function(X, values = NULL, lambda = fraction_grid(), relative = TRUE,
   # check maximum rank
   if (is.null(rank_max)) rank_max <- min(dim(X))
   # check loss function
-  loss <- match.arg(loss)
+  # loss <- match.arg(loss)
+  loss <- match.arg(loss, choices = c("pseudo_huber", "absolute", 
+                                      "truncated", "bounded"))
+  if (loss == "bounded") {
+    loss <- "truncated"
+    .Deprecated(
+      msg = c("argument value \"bounded\" is deprecated.\n", 
+              "Use 'loss = \"truncated\"' instead.\n",
+              "See help(\"rdmc\").")
+    )
+    
+  }
   if (is.null(loss_const)) {
     # set default constant for loss function (if applicable)
     loss_const <- switch(
       loss, 
       pseudo_huber = (max(values) - min(values)) / (length(values) - 1), 
       absolute = NA_real_, 
-      bounded = (max(values) - min(values)) / 2
+      truncated = (max(values) - min(values)) / 2
     )
   }
   

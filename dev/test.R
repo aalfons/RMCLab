@@ -38,16 +38,16 @@ identical(fit$X, foo$X)
 fit_pseudo_huber <- rdmc_tune(X_NA, values = 1:nb_cat, lambda = lambda, 
                               type = type, loss = "pseudo_huber")
 fit_pseudo_huber$lambda_opt
-fit_pseudo_huber$final$X
+fit_pseudo_huber$fit$X
 
 # absolute loss
 fit_absolute <- rdmc_tune(X_NA, values = 1:nb_cat, lambda = lambda, type = type, 
                           loss = "absolute")
 fit_absolute$lambda_opt
-fit_absolute$final$X
+fit_absolute$fit$X
 
-# bounded absolute loss
-fit_bounded <- rdmc_tune(X_NA, values = 1:nb_cat, lambda = lambda, type = type, 
-                         loss = "bounded")
-fit_bounded$lambda_opt
-fit_bounded$final$X
+# truncated absolute loss
+fit_truncated <- rdmc_tune(X_NA, values = 1:nb_cat, lambda = lambda, type = type, 
+                           loss = "truncated")
+fit_truncated$lambda_opt
+fit_truncated$fit$X

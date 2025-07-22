@@ -10,7 +10,7 @@ rdmc_tune(
   lambda = fraction_grid(),
   relative = TRUE,
   splits = holdout_control(),
-  loss = c("pseudo_huber", "absolute", "bounded"),
+  loss = c("pseudo_huber", "absolute", "truncated"),
   loss_const = NULL,
   ...
 )
@@ -43,12 +43,12 @@ observed cells.}
 \item{loss}{a character string specifying the robust loss function for the
 loss part of the objective function.  Possible values are
 \code{"pseudo_huber"} (the default) for the pseudo-Huber loss,
-\code{"absolute"} for the absolute loss, and \code{"bounded"} for the
-bounded absolute loss.  See \sQuote{Details} for more information.}
+\code{"absolute"} for the absolute loss, and \code{"truncated"} for the
+truncated absolute loss.  See \sQuote{Details} for more information.}
 
 \item{loss_const}{tuning constant for the loss function.  For the
 pseudo-Huber loss, the default value is the average step size between the
-rating categories in \code{values}.  For the bounded absolute loss,
+rating categories in \code{values}.  For the truncated absolute loss,
 the default is half the range of the rating categories in \code{values}.
 This is ignored for the absolute loss, which does not have a tuning
 parameter.  See \sQuote{Details} for more information.}
@@ -82,7 +82,7 @@ For the loss part of the objective function, the pseudo-Huber loss
 The absolute loss
 (\code{loss = "absolute"}) is given by
 \deqn{\rho(x) = |x|,}{rho(x) = |x|,}
-and the bounded absolute loss (\code{loss = "bounded"}) is defined as
+and the truncated absolute loss (\code{loss = "truncated"}) is defined as
 \deqn{\rho(x) = \min (|x|, \code{loss\_const}).}{rho(x) = min(|x|, \code{loss_const}).}
 }
 \references{
