@@ -1,25 +1,37 @@
-#' Toy Example from the MovieLens 100K Dataset
+#' Toy example derived from the MovieLens 100K dataset
 #'
-#' This dataset is a toy example derived from the MovieLens 100K dataset, which
-#'  contains 100,000 ratings (on a scale from 1 to 5) provided by 943 users for
-#'   1,682 movies. The original data was collected via the MovieLens website 
-#'   (movielens.umn.edu) over a seven-month period, from September 19, 1997,
-#'    to April 22, 1998.
+#' This dataset is a toy example derived from the MovieLens 100K dataset. The 
+#' original data were collected via the MovieLens website (movielens.umn.edu) 
+#' over a seven-month period, from September 19, 1997, to April 22, 1998.
 #'
-#' This toy version has been curated to include only users with at least 200 
-#' ratings and movies with at least 300 ratings, ensuring a denser and more 
-#' informative subset for testing and demonstration purposes.
+#' The original MovieLens 100K dataset contains 100,000 ratings on a scale 
+#' from 1 to 5 provided by 943 users for 1,682 movies.
+#'
+#' This toy version has been curated to be used in instantaneously computable 
+#' examples of the package documentation. It includes only users who provided 
+#' at least 200 ratings and movies that were rated at least 300 times, ensuring 
+#' a denser and more informative subset for testing and demonstration purposes.
 #'
 #' @usage
 #' data("MovieLensToy")
 #'
-#'
-#' @format A data frame with 149 rows and 33 variables:
-#' \describe{
-#'   \item{Rows}{Represent individual users.}
-#'   \item{Columns}{Represent movies. Each cell contains a rating from 1 to 5,
-#'    or NA if the movie was not rated by the user.}
-#' }
-#' @source GroupLens Research, \url{https://grouplens.org/datasets/movielens/100k/}
+#' @format A matrix with 149 rows and 33 variables. Rows represent users and 
+#' columns respresent movies. Each cell contains a rating from 1 to 5,
+#' or \code{NA} if the movie was not rated by the user.
 #' 
+#' The row names correspond to the user ID and the column names to the movie ID 
+#' in the original MovieLens 100K dataset.
+#' 
+#' @source GroupLens Research, 
+#' \url{https://grouplens.org/datasets/movielens/100k/}
+#' 
+#' @references 
+#' F. Maxwell Harper and Joseph A. Konstan (2015) The MovieLens Datasets:
+#' History and Context. \emph{ACM Transactions on Interactive Intelligent
+#' Systems (TiiS)}, \bold{5}(4), Article 19. \doi{10.1145/2827872}.
+#' 
+#' @examples
+#' data("MovieLensToy")
+#' dim(MovieLensToy)
+
 "MovieLensToy"

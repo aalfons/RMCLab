@@ -27,5 +27,8 @@ df_sub <- df %>%
 
 
 # reshape into dataframe 
-MovieLensToy <- as.matrix(dcast(df_sub, user_id ~ item_id, value.var = "rating")[,-1])
+MovieLensToy <- dcast(df_sub, user_id ~ item_id, value.var = "rating")
+user_id <- MovieLensToy[, 1]
+MovieLensToy <- as.matrix(MovieLensToy[, -1])
+rownames(MovieLensToy) <- user_id
 usethis::use_data(MovieLensToy, overwrite = TRUE)
