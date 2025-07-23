@@ -10,8 +10,10 @@
 #' a matrix completion algorithm. 
 #' 
 #' @param object  an object returned by a matrix completion algorithm.
-#' @param discretized  a logical indicating if the imputed data matrix with or 
-#' without the discretization step should be extracted.
+#' @param which  an integer specifying the index of the regularization 
+#' parameter for which to extract the completed data matrix.
+#' @param discretized  a logical indicating if the completed data matrix with 
+#' or without the discretization step should be extracted.
 #' @param \dots  additional arguments to be passed down to methods.
 #' 
 #' @return  The completed (i.e., imputed) data matrix.
@@ -38,11 +40,45 @@ get_completed.rdmc_tuned <- function(object, ...) {
   object$fit$X
 }
 
+
+#' @rdname get_completed
+#' @export
+get_completed.rdmc <- function(object, which, ...) {
+  out <- object$X
+  if (length(object$lambda) > 1L) {
+    if (missing(which)) {
+      stop("multiple regularization parameters used; use argument 'which' ", 
+           "to specify the index for which to extract the completed matrix")
+    } else if (!is.numeric(which) || length(which) != 1L) {
+      stop("argument 'which' must be a single integer")
+    }
+    out <- out[[which]]
+  }
+  out
+}
+
 #' @rdname get_completed
 #' @export
 get_completed.soft_impute_tuned <- function(object, discretized = FALSE, ...) {
   if (isTRUE(discretized)) object$fit$X_discretized
   else object$fit$X
+}
+
+#' @rdname get_completed
+#' @export
+get_completed.soft_impute <- function(object, which, discretized = FALSE, ...) {
+  if (isTRUE(discretized)) out <- object$X_discretized
+  else out <- object$X
+  if (length(object$lambda) > 1L) {
+    if (missing(which)) {
+      stop("multiple regularization parameters used; use argument 'which' ", 
+           "to specify the index for which to extract the completed matrix")
+    } else if (!is.numeric(which) || length(which) != 1L) {
+      stop("argument 'which' must be a single integer")
+    }
+    out <- out[[which]]
+  }
+  out
 }
 
 #' @rdname get_completed

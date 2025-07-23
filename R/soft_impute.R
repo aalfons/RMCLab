@@ -150,7 +150,7 @@ soft_impute <- function(X, lambda = fraction_grid(reverse = TRUE),
   
   # if requested, add discretized imputed matrix 
   # (only for fitting the algorithm for the optimal lambda after tuning)
-  if (nb_lambda == 1L && isTRUE(discretize)) {
+  if (isTRUE(discretize)) {
     # if not supplied, obtain values of rating scale (categories)
     if (is.null(values)) values <- unique(X[!is.na(X)])
     # obtain minimum and maximum value for discretization
@@ -158,7 +158,13 @@ soft_impute <- function(X, lambda = fraction_grid(reverse = TRUE),
     max_value <- max(values)
     # discretize the imputed matrix
     # FIXME: this only works for integer sequence from min_value to max_value
-    out$X_discretized <- pmin(pmax(round(X_imputed), min_value), max_value)
+    if (nb_lambda == 1L) {
+      out$X_discretized <- pmin(pmax(round(X_imputed), min_value), max_value)
+    } else {
+      out$X_discretized <- lapply(X_imputed, function(current_X_imputed) {
+        pmin(pmax(round(current_X_imputed), min_value), max_value)
+      })
+    }
   }
   
   # add class and return object

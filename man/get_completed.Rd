@@ -3,7 +3,9 @@
 \name{get_completed}
 \alias{get_completed}
 \alias{get_completed.rdmc_tuned}
+\alias{get_completed.rdmc}
 \alias{get_completed.soft_impute_tuned}
+\alias{get_completed.soft_impute}
 \alias{get_completed.median_impute}
 \alias{get_completed.mode_impute}
 \alias{get_imputed}
@@ -13,7 +15,11 @@ get_completed(object, ...)
 
 \method{get_completed}{rdmc_tuned}(object, ...)
 
+\method{get_completed}{rdmc}(object, which, ...)
+
 \method{get_completed}{soft_impute_tuned}(object, discretized = FALSE, ...)
+
+\method{get_completed}{soft_impute}(object, which, discretized = FALSE, ...)
 
 \method{get_completed}{median_impute}(object, discretized = FALSE, ...)
 
@@ -26,8 +32,11 @@ get_imputed(object, ...)
 
 \item{\dots}{additional arguments to be passed down to methods.}
 
-\item{discretized}{a logical indicating if the imputed data matrix with or
-without the discretization step should be extracted.}
+\item{which}{an integer specifying the index of the regularization
+parameter for which to extract the completed data matrix.}
+
+\item{discretized}{a logical indicating if the completed data matrix with
+or without the discretization step should be extracted.}
 }
 \value{
 The completed (i.e., imputed) data matrix.
