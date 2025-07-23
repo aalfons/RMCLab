@@ -93,17 +93,14 @@ rdmc_tune <- function(X, values = NULL, lambda = fraction_grid(),
   relative <- isTRUE(relative)
   # check loss function
   # loss <- match.arg(loss)
-  loss <- match.arg(loss, choices = c("pseudo_huber", "absolute", 
-                                      "truncated", "bounded"))
-  if (loss == "bounded") {
+  if (!missing(loss) && isTRUE(loss == "bounded")) {
     loss <- "truncated"
     .Deprecated(
       msg = c("argument value \"bounded\" is deprecated.\n", 
               "Use 'loss = \"truncated\"' instead.\n",
-              "See help(\"rdmc_tune\").")
+              "See help(\"rdmc\").")
     )
-    
-  }
+  } else loss <- match.arg(loss)
   if (is.null(loss_const)) {
     # set default constant for loss function (if applicable)
     loss_const <- switch(
