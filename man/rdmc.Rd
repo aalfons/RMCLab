@@ -88,6 +88,17 @@ the implementation automatically takes advantage of warm starts.}
 \value{
 An object of class \code{"rdmc"}.  The class structure is still experimental
 and may change.
+
+The following accessor functions are available:
+\itemize{
+\item \code{\link{get_completed}()} to extract the completed (i.e.,
+imputed) data matrix with a specified value of the regularization
+parameter,
+\item \code{\link{get_lambda}()} to extract the values of the
+regularization parameter,
+\item \code{\link{get_nb_iter}()} to extract the number of iterations with
+each value of the regularization parameter.
+}
 }
 \description{
 Perform robust discrete matrix completion with a low-rank constraint on a
@@ -104,12 +115,15 @@ and the truncated absolute loss (\code{loss = "truncated"}) is defined as
 \deqn{\rho(x) = \min (|x|, \code{loss\_const}).}{rho(x) = min(|x|, \code{loss_const}).}
 }
 \examples{
-# Toy Example from the MovieLens 100K Dataset
+# toy example derived from MovieLens 100K dataset
 data("MovieLensToy")
-# imputation by rdmc
-fit_rdmc <- rdmc(MovieLensToy, loss = "pseudo_huber")
-# get discretized imputed matrix with the first lambda value
-X_rmdc  <- get_completed(fit_rdmc, which = 1)
+# robust discrete matrix completion
+fit <- rdmc(MovieLensToy)
+# extract completed matrix with fifth value of 
+# regularization parameter
+X_hat <- get_completed(fit, which = 5)
+head(X_hat)
+
 }
 \references{
 Archimbaud, A., Alfons, A., and Wilms, I. (2024) Robust Matrix Completion

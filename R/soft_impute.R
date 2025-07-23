@@ -53,6 +53,15 @@
 #' An object of class \code{"soft_impute"}.  The class structure is still 
 #' experimental and may change.  
 #' 
+#' The following accessor functions are available:
+#' \itemize{
+#'   \item \code{\link{get_completed}()} to extract the completed (i.e., 
+#'   imputed) data matrix with a specified value of the regularization 
+#'   parameter,
+#'   \item \code{\link{get_lambda}()} to extract the values of the 
+#'   regularization parameter.
+#' }
+#' 
 #' @author Andreas Alfons and Aurore Archimbaud
 #' 
 #' @references 
@@ -66,22 +75,21 @@
 #' 
 #' @seealso \code{\link{soft_impute_tune}()}, \code{\link{fraction_grid}()}
 #' 
+#' @examples
+#' # toy example derived from MovieLens 100K dataset
+#' data("MovieLensToy")
+#' # Soft-Impute with discretization step
+#' fit <- soft_impute(MovieLensToy, discretize = TRUE)
+#' # extract discretized completed matrix with fifth value 
+#' # of regularization parameter
+#' X_hat <- get_completed(fit, which = 5, discretized = TRUE)
+#' head(X_hat)
+#' 
 #' @keywords multivariate
 #' 
 #' @importFrom softImpute biScale complete softImpute
 #' @export
-#' @examples
-#' # Toy Example from the MovieLens 100K Dataset
-#' data("MovieLensToy")
-#' # imputation by soft_impute
-#' fit_soft_impute <- soft_impute(MovieLensToy)
-#' # get non discretized imputed matrix with the first lambda value
-#' X_soft_impute <- get_completed(fit_soft_impute, which = 1)
-#' 
-#' # discrete imputation by soft_impute
-#' fit_soft_impute <- soft_impute(MovieLensToy, discretize = TRUE)
-#' # get discretized imputed matrix with the first lambda value
-#' X_soft_impute <- get_completed(fit_soft_impute, which = 1, discretized = TRUE)
+
 soft_impute <- function(X, lambda = fraction_grid(reverse = TRUE), 
                         relative = TRUE, type = c("svd", "als"), 
                         rank.max = NULL, thresh = 1e-05, 

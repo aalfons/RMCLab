@@ -29,12 +29,13 @@
 #' 
 #' The following accessor functions are available:
 #' \itemize{
-#'   \item \code{\link{get_completed}()} to extract the imputed data matrix (with the 
-#'   optimal value of the regularization parameter),
+#'   \item \code{\link{get_completed}()} to extract the completed (i.e., 
+#'   imputed) data matrix with the optimal value of the regularization 
+#'   parameter,
 #'   \item \code{\link{get_lambda}()} to extract the optimal value of the 
 #'   regularization parameter,
-#'   \item \code{\link{get_nb_iter}()} to extract the number of iterations (with 
-#'   the optimal value of the regularization parameter).
+#'   \item \code{\link{get_nb_iter}()} to extract the number of iterations with 
+#'   the optimal value of the regularization parameter.
 #' }
 #' 
 #' @author Andreas Alfons
@@ -47,30 +48,26 @@
 #' \code{\link{holdout_control}()}, \code{\link{cv_folds_control}()}, 
 #' \code{\link{create_splits}()}
 #' 
+#' @examples
+#' # toy example derived from MovieLens 100K dataset
+#' data("MovieLensToy")
+#' # robust discrete matrix completion with hyperparameter tuning
+#' set.seed(20250723)
+#' fit <- rdmc_tune(MovieLensToy, 
+#'                  lambda = fraction_grid(nb_lambda = 6),
+#'                  splits = holdout_control(R = 5))
+#' # extract completed matrix with optimal regularization parameter
+#' X_hat <- get_completed(fit)
+#' head(X_hat)
+#' # extract value of optimal regularization parameter
+#' get_lambda(fit)
+#' # extract number of iterations with optimal regularization parameter
+#' get_nb_iter(fit)
+#' 
 #' @keywords multivariate
 #' 
 #' @export
-#' @examples
-#' # Toy Example from the MovieLens 100K Dataset
-#' data("MovieLensToy")
-#' # imputation by rdmc_tune: automatically choose the best regularization parameter
-#' fit_rdmc_tuned <- rdmc_tune(MovieLensToy, loss = "pseudo_huber")
-#' # get discretized imputed matrix with the best regularization parameter
-#' X_rdmc_tuned <- get_completed(fit_rdmc_tuned)
-#' # get the number of iterations based on the best regularization parameter
-#' get_nb_iter(fit_rdmc_tuned)
-#' # get the value of the chosen regularized parameter
-#' get_lambda(fit_rdmc_tuned)
-#' 
-#' # Change lambda grid and splits for selection via repeated holdout validation.
-#' lambda <- fraction_grid(min = 0.01, max = 1, nb_lambda = 7, log = TRUE)
-#' splits <- holdout_control(pct = 0.1, R = 5)
-#' fit_rdmc_tuned <- rdmc_tune(MovieLensToy, loss = "absolute", values =  1:5, 
-#' lambda = lambda, splits = splits,
-#' conv_tol =  1e-4, max_iter = 10) 
-#' X_rdmc_tuned <- get_completed(fit_rdmc_tuned)
-#' get_nb_iter(fit_rdmc_tuned)
-#' get_lambda(fit_rdmc_tuned)
+
 rdmc_tune <- function(X, values = NULL, lambda = fraction_grid(), 
                       relative = TRUE, splits = holdout_control(), 
                       loss = c("pseudo_huber", "absolute", "truncated"),

@@ -21,10 +21,11 @@ If \code{NULL}, the unique values of the observed parts of \code{X} are
 used.}
 }
 \value{
-An object of class \code{"median_impute"}.
+An object of class \code{"median_impute"}. The class structure is still
+experimental and may change.
 
-The class structure is still experimental and may change.  Use the accessor
-function \code{\link{get_completed}()} to extract the imputed data matrix.
+Use the accessor function \code{\link{get_completed}()} to extract the
+completed (i.e., imputed) data matrix.
 }
 \description{
 Perform median imputation.  In case of discrete rating-scale data, a
@@ -36,12 +37,14 @@ sampling from the largest answer category smaller than the median and the
 smallest answer category larger than the median (for each missing cell).
 }
 \examples{
-# Toy Example from the MovieLens 100K Dataset
+# toy example derived from MovieLens 100K dataset
 data("MovieLensToy")
-# imputation by median (discretized by default)
-fit_median <- median_impute(MovieLensToy, values = 1:5)
-# get discretized imputed matrix
-X_median <- get_completed(fit_median, discretize = TRUE)
+# median imputation with discretization step
+fit <- median_impute(MovieLensToy, values = 1:5)
+# extract discretized completed matrix
+X_hat <- get_completed(fit, discretized = TRUE)
+head(X_hat)
+
 }
 \seealso{
 \code{\link{mode_impute}()}

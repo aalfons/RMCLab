@@ -71,6 +71,17 @@
 #' An object of class \code{"rdmc"}.  The class structure is still experimental 
 #' and may change.  
 #' 
+#' The following accessor functions are available:
+#' \itemize{
+#'   \item \code{\link{get_completed}()} to extract the completed (i.e., 
+#'   imputed) data matrix with a specified value of the regularization 
+#'   parameter,
+#'   \item \code{\link{get_lambda}()} to extract the values of the 
+#'   regularization parameter,
+#'   \item \code{\link{get_nb_iter}()} to extract the number of iterations with 
+#'   each value of the regularization parameter.
+#' }
+#' 
 #' @author Andreas Alfons and Aurore Archimbaud
 #' 
 #' @references
@@ -80,18 +91,22 @@
 #' 
 #' @seealso \code{\link{rdmc_tune}()}, \code{\link{fraction_grid}()}
 #' 
+#' @examples
+#' # toy example derived from MovieLens 100K dataset
+#' data("MovieLensToy")
+#' # robust discrete matrix completion
+#' fit <- rdmc(MovieLensToy)
+#' # extract completed matrix with fifth value of 
+#' # regularization parameter
+#' X_hat <- get_completed(fit, which = 5)
+#' head(X_hat)
+#' 
 #' @keywords multivariate
 #' 
 #' @useDynLib rdmc, .registration = TRUE
 #' @importFrom Rcpp evalCpp
 #' @export
-#' @examples
-#' # Toy Example from the MovieLens 100K Dataset
-#' data("MovieLensToy")
-#' # imputation by rdmc
-#' fit_rdmc <- rdmc(MovieLensToy, loss = "pseudo_huber")
-#' # get discretized imputed matrix with the first lambda value
-#' X_rmdc  <- get_completed(fit_rdmc, which = 1)
+
 rdmc <- function(X, values = NULL, lambda = fraction_grid(), relative = TRUE, 
                  loss = c("pseudo_huber", "absolute", "truncated"),
                  loss_const = NULL, type = "svd", svd_tol = 1e-04, 

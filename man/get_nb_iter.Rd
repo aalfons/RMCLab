@@ -3,11 +3,14 @@
 \name{get_nb_iter}
 \alias{get_nb_iter}
 \alias{get_nb_iter.rdmc_tuned}
+\alias{get_nb_iter.rdmc}
 \title{Extract the number of iterations}
 \usage{
 get_nb_iter(object, ...)
 
 \method{get_nb_iter}{rdmc_tuned}(object, ...)
+
+\method{get_nb_iter}{rdmc}(object, ...)
 }
 \arguments{
 \item{object}{an object returned by an iterative matrix completion

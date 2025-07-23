@@ -191,3 +191,9 @@ get_nb_iter <- function(object, ...) UseMethod("get_nb_iter")
 get_nb_iter.rdmc_tuned <- function(object, ...) {
   object$fit$nb_iter
 }
+
+#' @rdname get_nb_iter
+#' @export
+get_nb_iter.rdmc <- function(object, ...) {
+  object$nb_iter
+}

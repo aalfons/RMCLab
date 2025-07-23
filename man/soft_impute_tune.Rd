@@ -68,22 +68,21 @@ Note that this uses the convenience wrapper \code{\link{soft_impute}()},
 whose default behavior is different from that of the original function.
 }
 \examples{
-# Toy Example from the MovieLens 100K Dataset
+# toy example derived from MovieLens 100K dataset
 data("MovieLensToy")
-# discrete (bydefault) imputation by soft_impute_tune with the best regularization parameter
-fit_soft_impute_tuned <- soft_impute_tune(MovieLensToy)
-# get discretized imputed matrix with the first lambda value
-X_soft_impute_tuned <- get_completed(fit_soft_impute_tuned, 
-discretized = TRUE)
+# Soft-Impute with discretization step and hyperparameter tuning
+set.seed(20250723)
+fit <- soft_impute_tune(MovieLensToy, 
+                        lambda = fraction_grid(nb_lambda = 6, 
+                                               reverse = TRUE),
+                        splits = holdout_control(R = 5))
+# extract discretized completed matrix with optimal 
+# regularization parameter
+X_hat <- get_completed(fit, discretized = TRUE)
+head(X_hat)
+# extract value of optimal regularization parameter
+get_lambda(fit)
 
-# Change lambda grid and splits for selection via repeated holdout validation.
-lambda <- fraction_grid(min = 0.01, max = 1, nb_lambda = 7, log = TRUE)
-splits <- holdout_control(pct = 0.1, R = 5)
-fit_soft_impute_tuned <- soft_impute_tune(MovieLensToy,
-lambda = lambda, splits = splits, thresh = 1e-04, maxit = 10)
-# get discretized imputed matrix with the first lambda value
-X_soft_impute_tuned <- get_completed(fit_soft_impute_tuned, 
-discretized = TRUE)
 }
 \references{
 Hastie, T., Mazumder, R., Lee, J. D. and Zadeh, R. (2015) Matrix Completion

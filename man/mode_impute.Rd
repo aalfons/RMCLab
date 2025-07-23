@@ -15,10 +15,11 @@ If \code{NULL}, the unique values of the observed parts of \code{X} are
 used.}
 }
 \value{
-An object of class \code{"mode_impute"}.
+An object of class \code{"mode_impute"}. The class structure is still
+experimental and may change.
 
-The class structure is still experimental and may change.  Use the accessor
-function \code{\link{get_completed}()} to extract the imputed data matrix.
+Use the accessor function \code{\link{get_completed}()} to extract the
+completed (i.e., imputed) data matrix.
 }
 \description{
 Perform mode imputation for discrete data.  In case of multiple modes in a
@@ -30,12 +31,14 @@ suitable for discrete data.  It does not estimate the mode of a continuous
 density.
 }
 \examples{
-# Toy Example from the MovieLens 100K Dataset
+# toy example derived from MovieLens 100K dataset
 data("MovieLensToy")
-# imputation by mode 
-fit_mode <- mode_impute(MovieLensToy, values = 1:5)
-# get discretized imputed matrix
-X_mode <- get_completed(fit_mode)
+# mode imputation
+fit <- mode_impute(MovieLensToy, values = 1:5)
+# extract completed matrix
+X_hat <- get_completed(fit)
+head(X_hat)
+
 }
 \seealso{
 \code{\link{median_impute}()}

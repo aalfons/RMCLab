@@ -25,26 +25,30 @@
 #' used.
 #' 
 #' @return 
-#' An object of class \code{"median_impute"}.
+#' An object of class \code{"median_impute"}. The class structure is still 
+#' experimental and may change.
 #' 
-#' The class structure is still experimental and may change.  Use the accessor 
-#' function \code{\link{get_completed}()} to extract the imputed data matrix.
+#' Use the accessor function \code{\link{get_completed}()} to extract the 
+#' completed (i.e., imputed) data matrix.
 #' 
 #' @author Andreas Alfons
 #' 
 #' @seealso \code{\link{mode_impute}()}
 #' 
+#' @examples
+#' # toy example derived from MovieLens 100K dataset
+#' data("MovieLensToy")
+#' # median imputation with discretization step
+#' fit <- median_impute(MovieLensToy, values = 1:5)
+#' # extract discretized completed matrix
+#' X_hat <- get_completed(fit, discretized = TRUE)
+#' head(X_hat)
+#' 
 #' @keywords multivariate
 #' 
 #' @importFrom stats median
 #' @export
-#' @examples
-#' # Toy Example from the MovieLens 100K Dataset
-#' data("MovieLensToy")
-#' # imputation by median (discretized by default)
-#' fit_median <- median_impute(MovieLensToy, values = 1:5)
-#' # get discretized imputed matrix
-#' X_median <- get_completed(fit_median, discretize = TRUE)
+
 median_impute <- function(X, discretize = TRUE, values = NULL) {
   
   # initializations

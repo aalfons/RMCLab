@@ -57,6 +57,15 @@ used.}
 \value{
 An object of class \code{"soft_impute"}.  The class structure is still
 experimental and may change.
+
+The following accessor functions are available:
+\itemize{
+\item \code{\link{get_completed}()} to extract the completed (i.e.,
+imputed) data matrix with a specified value of the regularization
+parameter,
+\item \code{\link{get_lambda}()} to extract the values of the
+regularization parameter.
+}
 }
 \description{
 Convenience wrapper for \code{\link[softImpute]{softImpute}()} that allows
@@ -69,17 +78,15 @@ discretization step after fitting the algorithm to map the imputed values to
 the rating scale of the observed values.
 }
 \examples{
-# Toy Example from the MovieLens 100K Dataset
+# toy example derived from MovieLens 100K dataset
 data("MovieLensToy")
-# imputation by soft_impute
-fit_soft_impute <- soft_impute(MovieLensToy)
-# get non discretized imputed matrix with the first lambda value
-X_soft_impute <- get_completed(fit_soft_impute, which = 1)
+# Soft-Impute with discretization step
+fit <- soft_impute(MovieLensToy, discretize = TRUE)
+# extract discretized completed matrix with fifth value 
+# of regularization parameter
+X_hat <- get_completed(fit, which = 5, discretized = TRUE)
+head(X_hat)
 
-# discrete imputation by soft_impute
-fit_soft_impute <- soft_impute(MovieLensToy, discretize = TRUE)
-# get discretized imputed matrix with the first lambda value
-X_soft_impute <- get_completed(fit_soft_impute, which = 1, discretized = TRUE)
 }
 \references{
 Hastie, T., Mazumder, R., Lee, J. D. and Zadeh, R. (2015) Matrix Completion
