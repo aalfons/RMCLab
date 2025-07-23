@@ -60,6 +60,9 @@ get_completed.rdmc <- function(object, which, ...) {
 #' @rdname get_completed
 #' @export
 get_completed.soft_impute_tuned <- function(object, discretized = FALSE, ...) {
+  if (isTRUE(discretized) & is.null(object$fit$X_discretized)) 
+    stop('You requested the discretized imputed matrix, but this step must be explicitly enabled in the soft_impute_tune() function. 
+            Please set the parameter discretize = TRUE to perform this step.')
   if (isTRUE(discretized)) object$fit$X_discretized
   else object$fit$X
 }
@@ -67,6 +70,9 @@ get_completed.soft_impute_tuned <- function(object, discretized = FALSE, ...) {
 #' @rdname get_completed
 #' @export
 get_completed.soft_impute <- function(object, which, discretized = FALSE, ...) {
+  if (isTRUE(discretized) & is.null(object$X_discretized)) 
+    stop('You requested the discretized imputed matrix, but this step must be explicitly enabled in the soft_impute() function. 
+            Please set the parameter discretize = TRUE to perform this step.')
   if (isTRUE(discretized)) out <- object$X_discretized
   else out <- object$X
   if (length(object$lambda) > 1L) {
@@ -83,7 +89,10 @@ get_completed.soft_impute <- function(object, which, discretized = FALSE, ...) {
 
 #' @rdname get_completed
 #' @export
-get_completed.median_impute <- function(object, discretized = FALSE, ...) {
+get_completed.median_impute <- function(object, discretized = TRUE, ...) {
+  if (isTRUE(discretized) & is.null(object$X_discretized)) 
+    stop('You requested the discretized imputed matrix, but this step must be explicitly enabled in the median_impute() function. 
+            Please set the parameter discretize = TRUE to perform this step.')
   if (isTRUE(discretized)) object$X_discretized
   else object$X
 }

@@ -85,7 +85,13 @@
 #' @useDynLib rdmc, .registration = TRUE
 #' @importFrom Rcpp evalCpp
 #' @export
-
+#' @examples
+#' # Toy Example from the MovieLens 100K Dataset
+#' data("MovieLensToy")
+#' # imputation by rdmc
+#' fit_rdmc <- rdmc(MovieLensToy, loss = "pseudo_huber")
+#' # get discretized imputed matrix with the first lambda value
+#' X_rmdc  <- get_completed(fit_rdmc, which = 1)
 rdmc <- function(X, values = NULL, lambda = fraction_grid(), relative = TRUE, 
                  loss = c("pseudo_huber", "absolute", "truncated"),
                  loss_const = NULL, type = "svd", svd_tol = 1e-04, 

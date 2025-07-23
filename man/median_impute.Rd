@@ -24,7 +24,7 @@ used.}
 An object of class \code{"median_impute"}.
 
 The class structure is still experimental and may change.  Use the accessor
-function \code{\link{get_X}()} to extract the imputed data matrix.
+function \code{\link{get_completed}()} to extract the imputed data matrix.
 }
 \description{
 Perform median imputation.  In case of discrete rating-scale data, a
@@ -34,6 +34,14 @@ the median of a given column may lie in between two answer categories in
 case of an even number of observed values).  This is done by randomly
 sampling from the largest answer category smaller than the median and the
 smallest answer category larger than the median (for each missing cell).
+}
+\examples{
+# Toy Example from the MovieLens 100K Dataset
+data("MovieLensToy")
+# imputation by median (discretized by default)
+fit_median <- median_impute(MovieLensToy, values = 1:5)
+# get discretized imputed matrix
+X_median <- get_completed(fit_median, discretize = TRUE)
 }
 \seealso{
 \code{\link{mode_impute}()}

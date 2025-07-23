@@ -33,7 +33,7 @@
 #' 
 #' The following accessor functions are available:
 #' \itemize{
-#'   \item \code{\link{get_X}()} to extract the imputed data matrix (with the 
+#'   \item \code{\link{get_completed}()} to extract the imputed data matrix (with the 
 #'   optimal value of the regularization parameter),
 #'   \item \code{\link{get_lambda}()} to extract the optimal value of the 
 #'   regularization parameter.
@@ -52,7 +52,23 @@
 #' @keywords multivariate
 #' 
 #' @export
-
+#' @examples
+#' # Toy Example from the MovieLens 100K Dataset
+#' data("MovieLensToy")
+#' # discrete (bydefault) imputation by soft_impute_tune with the best regularization parameter
+#' fit_soft_impute_tuned <- soft_impute_tune(MovieLensToy)
+#' # get discretized imputed matrix with the first lambda value
+#' X_soft_impute_tuned <- get_completed(fit_soft_impute_tuned, 
+#' discretized = TRUE)
+#' 
+#' # Change lambda grid and splits for selection via repeated holdout validation.
+#' lambda <- fraction_grid(min = 0.01, max = 1, nb_lambda = 7, log = TRUE)
+#' splits <- holdout_control(pct = 0.1, R = 5)
+#' fit_soft_impute_tuned <- soft_impute_tune(MovieLensToy,
+#' lambda = lambda, splits = splits, thresh = 1e-04, maxit = 10)
+#' # get discretized imputed matrix with the first lambda value
+#' X_soft_impute_tuned <- get_completed(fit_soft_impute_tuned, 
+#' discretized = TRUE)
 soft_impute_tune <- function(X, lambda = fraction_grid(reverse = TRUE), 
                              relative = TRUE, splits = holdout_control(), 
                              ..., discretize = TRUE, values = NULL) {

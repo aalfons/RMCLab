@@ -68,6 +68,19 @@ of discrete rating-scale data, the wrapper function allows to include a
 discretization step after fitting the algorithm to map the imputed values to
 the rating scale of the observed values.
 }
+\examples{
+# Toy Example from the MovieLens 100K Dataset
+data("MovieLensToy")
+# imputation by soft_impute
+fit_soft_impute <- soft_impute(MovieLensToy)
+# get non discretized imputed matrix with the first lambda value
+X_soft_impute <- get_completed(fit_soft_impute, which = 1)
+
+# discrete imputation by soft_impute
+fit_soft_impute <- soft_impute(MovieLensToy, discretize = TRUE)
+# get discretized imputed matrix with the first lambda value
+X_soft_impute <- get_completed(fit_soft_impute, which = 1, discretized = TRUE)
+}
 \references{
 Hastie, T., Mazumder, R., Lee, J. D. and Zadeh, R. (2015) Matrix Completion
 and Low-Rank SVD via Fast Alternating Least Squares. \emph{Journal of

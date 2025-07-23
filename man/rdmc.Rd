@@ -103,6 +103,14 @@ The absolute loss
 and the truncated absolute loss (\code{loss = "truncated"}) is defined as
 \deqn{\rho(x) = \min (|x|, \code{loss\_const}).}{rho(x) = min(|x|, \code{loss_const}).}
 }
+\examples{
+# Toy Example from the MovieLens 100K Dataset
+data("MovieLensToy")
+# imputation by rdmc
+fit_rdmc <- rdmc(MovieLensToy, loss = "pseudo_huber")
+# get discretized imputed matrix with the first lambda value
+X_rmdc  <- get_completed(fit_rdmc, which = 1)
+}
 \references{
 Archimbaud, A., Alfons, A., and Wilms, I. (2024) Robust Matrix Completion
 for Discrete Rating-Scale Data. arXiv:2412.20802.

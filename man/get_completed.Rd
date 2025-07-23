@@ -21,7 +21,7 @@ get_completed(object, ...)
 
 \method{get_completed}{soft_impute}(object, which, discretized = FALSE, ...)
 
-\method{get_completed}{median_impute}(object, discretized = FALSE, ...)
+\method{get_completed}{median_impute}(object, discretized = TRUE, ...)
 
 \method{get_completed}{mode_impute}(object, ...)
 

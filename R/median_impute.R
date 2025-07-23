@@ -28,7 +28,7 @@
 #' An object of class \code{"median_impute"}.
 #' 
 #' The class structure is still experimental and may change.  Use the accessor 
-#' function \code{\link{get_X}()} to extract the imputed data matrix.
+#' function \code{\link{get_completed}()} to extract the imputed data matrix.
 #' 
 #' @author Andreas Alfons
 #' 
@@ -38,6 +38,13 @@
 #' 
 #' @importFrom stats median
 #' @export
+#' @examples
+#' # Toy Example from the MovieLens 100K Dataset
+#' data("MovieLensToy")
+#' # imputation by median (discretized by default)
+#' fit_median <- median_impute(MovieLensToy, values = 1:5)
+#' # get discretized imputed matrix
+#' X_median <- get_completed(fit_median, discretize = TRUE)
 median_impute <- function(X, discretize = TRUE, values = NULL) {
   
   # initializations

@@ -19,7 +19,7 @@
 #' An object of class \code{"mode_impute"}.
 #' 
 #' The class structure is still experimental and may change.  Use the accessor 
-#' function \code{\link{get_X}()} to extract the imputed data matrix.
+#' function \code{\link{get_completed}()} to extract the imputed data matrix.
 #' 
 #' @note  
 #' The mode is computed as the most frequent value, hence this function is only 
@@ -33,6 +33,13 @@
 #' @keywords multivariate
 #' 
 #' @export
+#' @examples
+#' # Toy Example from the MovieLens 100K Dataset
+#' data("MovieLensToy")
+#' # imputation by mode 
+#' fit_mode <- mode_impute(MovieLensToy, values = 1:5)
+#' # get discretized imputed matrix
+#' X_mode <- get_completed(fit_mode)
 
 mode_impute <- function(X, values = NULL) {
   

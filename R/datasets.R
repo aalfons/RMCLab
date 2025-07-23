@@ -1,0 +1,25 @@
+#' Toy Example from the MovieLens 100K Dataset
+#'
+#' This dataset is a toy example derived from the MovieLens 100K dataset, which
+#'  contains 100,000 ratings (on a scale from 1 to 5) provided by 943 users for
+#'   1,682 movies. The original data was collected via the MovieLens website 
+#'   (movielens.umn.edu) over a seven-month period, from September 19, 1997,
+#'    to April 22, 1998.
+#'
+#' This toy version has been curated to include only users with at least 200 
+#' ratings and movies with at least 300 ratings, ensuring a denser and more 
+#' informative subset for testing and demonstration purposes.
+#'
+#' @usage
+#' data("MovieLensToy")
+#'
+#'
+#' @format A data frame with 149 rows and 33 variables:
+#' \describe{
+#'   \item{Rows}{Represent individual users.}
+#'   \item{Columns}{Represent movies. Each cell contains a rating from 1 to 5,
+#'    or NA if the movie was not rated by the user.}
+#' }
+#' @source GroupLens Research, \url{https://grouplens.org/datasets/movielens/100k/}
+#' 
+"MovieLensToy"

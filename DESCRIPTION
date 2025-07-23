@@ -30,3 +30,4 @@ Author:
 Maintainer: Andreas Alfons <alfons@ese.eur.nl>
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
+LazyData: true

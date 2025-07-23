@@ -70,7 +70,18 @@
 #' 
 #' @importFrom softImpute biScale complete softImpute
 #' @export
-
+#' @examples
+#' # Toy Example from the MovieLens 100K Dataset
+#' data("MovieLensToy")
+#' # imputation by soft_impute
+#' fit_soft_impute <- soft_impute(MovieLensToy)
+#' # get non discretized imputed matrix with the first lambda value
+#' X_soft_impute <- get_completed(fit_soft_impute, which = 1)
+#' 
+#' # discrete imputation by soft_impute
+#' fit_soft_impute <- soft_impute(MovieLensToy, discretize = TRUE)
+#' # get discretized imputed matrix with the first lambda value
+#' X_soft_impute <- get_completed(fit_soft_impute, which = 1, discretized = TRUE)
 soft_impute <- function(X, lambda = fraction_grid(reverse = TRUE), 
                         relative = TRUE, type = c("svd", "als"), 
                         rank.max = NULL, thresh = 1e-05, 

@@ -18,7 +18,7 @@ used.}
 An object of class \code{"mode_impute"}.
 
 The class structure is still experimental and may change.  Use the accessor
-function \code{\link{get_X}()} to extract the imputed data matrix.
+function \code{\link{get_completed}()} to extract the imputed data matrix.
 }
 \description{
 Perform mode imputation for discrete data.  In case of multiple modes in a
@@ -28,6 +28,14 @@ given column, one of them is selected at random for each missing cell.
 The mode is computed as the most frequent value, hence this function is only
 suitable for discrete data.  It does not estimate the mode of a continuous
 density.
+}
+\examples{
+# Toy Example from the MovieLens 100K Dataset
+data("MovieLensToy")
+# imputation by mode 
+fit_mode <- mode_impute(MovieLensToy, values = 1:5)
+# get discretized imputed matrix
+X_mode <- get_completed(fit_mode)
 }
 \seealso{
 \code{\link{median_impute}()}
