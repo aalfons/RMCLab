@@ -86,17 +86,41 @@ with a grid of values for the regularization parameter \code{lambda} so that
 the implementation automatically takes advantage of warm starts.}
 }
 \value{
-An object of class \code{"rdmc"}.  The class structure is still experimental
-and may change.
+An object of class \code{"rdmc"} with the following components:
+\item{lambda}{a numeric vector containing the values of the regularization
+parameter.}
+\item{d_max}{a numeric value with which the values of the regularization
+parameter were multiplied. If \code{relative = TRUE}, the largest singular
+value of the median-centered data matrix, otherwise 1. }
+\item{L}{in case of a single value of \code{lambda}, a numeric matrix
+containing the predictions of the median-centered data matrix. Otherwise a
+list of such matrices.}
+\item{Z}{in case of a single value of \code{lambda}, an ancillary continuous
+matrix used in the optimization algorithm. Otherwise a list of such
+matrices.}
+\item{Theta}{in case of a single value of \code{lambda}, a numeric matrix
+containing the discrepancy parameter, i.e., the multiplier adjusting for the
+discrepancy between \code{L} and \code{Z} in the optimization algorithm.
+Otherwise a list of such matrices.}
+\item{objective}{a numeric vector containing the value of the objective
+function for each value of the regularization parameter.}
+\item{converged}{a logical vector indicating whether the algorithm
+converged for each value of the regularization parameter.}
+\item{nb_iter}{an integer vector containing the number of iterations for
+each value of the regularization parameter.}
+\item{X}{in case of a single value of \code{lambda}, a numeric matrix
+containing the completed (i.e., imputed) data matrix. Otherwise a list of
+such matrices.}
 
+The class structure is still experimental and may change in the future.
 The following accessor functions are available:
 \itemize{
 \item \code{\link{get_completed}()} to extract the completed (i.e.,
-imputed) data matrix with a specified value of the regularization
+imputed) data matrix for a specified value of the regularization
 parameter,
 \item \code{\link{get_lambda}()} to extract the values of the
 regularization parameter,
-\item \code{\link{get_nb_iter}()} to extract the number of iterations with
+\item \code{\link{get_nb_iter}()} to extract the number of iterations for
 each value of the regularization parameter.
 }
 }

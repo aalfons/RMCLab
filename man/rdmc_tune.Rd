@@ -56,9 +56,19 @@ parameter.  See \sQuote{Details} for more information.}
 \item{\dots}{additional arguments to be passed down to \code{\link{rdmc}()}.}
 }
 \value{
-An object of class \code{"rdmc_tuned"}.  The class structure is still
-experimental and may change.
+An object of class \code{"rdmc_tuned"} with the following components:
+\item{lambda}{a numeric vector containing the values of the regularization
+parameter.}
+\item{tuning_loss}{a numeric vector containing the (average) values of the
+loss function on the validation set(s) for each value of the regularization
+parameter.}
+\item{lambda_opt}{numeric; the optimal value of the regularization
+parameter.}
+\item{fit}{an object of class \code{"\link{rdmc}"} containing the results
+from the algorithm with the optimal regularization parameter on the full
+(observed) data matrix.}
 
+The class structure is still experimental and may change in the future.
 The following accessor functions are available:
 \itemize{
 \item \code{\link{get_completed}()} to extract the completed (i.e.,
