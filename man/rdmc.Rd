@@ -150,7 +150,7 @@ head(X_hat)
 
 }
 \references{
-Archimbaud, A., Alfons, A., and Wilms, I. (2024) Robust Matrix Completion
+Archimbaud, A., Alfons, A., and Wilms, I. (2025) Robust Matrix Completion
 for Discrete Rating-Scale Data. arXiv:2412.20802.
 \doi{10.48550/arXiv.2412.20802}.
 }
