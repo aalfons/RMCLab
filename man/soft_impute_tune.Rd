@@ -78,7 +78,7 @@ fit <- soft_impute_tune(MovieLensToy,
                         splits = holdout_control(R = 5))
 # extract discretized completed matrix with optimal 
 # regularization parameter
-X_hat <- get_completed(fit, discretized = TRUE)
+X_hat <- get_completed(fit)
 head(X_hat)
 # extract value of optimal regularization parameter
 get_lambda(fit)

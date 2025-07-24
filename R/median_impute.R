@@ -41,7 +41,7 @@
 #' # median imputation with discretization step
 #' fit <- median_impute(MovieLensToy, values = 1:5)
 #' # extract discretized completed matrix
-#' X_hat <- get_completed(fit, discretized = TRUE)
+#' X_hat <- get_completed(fit)
 #' head(X_hat)
 #' 
 #' @keywords multivariate

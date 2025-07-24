@@ -84,7 +84,7 @@ data("MovieLensToy")
 fit <- soft_impute(MovieLensToy, discretize = TRUE)
 # extract discretized completed matrix with fifth value 
 # of regularization parameter
-X_hat <- get_completed(fit, which = 5, discretized = TRUE)
+X_hat <- get_completed(fit, which = 5)
 head(X_hat)
 
 }

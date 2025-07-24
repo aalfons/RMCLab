@@ -13,7 +13,9 @@
 #' @param which  an integer specifying the index of the regularization 
 #' parameter for which to extract the completed data matrix.
 #' @param discretized  a logical indicating if the completed data matrix with 
-#' or without the discretization step should be extracted.
+#' or without the discretization step should be extracted. The default is 
+#' \code{TRUE} if the discretization step was performed and \code{FALSE} 
+#' otherwise.
 #' @param \dots  additional arguments to be passed down to methods.
 #' 
 #' @return  The completed (i.e., imputed) data matrix.
@@ -59,21 +61,34 @@ get_completed.rdmc <- function(object, which, ...) {
 
 #' @rdname get_completed
 #' @export
-get_completed.soft_impute_tuned <- function(object, discretized = FALSE, ...) {
-  if (isTRUE(discretized) & is.null(object$fit$X_discretized)) 
-    stop('You requested the discretized imputed matrix, but this step must be explicitly enabled in the soft_impute_tune() function. 
-            Please set the parameter discretize = TRUE to perform this step.')
-  if (isTRUE(discretized)) object$fit$X_discretized
+get_completed.soft_impute_tuned <- function(object, discretized = NULL, ...) {
+  have_discretized <- !is.null(object$fit$X_discretized)
+  if (is.null(discretized)) discretized <- have_discretized
+  else {
+    discretized <- isTRUE(discretized)
+    if (discretized & !have_discretized) 
+      stop("You requested the discretized completed matrix, but this step ", 
+           "must be explicitly enabled in function soft_impute_tune(). Please ",
+           "run soft_impute_tune() with 'discretize = TRUE' to perform this ", 
+           "step.")
+  }
+  if (discretized) object$fit$X_discretized
   else object$fit$X
 }
 
 #' @rdname get_completed
 #' @export
-get_completed.soft_impute <- function(object, which, discretized = FALSE, ...) {
-  if (isTRUE(discretized) & is.null(object$X_discretized)) 
-    stop('You requested the discretized imputed matrix, but this step must be explicitly enabled in the soft_impute() function. 
-            Please set the parameter discretize = TRUE to perform this step.')
-  if (isTRUE(discretized)) out <- object$X_discretized
+get_completed.soft_impute <- function(object, which, discretized = NULL, ...) {
+  have_discretized <- !is.null(object$X_discretized)
+  if (is.null(discretized)) discretized <- have_discretized
+  else {
+    discretized <- isTRUE(discretized)
+    if (discretized & !have_discretized) 
+      stop("You requested the discretized completed matrix, but this step ", 
+           "must be explicitly enabled in function soft_impute(). Please ",
+           "run soft_impute() with 'discretize = TRUE' to perform this step.")
+  }
+  if (discretized) out <- object$X_discretized
   else out <- object$X
   if (length(object$lambda) > 1L) {
     if (missing(which)) {
@@ -89,11 +104,17 @@ get_completed.soft_impute <- function(object, which, discretized = FALSE, ...) {
 
 #' @rdname get_completed
 #' @export
-get_completed.median_impute <- function(object, discretized = TRUE, ...) {
-  if (isTRUE(discretized) & is.null(object$X_discretized)) 
-    stop('You requested the discretized imputed matrix, but this step must be explicitly enabled in the median_impute() function. 
-            Please set the parameter discretize = TRUE to perform this step.')
-  if (isTRUE(discretized)) object$X_discretized
+get_completed.median_impute <- function(object, discretized = NULL, ...) {
+  have_discretized <- !is.null(object$X_discretized)
+  if (is.null(discretized)) discretized <- have_discretized
+  else {
+    discretized <- isTRUE(discretized)
+    if (discretized & !have_discretized) 
+      stop("You requested the discretized completed matrix, but this step ", 
+           "must be explicitly enabled in function median_impute(). Please ",
+           "run median_impute() with 'discretize = TRUE' to perform this step.")
+  }
+  if (discretized) object$X_discretized
   else object$X
 }
 

@@ -17,11 +17,11 @@ get_completed(object, ...)
 
 \method{get_completed}{rdmc}(object, which, ...)
 
-\method{get_completed}{soft_impute_tuned}(object, discretized = FALSE, ...)
+\method{get_completed}{soft_impute_tuned}(object, discretized = NULL, ...)
 
-\method{get_completed}{soft_impute}(object, which, discretized = FALSE, ...)
+\method{get_completed}{soft_impute}(object, which, discretized = NULL, ...)
 
-\method{get_completed}{median_impute}(object, discretized = TRUE, ...)
+\method{get_completed}{median_impute}(object, discretized = NULL, ...)
 
 \method{get_completed}{mode_impute}(object, ...)
 
@@ -36,7 +36,9 @@ get_imputed(object, ...)
 parameter for which to extract the completed data matrix.}
 
 \item{discretized}{a logical indicating if the completed data matrix with
-or without the discretization step should be extracted.}
+or without the discretization step should be extracted. The default is
+\code{TRUE} if the discretization step was performed and \code{FALSE}
+otherwise.}
 }
 \value{
 The completed (i.e., imputed) data matrix.
