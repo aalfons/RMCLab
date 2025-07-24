@@ -1,6 +1,8 @@
-# rdmc: Robust Discrete Matrix Completion
+# RMCLab: Lab for Matrix Completion and Imputation of Discrete Rating Data
 
-Robust matrix completion for discrete rating-scale data with a low-rank constraint on a latent continuous matrix, implemented via an ADMM algorithm. For the loss part of the objective function, several robust loss functions are implemented. More information can be found in our paper:
+Collection of methods for rating matrix completion, which is a statistical framework for recommender systems. Another relevant application is the imputation of rating-scale survey data in the social and behavioral sciences. Note that matrix completion and imputation are synonymous terms used in different streams of the literature. 
+
+The main functionality implements robust matrix completion for discrete rating-scale data with a low-rank constraint on a latent continuous matrix. More information can be found in our paper:
 
 Archimbaud, A., Alfons, A., and Wilms, I. (2025). Robust Matrix Completion for Discrete Rating-Scale Data. arXiv:2412.20802. doi:[10.48550/arXiv.2412.20802](https://doi.org/10.48550/arXiv.2412.20802).
 
@@ -14,11 +16,11 @@ install it from the `R` command line via
 
 ```
 install.packages("devtools")
-devtools::install_github("aalfons/rdmc")
+devtools::install_github("aalfons/RMCLab")
 ```
 
 If you already have package `devtools` installed, you can skip the first
-line. Moreover, package `rdmc` contains `C++` code that needs to be
+line. Moreover, package `RMCLab` contains `C++` code that needs to be
 compiled, so you may need to download and install the [necessary tools
 for MacOS](https://cran.r-project.org/bin/macosx/tools/) or the
 [necessary tools for
@@ -27,7 +29,7 @@ Windows](https://cran.r-project.org/bin/windows/Rtools/).
 
 ## Report issues and request features
 
-If you experience any bugs or issues or if you have any suggestions for additional features, please submit an issue via the [*Issues*](https://github.com/aalfons/rdmc/issues) tab of this repository.  Please have a look at existing issues first to see if your problem or feature request has already been discussed.
+If you experience any bugs or issues or if you have any suggestions for additional features, please submit an issue via the [*Issues*](https://github.com/aalfons/RMCLab/issues) tab of this repository.  Please have a look at existing issues first to see if your problem or feature request has already been discussed.
 
 
 ## Contribute to the package

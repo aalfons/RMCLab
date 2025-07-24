@@ -29,8 +29,8 @@ Learning Research}, \bold{11}(80), 2287--2322.
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/aalfons/rdmc}
-  \item Report bugs at \url{https://github.com/aalfons/rdmc/issues}
+  \item \url{https://github.com/aalfons/RMCLab}
+  \item Report bugs at \url{https://github.com/aalfons/RMCLab/issues}
 }
 
 }

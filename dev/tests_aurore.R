@@ -1,6 +1,6 @@
 # Installation ----
-#devtools::install_github("aalfons/rdmc", ref = "dev")
-#library(rdmc)
+#devtools::install_github("aalfons/RMCLab", ref = "dev")
+#library(RMCLab)
 
 
 # Title: should we say imputation of rating scale data either in the title or the description?
