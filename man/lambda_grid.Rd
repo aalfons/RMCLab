@@ -47,6 +47,16 @@ A numeric vector of values for the regularization parameter.
 Construct a grid of values for the regularization parameter in
 \code{\link{rdmc}()} or \code{\link{soft_impute}()}.
 }
+\details{
+Function \code{fraction_grid()} generates a grid of values in the interval
+(0, 1], either on a logarithmic or linear scale, which \code{\link{rdmc}()}
+and \code{\link{soft_impute}()} can relate to a certain reference value
+computed from the data at hand.
+
+Function \code{mult_grid()} generates a multiplicative grid in which the
+each value is obtained by multiplying the previous value with a specified
+factor.
+}
 \examples{
 fraction_grid()
 fraction_grid(log = FALSE)
