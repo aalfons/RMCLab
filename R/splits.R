@@ -20,6 +20,17 @@
 #' 
 #' \code{\link{rdmc_tune}()}, \code{\link{soft_impute_tune}()}
 #' 
+#' @examples
+#' # toy example derived from MovieLens 100K dataset
+#' data("MovieLensToy")
+#' # robust discrete matrix completion with hyperparameter tuning
+#' set.seed(20250723)
+#' fit <- rdmc_tune(MovieLensToy, 
+#'                  lambda = fraction_grid(nb_lambda = 6),
+#'                  splits = holdout_control(R = 5))
+#' # extract optimal value of regularization parameter
+#' get_lambda(fit)
+#' 
 #' @keywords utilities
 
 NULL
@@ -90,6 +101,29 @@ cv_folds_control <- function(K = 5L) {
 #' \code{\link{holdout_control}()}, \code{\link{cv_folds_control}()}, 
 #' 
 #' \code{\link{rdmc_tune}()}, \code{\link{soft_impute_tune}()}
+#' 
+#' @examples
+#' # toy example derived from MovieLens 100K dataset
+#' data("MovieLensToy")
+#' # set up validation sets so that methods use same data splits
+#' set.seed(20250723)
+#' observed <- which(!is.na(MovieLensToy))
+#' holdout_splits <- holdout(observed, R = 5)
+#' # robust discrete matrix completion with hyperparameter tuning
+#' fit_RDMC <- rdmc_tune(
+#'   MovieLensToy, 
+#'   lambda = fraction_grid(nb_lambda = 6),
+#'   splits = holdout_splits
+#' )
+#' # Soft-Impute with discretization step and hyperparameter tuning
+#' fit_SI <- soft_impute_tune(
+#'   MovieLensToy, 
+#'   lambda = fraction_grid(nb_lambda = 6, reverse = TRUE),
+#'   splits = holdout_splits
+#' )
+#' # extract optimal values of regularization parameter
+#' get_lambda(fit_RDMC)
+#' get_lambda(fit_SI)
 #' 
 #' @keywords utilities
 #' 

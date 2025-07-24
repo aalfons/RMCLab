@@ -80,7 +80,7 @@ fit <- soft_impute_tune(MovieLensToy,
 # regularization parameter
 X_hat <- get_completed(fit)
 head(X_hat)
-# extract value of optimal regularization parameter
+# extract optimal value of regularization parameter
 get_lambda(fit)
 
 }

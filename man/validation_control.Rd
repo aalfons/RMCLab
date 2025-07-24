@@ -30,6 +30,18 @@ matrix into training and validation sets for hyperparameter tuning.
 Construct control objects for repeated holdout validation or
 \eqn{K}-fold cross-validation.
 }
+\examples{
+# toy example derived from MovieLens 100K dataset
+data("MovieLensToy")
+# robust discrete matrix completion with hyperparameter tuning
+set.seed(20250723)
+fit <- rdmc_tune(MovieLensToy, 
+                 lambda = fraction_grid(nb_lambda = 6),
+                 splits = holdout_control(R = 5))
+# extract optimal value of regularization parameter
+get_lambda(fit)
+
+}
 \seealso{
 \code{\link{create_splits}()},
 

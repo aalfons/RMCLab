@@ -44,7 +44,7 @@ set.seed(20250723)
 fit <- rdmc_tune(MovieLensToy, 
                  lambda = fraction_grid(nb_lambda = 6),
                  splits = holdout_control(R = 5))
-# extract value of optimal regularization parameter
+# extract optimal value of regularization parameter
 get_lambda(fit)
 
 # for more examples, see the help files of other functions for 

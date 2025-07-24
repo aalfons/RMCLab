@@ -46,6 +46,30 @@ functions that first call \code{\link{holdout_control}()} and
 \code{\link{cv_folds_control}()}, respectively, before calling
 \code{create_splits()}.
 }
+\examples{
+# toy example derived from MovieLens 100K dataset
+data("MovieLensToy")
+# set up validation sets so that methods use same data splits
+set.seed(20250723)
+observed <- which(!is.na(MovieLensToy))
+holdout_splits <- holdout(observed, R = 5)
+# robust discrete matrix completion with hyperparameter tuning
+fit_RDMC <- rdmc_tune(
+  MovieLensToy, 
+  lambda = fraction_grid(nb_lambda = 6),
+  splits = holdout_splits
+)
+# Soft-Impute with discretization step and hyperparameter tuning
+fit_SI <- soft_impute_tune(
+  MovieLensToy, 
+  lambda = fraction_grid(nb_lambda = 6, reverse = TRUE),
+  splits = holdout_splits
+)
+# extract optimal values of regularization parameter
+get_lambda(fit_RDMC)
+get_lambda(fit_SI)
+
+}
 \seealso{
 \code{\link{holdout_control}()}, \code{\link{cv_folds_control}()},
 

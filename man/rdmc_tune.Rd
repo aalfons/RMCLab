@@ -97,7 +97,7 @@ fit <- rdmc_tune(MovieLensToy,
 # extract completed matrix with optimal regularization parameter
 X_hat <- get_completed(fit)
 head(X_hat)
-# extract value of optimal regularization parameter
+# extract optimal value of regularization parameter
 get_lambda(fit)
 # extract number of iterations with optimal regularization parameter
 get_nb_iter(fit)
