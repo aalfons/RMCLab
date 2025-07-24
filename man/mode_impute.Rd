@@ -15,9 +15,13 @@ If \code{NULL}, the unique values of the observed parts of \code{X} are
 used.}
 }
 \value{
-An object of class \code{"mode_impute"}. The class structure is still
-experimental and may change.
+An object of class \code{"mode_impute"} with the following components:
+\item{modes}{a list containing the mode(s) of the observed values
+for each variable.}
+\item{X}{a numeric matrix containing the completed (i.e., imputed) data
+matrix.}
 
+The class structure is still experimental and may change in the future.
 Use the accessor function \code{\link{get_completed}()} to extract the
 completed (i.e., imputed) data matrix.
 }

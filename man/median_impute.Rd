@@ -21,9 +21,16 @@ If \code{NULL}, the unique values of the observed parts of \code{X} are
 used.}
 }
 \value{
-An object of class \code{"median_impute"}. The class structure is still
-experimental and may change.
+An object of class \code{"median_impute"} with the following components:
+\item{medians}{a numeric vector containing the median of the observed values
+for each variable.}
+\item{X}{a numeric matrix containing the completed (i.e., imputed) data
+matrix.}
+\item{X_discretized}{a numeric matrix containing the completed (i.e.,
+imputed) data matrix after the discretization step. This is only returned
+if requested via \code{discretize = TRUE}.}
 
+The class structure is still experimental and may change in the future.
 Use the accessor function \code{\link{get_completed}()} to extract the
 completed (i.e., imputed) data matrix.
 }

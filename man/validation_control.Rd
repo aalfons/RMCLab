@@ -25,6 +25,14 @@ to 5).}
 An object inheriting from class \code{"split_control"} containing
 the relevant information for splitting the the observed cells of a data
 matrix into training and validation sets for hyperparameter tuning.
+
+The subclass \code{"holdout_control"} returned by \code{holdout_control()}
+is a list with components \code{pct} and \code{R} containing the
+corresponding argument values after validity checks.
+
+The subclass \code{"cv_folds_control"} returned by \code{cv_folds_control()}
+is a list with a single component \code{K} containing the corresponding
+argument value after validity checks.
 }
 \description{
 Construct control objects for repeated holdout validation or
