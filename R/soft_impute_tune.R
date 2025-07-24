@@ -28,9 +28,19 @@
 #' the discrete rating scale of the observed values.
 #' 
 #' @return 
-#' An object of class \code{"soft_impute_tuned"}.  The class structure is still 
-#' experimental and may change.  
+#' An object of class \code{"soft_impute_tuned"} with the following components: 
+#' \item{lambda}{a numeric vector containing the values of the regularization 
+#' parameter.}
+#' \item{tuning_loss}{a numeric vector containing the (average) values of the 
+#' loss function on the validation set(s) for each value of the regularization 
+#' parameter.}
+#' \item{lambda_opt}{numeric; the optimal value of the regularization 
+#' parameter.}
+#' \item{fit}{an object of class \code{"\link{soft_impute}"} containing the 
+#' results from the algorithm with the optimal regularization parameter on the 
+#' full (observed) data matrix.}
 #' 
+#' The class structure is still experimental and may change in the future. 
 #' The following accessor functions are available:
 #' \itemize{
 #'   \item \code{\link{get_completed}()} to extract the imputed data matrix (with the 
@@ -97,7 +107,8 @@ soft_impute_tune <- function(X, lambda = fraction_grid(reverse = TRUE),
     X_train <- X
     X_train[indices] <- NA_real_
     # apply soft_impute() to training data
-    fit_train <- soft_impute(X_train, lambda = lambda, relative = relative, ...)
+    soft_impute(X_train, lambda = lambda, relative = relative, ..., 
+                discretize = FALSE)
   }, ...)
 
   # extract predictions for the elements in the different test sets and compute 

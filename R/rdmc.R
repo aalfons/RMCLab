@@ -73,7 +73,7 @@
 #' parameter.}
 #' \item{d_max}{a numeric value with which the values of the regularization 
 #' parameter were multiplied. If \code{relative = TRUE}, the largest singular 
-#' value of the median-centered data matrix, otherwise 1. }
+#' value of the median-centered data matrix, otherwise 1.}
 #' \item{L}{in case of a single value of \code{lambda}, a numeric matrix 
 #' containing the predictions of the median-centered data matrix. Otherwise a 
 #' list of such matrices.}

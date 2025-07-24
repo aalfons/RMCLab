@@ -28,7 +28,8 @@
 #' regularization parameter should be considered relative to a certain 
 #' reference value computed from the data at hand.  If \code{TRUE} (the 
 #' default), the values of \code{lambda} are multiplied with the value 
-#' returned by \code{\link[softImpute]{lambda0}()}.
+#' returned by \code{\link[softImpute]{lambda0}()} (applied to the 
+#' mean-centered data matrix).
 #' @param type  a character string specifying the type of algorithm. Possible 
 #' values are \code{"svd"} and \code{"als"}. See 
 #' \code{\link[softImpute]{softImpute}()} for details on the algorithms, but 
@@ -40,7 +41,7 @@
 #' @param thresh,maxit,trace.it,final.svd  see 
 #' \code{\link[softImpute]{softImpute}()}.
 #' @param discretize  a logical indicating whether to include a discretization 
-#' step after fitting the algorithm (defaults to \code{FALSE}).  In case of 
+#' step after fitting the algorithm (defaults to \code{TRUE}).  In case of 
 #' discrete rating-scale data, this can be used to map the imputed values to 
 #' the discrete rating scale of the observed values.
 #' @param values  an optional numeric vector giving the possible values of 
@@ -50,13 +51,28 @@
 #' used.
 #' 
 #' @return 
-#' An object of class \code{"soft_impute"}.  The class structure is still 
-#' experimental and may change.  
+#' An object of class \code{"soft_impute"} with the following components: 
+#' \item{lambda}{a numeric vector containing the values of the regularization 
+#' parameter.}
+#' \item{lambda0}{a numeric value with which the values of the regularization 
+#' parameter were multiplied. If \code{relative = TRUE}, the value returned by 
+#' \code{\link[softImpute]{lambda0}()} (applied to the mean-centered data 
+#' matrix), otherwise 1.}
+#' \item{svd}{in case of a single value of \code{lambda}, an object returned by 
+#' \code{\link[softImpute]{softImpute}()}. Otherwise a list of such objects.}
+#' \item{X}{in case of a single value of \code{lambda}, a numeric matrix 
+#' containing the completed (i.e., imputed) data matrix. Otherwise a list of 
+#' such matrices.}
+#' \item{X_discretized}{in case of a single value of \code{lambda}, a numeric 
+#' matrix containing the completed (i.e., imputed) data matrix after the 
+#' discretization step. Otherwise a list of such matrices. This is only 
+#' returned if requested via \code{discretize = TRUE}.}
 #' 
+#' The class structure is still experimental and may change in the future. 
 #' The following accessor functions are available:
 #' \itemize{
 #'   \item \code{\link{get_completed}()} to extract the completed (i.e., 
-#'   imputed) data matrix with a specified value of the regularization 
+#'   imputed) data matrix for a specified value of the regularization 
 #'   parameter,
 #'   \item \code{\link{get_lambda}()} to extract the values of the 
 #'   regularization parameter.
@@ -79,7 +95,7 @@
 #' # toy example derived from MovieLens 100K dataset
 #' data("MovieLensToy")
 #' # Soft-Impute with discretization step
-#' fit <- soft_impute(MovieLensToy, discretize = TRUE)
+#' fit <- soft_impute(MovieLensToy)
 #' # extract discretized completed matrix with fifth value 
 #' # of regularization parameter
 #' X_hat <- get_completed(fit, which = 5)
@@ -99,7 +115,7 @@ soft_impute <- function(X, lambda = fraction_grid(reverse = TRUE),
                         # fitting the algorithm for the optimal lambda after 
                         # tuning, but it is currently ignored if a vector of 
                         # lambda is supplied
-                        discretize = FALSE, values = NULL) {
+                        discretize = TRUE, values = NULL) {
   
   # initializations
   X <- as.matrix(X)
