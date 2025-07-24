@@ -24,10 +24,25 @@
 #' different streams of the literature, hence \code{get_imputed()} is an 
 #' alias for \code{get_completed()} with the same functionality.
 #' 
-#' @author Andreas Alfons
+#' @author Andreas Alfons and Aurore Archimbaud
 #' 
 #' @seealso \code{\link{rdmc_tune}()}, \code{\link{soft_impute_tune}()}, 
 #' \code{\link{median_impute}()}, \code{\link{mode_impute}()}
+#' 
+#' @examples
+#' # toy example derived from MovieLens 100K dataset
+#' data("MovieLensToy")
+#' # robust discrete matrix completion with hyperparameter tuning
+#' set.seed(20250723)
+#' fit <- rdmc_tune(MovieLensToy, 
+#'                  lambda = fraction_grid(nb_lambda = 6),
+#'                  splits = holdout_control(R = 5))
+#' # extract completed matrix with optimal regularization parameter
+#' X_hat <- get_completed(fit)
+#' head(X_hat)
+#' 
+#' # for more examples, see the help files of other functions for 
+#' # matrix completion and imputation methods
 #' 
 #' @keywords utilities
 #' 
@@ -149,6 +164,20 @@ get_imputed <- get_completed
 #' 
 #' @seealso \code{\link{rdmc_tune}()}, \code{\link{soft_impute_tune}()}
 #' 
+#' @examples
+#' # toy example derived from MovieLens 100K dataset
+#' data("MovieLensToy")
+#' # robust discrete matrix completion with hyperparameter tuning
+#' set.seed(20250723)
+#' fit <- rdmc_tune(MovieLensToy, 
+#'                  lambda = fraction_grid(nb_lambda = 6),
+#'                  splits = holdout_control(R = 5))
+#' # extract value of optimal regularization parameter
+#' get_lambda(fit)
+#' 
+#' # for more examples, see the help files of other functions for 
+#' # matrix completion and imputation methods
+#' 
 #' @keywords utilities
 #' 
 #' @export
@@ -199,6 +228,17 @@ get_lambda.soft_impute <- function(object, relative = TRUE, ...) {
 #' @author Andreas Alfons
 #' 
 #' @seealso \code{\link{rdmc_tune}()}
+#' 
+#' @examples
+#' # toy example derived from MovieLens 100K dataset
+#' data("MovieLensToy")
+#' # robust discrete matrix completion with hyperparameter tuning
+#' set.seed(20250723)
+#' fit <- rdmc_tune(MovieLensToy, 
+#'                  lambda = fraction_grid(nb_lambda = 6),
+#'                  splits = holdout_control(R = 5))
+#' # extract number of iterations with optimal regularization parameter
+#' get_nb_iter(fit)
 #' 
 #' @keywords utilities
 #' 

@@ -52,11 +52,27 @@ Matrix completion and imputation are synonymous terms used in
 different streams of the literature, hence \code{get_imputed()} is an
 alias for \code{get_completed()} with the same functionality.
 }
+\examples{
+# toy example derived from MovieLens 100K dataset
+data("MovieLensToy")
+# robust discrete matrix completion with hyperparameter tuning
+set.seed(20250723)
+fit <- rdmc_tune(MovieLensToy, 
+                 lambda = fraction_grid(nb_lambda = 6),
+                 splits = holdout_control(R = 5))
+# extract completed matrix with optimal regularization parameter
+X_hat <- get_completed(fit)
+head(X_hat)
+
+# for more examples, see the help files of other functions for 
+# matrix completion and imputation methods
+
+}
 \seealso{
 \code{\link{rdmc_tune}()}, \code{\link{soft_impute_tune}()},
 \code{\link{median_impute}()}, \code{\link{mode_impute}()}
 }
 \author{
-Andreas Alfons
+Andreas Alfons and Aurore Archimbaud
 }
 \keyword{utilities}

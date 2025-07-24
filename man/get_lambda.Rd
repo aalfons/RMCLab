@@ -36,6 +36,21 @@ The optimal value of the regularization parameter.
 Extract the optimal value of the regularization parameter from an object
 returned by a matrix completion algorithm.
 }
+\examples{
+# toy example derived from MovieLens 100K dataset
+data("MovieLensToy")
+# robust discrete matrix completion with hyperparameter tuning
+set.seed(20250723)
+fit <- rdmc_tune(MovieLensToy, 
+                 lambda = fraction_grid(nb_lambda = 6),
+                 splits = holdout_control(R = 5))
+# extract value of optimal regularization parameter
+get_lambda(fit)
+
+# for more examples, see the help files of other functions for 
+# matrix completion and imputation methods
+
+}
 \seealso{
 \code{\link{rdmc_tune}()}, \code{\link{soft_impute_tune}()}
 }

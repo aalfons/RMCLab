@@ -25,6 +25,18 @@ The number of iterations performed in the iterative algorithm.
 Extract the number of iterations from an object returned by a matrix
 completion algorithm.
 }
+\examples{
+# toy example derived from MovieLens 100K dataset
+data("MovieLensToy")
+# robust discrete matrix completion with hyperparameter tuning
+set.seed(20250723)
+fit <- rdmc_tune(MovieLensToy, 
+                 lambda = fraction_grid(nb_lambda = 6),
+                 splits = holdout_control(R = 5))
+# extract number of iterations with optimal regularization parameter
+get_nb_iter(fit)
+
+}
 \seealso{
 \code{\link{rdmc_tune}()}
 }
