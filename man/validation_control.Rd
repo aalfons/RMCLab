@@ -11,31 +11,31 @@ holdout_control(pct = 0.1, R = 10L)
 cv_folds_control(K = 5L)
 }
 \arguments{
-\item{pct}{numeric in the interval (0, 1); the percentage of observed cells
-in the data matrix to be randomly selected into the validation set (defaults
+\item{pct}{numeric in the interval (0, 1); the percentage of observed cells 
+in the data matrix to be randomly selected into the validation set (defaults 
 to 0.1).}
 
-\item{R}{an integer giving the number of random splits into training and
+\item{R}{an integer giving the number of random splits into training and 
 validation sets (defaults to 10).}
 
-\item{K}{an integer giving the number of cross-validation folds (defaults
+\item{K}{an integer giving the number of cross-validation folds (defaults 
 to 5).}
 }
 \value{
-An object inheriting from class \code{"split_control"} containing
-the relevant information for splitting the the observed cells of a data
+An object inheriting from class \code{"split_control"} containing 
+the relevant information for splitting the the observed cells of a data 
 matrix into training and validation sets for hyperparameter tuning.
 
-The subclass \code{"holdout_control"} returned by \code{holdout_control()}
-is a list with components \code{pct} and \code{R} containing the
+The subclass \code{"holdout_control"} returned by \code{holdout_control()} 
+is a list with components \code{pct} and \code{R} containing the 
 corresponding argument values after validity checks.
 
-The subclass \code{"cv_folds_control"} returned by \code{cv_folds_control()}
-is a list with a single component \code{K} containing the corresponding
+The subclass \code{"cv_folds_control"} returned by \code{cv_folds_control()} 
+is a list with a single component \code{K} containing the corresponding 
 argument value after validity checks.
 }
 \description{
-Construct control objects for repeated holdout validation or
+Construct control objects for repeated holdout validation or 
 \eqn{K}-fold cross-validation.
 }
 \examples{
@@ -51,7 +51,7 @@ get_lambda(fit)
 
 }
 \seealso{
-\code{\link{create_splits}()},
+\code{\link{create_splits}()}, 
 
 \code{\link{rdmc_tune}()}, \code{\link{soft_impute_tune}()}
 }

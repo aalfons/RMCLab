@@ -32,24 +32,24 @@ get_imputed(object, ...)
 
 \item{\dots}{additional arguments to be passed down to methods.}
 
-\item{which}{an integer specifying the index of the regularization
+\item{which}{an integer specifying the index of the regularization 
 parameter for which to extract the completed data matrix.}
 
-\item{discretized}{a logical indicating if the completed data matrix with
-or without the discretization step should be extracted. The default is
-\code{TRUE} if the discretization step was performed and \code{FALSE}
+\item{discretized}{a logical indicating if the completed data matrix with 
+or without the discretization step should be extracted. The default is 
+\code{TRUE} if the discretization step was performed and \code{FALSE} 
 otherwise.}
 }
 \value{
 The completed (i.e., imputed) data matrix.
 }
 \description{
-Extract the completed (i.e., imputed) data matrix from an object returned by
+Extract the completed (i.e., imputed) data matrix from an object returned by 
 a matrix completion algorithm.
 }
 \note{
-Matrix completion and imputation are synonymous terms used in
-different streams of the literature, hence \code{get_imputed()} is an
+Matrix completion and imputation are synonymous terms used in 
+different streams of the literature, hence \code{get_imputed()} is an 
 alias for \code{get_completed()} with the same functionality.
 }
 \examples{
@@ -69,7 +69,7 @@ head(X_hat)
 
 }
 \seealso{
-\code{\link{rdmc_tune}()}, \code{\link{soft_impute_tune}()},
+\code{\link{rdmc_tune}()}, \code{\link{soft_impute_tune}()}, 
 \code{\link{median_impute}()}, \code{\link{mode_impute}()}
 }
 \author{

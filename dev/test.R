@@ -1,4 +1,4 @@
-library("rdmc")
+library("RMCLab")
 
 # set seed of random number generator for reproducibility
 set.seed(1234)

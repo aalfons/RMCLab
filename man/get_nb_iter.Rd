@@ -13,7 +13,7 @@ get_nb_iter(object, ...)
 \method{get_nb_iter}{rdmc}(object, ...)
 }
 \arguments{
-\item{object}{an object returned by an iterative matrix completion
+\item{object}{an object returned by an iterative matrix completion 
 algorithm.}
 
 \item{\dots}{currently ignored.}
@@ -22,7 +22,7 @@ algorithm.}
 The number of iterations performed in the iterative algorithm.
 }
 \description{
-Extract the number of iterations from an object returned by a matrix
+Extract the number of iterations from an object returned by a matrix 
 completion algorithm.
 }
 \examples{

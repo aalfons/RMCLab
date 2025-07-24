@@ -10,28 +10,28 @@ mode_impute(X, values = NULL)
 \item{X}{a matrix or data frame of discrete data with missing values.}
 
 \item{values}{an optional numeric vector giving the possible values.
-Currently, the possible values are assumed to be the same for all columns.
-If \code{NULL}, the unique values of the observed parts of \code{X} are
+Currently, the possible values are assumed to be the same for all columns.  
+If \code{NULL}, the unique values of the observed parts of \code{X} are 
 used.}
 }
 \value{
-An object of class \code{"mode_impute"} with the following components:
-\item{modes}{a list containing the mode(s) of the observed values
+An object of class \code{"mode_impute"} with the following components: 
+\item{modes}{a list containing the mode(s) of the observed values 
 for each variable.}
-\item{X}{a numeric matrix containing the completed (i.e., imputed) data
+\item{X}{a numeric matrix containing the completed (i.e., imputed) data 
 matrix.}
 
-The class structure is still experimental and may change in the future.
-Use the accessor function \code{\link{get_completed}()} to extract the
+The class structure is still experimental and may change in the future. 
+Use the accessor function \code{\link{get_completed}()} to extract the 
 completed (i.e., imputed) data matrix.
 }
 \description{
-Perform mode imputation for discrete data.  In case of multiple modes in a
+Perform mode imputation for discrete data.  In case of multiple modes in a 
 given column, one of them is selected at random for each missing cell.
 }
 \note{
-The mode is computed as the most frequent value, hence this function is only
-suitable for discrete data.  It does not estimate the mode of a continuous
+The mode is computed as the most frequent value, hence this function is only 
+suitable for discrete data.  It does not estimate the mode of a continuous 
 density.
 }
 \examples{

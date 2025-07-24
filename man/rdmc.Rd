@@ -25,111 +25,111 @@ rdmc(
 \arguments{
 \item{X}{a matrix or data frame of discrete ratings with missing values.}
 
-\item{values}{an optional numeric vector giving the possible values of the
-ratings.  Currently, these are assumed to be the same for all columns.  If
+\item{values}{an optional numeric vector giving the possible values of the 
+ratings.  Currently, these are assumed to be the same for all columns.  If 
 \code{NULL}, the unique values of the observed parts of \code{X} are used.}
 
-\item{lambda}{a numeric vector giving values of the regularization
+\item{lambda}{a numeric vector giving values of the regularization 
 parameter.  See \code{\link{fraction_grid}()} for the default values.}
 
-\item{relative}{a logical indicating whether the values of the
-regularization parameter should be considered relative to a certain
-reference value computed from the data at hand.  If \code{TRUE} (the
-default), the values of \code{lambda} are multiplied with the largest
-singular value of the median-centered data matrix with missing values
+\item{relative}{a logical indicating whether the values of the 
+regularization parameter should be considered relative to a certain 
+reference value computed from the data at hand.  If \code{TRUE} (the 
+default), the values of \code{lambda} are multiplied with the largest 
+singular value of the median-centered data matrix with missing values 
 replaced by zeros.}
 
-\item{loss}{a character string specifying the robust loss function for the
-loss part of the objective function.  Possible values are
-\code{"pseudo_huber"} (the default) for the pseudo-Huber loss,
-\code{"absolute"} for the absolute loss, and \code{"truncated"} for the
+\item{loss}{a character string specifying the robust loss function for the 
+loss part of the objective function.  Possible values are 
+\code{"pseudo_huber"} (the default) for the pseudo-Huber loss, 
+\code{"absolute"} for the absolute loss, and \code{"truncated"} for the 
 truncated absolute loss.  See \sQuote{Details} for more information.}
 
-\item{loss_const}{tuning constant for the loss function.  For the
-pseudo-Huber loss, the default value is the average step size between the
-rating categories in \code{values}.  For the truncated absolute loss,
-the default is half the range of the rating categories in \code{values}.
-This is ignored for the absolute loss, which does not have a tuning
+\item{loss_const}{tuning constant for the loss function.  For the 
+pseudo-Huber loss, the default value is the average step size between the 
+rating categories in \code{values}.  For the truncated absolute loss, 
+the default is half the range of the rating categories in \code{values}.  
+This is ignored for the absolute loss, which does not have a tuning 
 parameter.  See \sQuote{Details} for more information.}
 
-\item{type}{a character string specifying the type of algorithm for the
-low-rank latent continuous matrix.  Currently only \code{"svd"} is
+\item{type}{a character string specifying the type of algorithm for the 
+low-rank latent continuous matrix.  Currently only \code{"svd"} is 
 implemented for a soft-thresholded SVD step.}
 
-\item{svd_tol}{numeric tolerance for the soft-thresholded SVD step.  Only
-singular values larger than \code{svd_tol} are kept to construct the
+\item{svd_tol}{numeric tolerance for the soft-thresholded SVD step.  Only 
+singular values larger than \code{svd_tol} are kept to construct the 
 low-rank latent continuous matrix.}
 
-\item{rank_max}{a positive integer giving a rank constraint in the
-soft-thresholded SVD step for the latent continuous matrix. The default is
+\item{rank_max}{a positive integer giving a rank constraint in the 
+soft-thresholded SVD step for the latent continuous matrix. The default is 
 to use the minimum of the number of rows and columns.}
 
-\item{mu}{numeric; penalty parameter for the discrepancy between the
-discrete rating matrix and the latent low-rank continuous matrix.  It is
+\item{mu}{numeric; penalty parameter for the discrepancy between the 
+discrete rating matrix and the latent low-rank continuous matrix.  It is 
 not recommended to change the default value of 0.1.}
 
-\item{delta}{numeric; update factor for penalty parameter \code{mu} applied
-after each iteration to increase the strength of the penalty.  It is not
+\item{delta}{numeric; update factor for penalty parameter \code{mu} applied 
+after each iteration to increase the strength of the penalty.  It is not 
 recommended to change the default value of 1.05.}
 
-\item{conv_tol}{numeric; convergence tolerance for the relative change in
+\item{conv_tol}{numeric; convergence tolerance for the relative change in 
 the objective function.}
 
-\item{max_iter}{a positive integer specifying the maximum number of
-iterations.  In practice, large gains can often be had in the first few
-iterations, with subsequent iterations yielding relatively small gains until
+\item{max_iter}{a positive integer specifying the maximum number of 
+iterations.  In practice, large gains can often be had in the first few 
+iterations, with subsequent iterations yielding relatively small gains until 
 convergence.  Hence the default is to perform at most 10 iterations.}
 
-\item{L, Theta}{starting values for the algorithm.  These are not expected
-to be set by the user.  Instead, it is recommended to call this function
-with a grid of values for the regularization parameter \code{lambda} so that
+\item{L, Theta}{starting values for the algorithm.  These are not expected 
+to be set by the user.  Instead, it is recommended to call this function 
+with a grid of values for the regularization parameter \code{lambda} so that 
 the implementation automatically takes advantage of warm starts.}
 }
 \value{
-An object of class \code{"rdmc"} with the following components:
-\item{lambda}{a numeric vector containing the values of the regularization
+An object of class \code{"rdmc"} with the following components: 
+\item{lambda}{a numeric vector containing the values of the regularization 
 parameter.}
-\item{d_max}{a numeric value with which the values of the regularization
-parameter were multiplied. If \code{relative = TRUE}, the largest singular
+\item{d_max}{a numeric value with which the values of the regularization 
+parameter were multiplied. If \code{relative = TRUE}, the largest singular 
 value of the median-centered data matrix, otherwise 1.}
-\item{L}{in case of a single value of \code{lambda}, a numeric matrix
-containing the predictions of the median-centered data matrix. Otherwise a
+\item{L}{in case of a single value of \code{lambda}, a numeric matrix 
+containing the predictions of the median-centered data matrix. Otherwise a 
 list of such matrices.}
-\item{Z}{in case of a single value of \code{lambda}, an ancillary continuous
-matrix used in the optimization algorithm. Otherwise a list of such
+\item{Z}{in case of a single value of \code{lambda}, an ancillary continuous 
+matrix used in the optimization algorithm. Otherwise a list of such 
 matrices.}
-\item{Theta}{in case of a single value of \code{lambda}, a numeric matrix
-containing the discrepancy parameter, i.e., the multiplier adjusting for the
-discrepancy between \code{L} and \code{Z} in the optimization algorithm.
+\item{Theta}{in case of a single value of \code{lambda}, a numeric matrix 
+containing the discrepancy parameter, i.e., the multiplier adjusting for the 
+discrepancy between \code{L} and \code{Z} in the optimization algorithm. 
 Otherwise a list of such matrices.}
-\item{objective}{a numeric vector containing the value of the objective
+\item{objective}{a numeric vector containing the value of the objective 
 function for each value of the regularization parameter.}
-\item{converged}{a logical vector indicating whether the algorithm
+\item{converged}{a logical vector indicating whether the algorithm 
 converged for each value of the regularization parameter.}
-\item{nb_iter}{an integer vector containing the number of iterations for
+\item{nb_iter}{an integer vector containing the number of iterations for 
 each value of the regularization parameter.}
-\item{X}{in case of a single value of \code{lambda}, a numeric matrix
-containing the completed (i.e., imputed) data matrix. Otherwise a list of
+\item{X}{in case of a single value of \code{lambda}, a numeric matrix 
+containing the completed (i.e., imputed) data matrix. Otherwise a list of 
 such matrices.}
 
-The class structure is still experimental and may change in the future.
+The class structure is still experimental and may change in the future. 
 The following accessor functions are available:
 \itemize{
-\item \code{\link{get_completed}()} to extract the completed (i.e.,
-imputed) data matrix for a specified value of the regularization
-parameter,
-\item \code{\link{get_lambda}()} to extract the values of the
-regularization parameter,
-\item \code{\link{get_nb_iter}()} to extract the number of iterations for
-each value of the regularization parameter.
+  \item \code{\link{get_completed}()} to extract the completed (i.e., 
+  imputed) data matrix for a specified value of the regularization 
+  parameter,
+  \item \code{\link{get_lambda}()} to extract the values of the 
+  regularization parameter,
+  \item \code{\link{get_nb_iter}()} to extract the number of iterations for 
+  each value of the regularization parameter.
 }
 }
 \description{
-Perform robust discrete matrix completion with a low-rank constraint on a
+Perform robust discrete matrix completion with a low-rank constraint on a 
 latent continuous matrix, implemented via an ADMM algorithm.
 }
 \details{
-For the loss part of the objective function, the pseudo-Huber loss
+For the loss part of the objective function, the pseudo-Huber loss 
 (\code{loss = "pseudo_huber"}) is given by
 \deqn{\rho(x) = \code{loss\_const}^2 (\sqrt{1 + (x/\code{loss\_const})^2} - 1).}{rho(x) = \code{loss_const}^2 (sqrt(1 + (x/\code{loss_const})^2) - 1).}
 The absolute loss
@@ -150,8 +150,8 @@ head(X_hat)
 
 }
 \references{
-Archimbaud, A., Alfons, A., and Wilms, I. (2025) Robust Matrix Completion
-for Discrete Rating-Scale Data. arXiv:2412.20802.
+Archimbaud, A., Alfons, A., and Wilms, I. (2025) Robust Matrix Completion 
+for Discrete Rating-Scale Data. arXiv:2412.20802. 
 \doi{10.48550/arXiv.2412.20802}.
 }
 \seealso{

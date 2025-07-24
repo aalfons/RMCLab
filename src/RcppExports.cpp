@@ -13,7 +13,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 // rdmc_cpp
 Rcpp::List rdmc_cpp(const arma::mat& X, const arma::umat& idx_NA, const arma::umat& idx_observed, const arma::mat& values, const Rcpp::NumericVector& lambda, const double& d_max, const arma::uword& rank_max, const std::string& type, const double& svd_tol, const std::string& loss, const double& loss_const, const double& delta, double mu, const double& conv_tol, const int& max_iter, arma::mat L, arma::mat Theta);
-RcppExport SEXP _rdmc_rdmc_cpp(SEXP XSEXP, SEXP idx_NASEXP, SEXP idx_observedSEXP, SEXP valuesSEXP, SEXP lambdaSEXP, SEXP d_maxSEXP, SEXP rank_maxSEXP, SEXP typeSEXP, SEXP svd_tolSEXP, SEXP lossSEXP, SEXP loss_constSEXP, SEXP deltaSEXP, SEXP muSEXP, SEXP conv_tolSEXP, SEXP max_iterSEXP, SEXP LSEXP, SEXP ThetaSEXP) {
+RcppExport SEXP _RMCLab_rdmc_cpp(SEXP XSEXP, SEXP idx_NASEXP, SEXP idx_observedSEXP, SEXP valuesSEXP, SEXP lambdaSEXP, SEXP d_maxSEXP, SEXP rank_maxSEXP, SEXP typeSEXP, SEXP svd_tolSEXP, SEXP lossSEXP, SEXP loss_constSEXP, SEXP deltaSEXP, SEXP muSEXP, SEXP conv_tolSEXP, SEXP max_iterSEXP, SEXP LSEXP, SEXP ThetaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -40,11 +40,11 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_rdmc_rdmc_cpp", (DL_FUNC) &_rdmc_rdmc_cpp, 17},
+    {"_RMCLab_rdmc_cpp", (DL_FUNC) &_RMCLab_rdmc_cpp, 17},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_rdmc(DllInfo *dll) {
+RcppExport void R_init_RMCLab(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

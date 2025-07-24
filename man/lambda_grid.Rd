@@ -18,43 +18,43 @@ mult_grid(min = 0.05, factor = 1.5, nb_lambda = 10L)
 }
 \arguments{
 \item{min}{numeric; the smallest value of the regularization parameter.
-For \code{fraction_grid()}, it must be in the interval (0, 1) with the
-default being 0.01.  For \code{mult_grid()}, it must be larger than 0 with
+For \code{fraction_grid()}, it must be in the interval (0, 1) with the 
+default being 0.01.  For \code{mult_grid()}, it must be larger than 0 with 
 the default being 0.05.}
 
-\item{max}{numeric; the largest value of the regularization parameter.  It
+\item{max}{numeric; the largest value of the regularization parameter.  It 
 must be in the interval (\code{min}, 1] with the default being 1.}
 
-\item{nb_lambda}{a positive integer giving the number of values for the
+\item{nb_lambda}{a positive integer giving the number of values for the 
 regularization parameter to be generated.}
 
-\item{log}{a logical indicating whether the grid of values should be on a
+\item{log}{a logical indicating whether the grid of values should be on a 
 logarithmic scale (defaults to \code{TRUE}).}
 
-\item{reverse}{a logical indicating whether the grid of values should be
-in ascending order (\code{FALSE}, the default) or in descending order
+\item{reverse}{a logical indicating whether the grid of values should be 
+in ascending order (\code{FALSE}, the default) or in descending order 
 (\code{TRUE}).}
 
-\item{factor}{numeric; multiplication factor larger than 1 to be used to
-construct the values of the regularization parameter.  That is, the second
-value is obtained by multiplying \code{min} by \code{factor}, with this
+\item{factor}{numeric; multiplication factor larger than 1 to be used to 
+construct the values of the regularization parameter.  That is, the second 
+value is obtained by multiplying \code{min} by \code{factor}, with this 
 process being iterated further.}
 }
 \value{
 A numeric vector of values for the regularization parameter.
 }
 \description{
-Construct a grid of values for the regularization parameter in
+Construct a grid of values for the regularization parameter in 
 \code{\link{rdmc}()} or \code{\link{soft_impute}()}.
 }
 \details{
-Function \code{fraction_grid()} generates a grid of values in the interval
-(0, 1], either on a logarithmic or linear scale, which \code{\link{rdmc}()}
-and \code{\link{soft_impute}()} can relate to a certain reference value
-computed from the data at hand.
+Function \code{fraction_grid()} generates a grid of values in the interval 
+(0, 1], either on a logarithmic or linear scale, which \code{\link{rdmc}()} 
+and \code{\link{soft_impute}()} can relate to a certain reference value 
+computed from the data at hand. 
 
-Function \code{mult_grid()} generates a multiplicative grid in which the
-each value is obtained by multiplying the previous value with a specified
+Function \code{mult_grid()} generates a multiplicative grid in which the 
+each value is obtained by multiplying the previous value with a specified 
 factor.
 }
 \examples{

@@ -3,21 +3,22 @@
 #         Erasmus University Rotterdam
 # ************************************
 
-#' @name rdmc-package
+#' @name RMCLab-package
+#' @aliases RMCLab
 #'
-#' @title \packageTitle{rdmc}
+#' @title \packageTitle{RMCLab}
 #'
-#' @description \packageDescription{rdmc}
+#' @description \packageDescription{RMCLab}
 #'
 #' @details
 #' The DESCRIPTION file:
-#' \packageDESCRIPTION{rdmc}
-#' \packageIndices{rdmc}
+#' \packageDESCRIPTION{RMCLab}
+#' \packageIndices{RMCLab}
 #'
 #' @author
-#' \packageAuthor{rdmc}
+#' \packageAuthor{RMCLab}
 #'
-#' Maintainer: \packageMaintainer{rdmc}
+#' Maintainer: \packageMaintainer{RMCLab}
 #' 
 #' @references
 #' Archimbaud, A., Alfons, A., and Wilms, I. (2025) Robust Matrix Completion 

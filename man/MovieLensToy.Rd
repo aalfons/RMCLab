@@ -5,32 +5,32 @@
 \alias{MovieLensToy}
 \title{Toy example derived from the MovieLens 100K dataset}
 \format{
-A matrix with 149 rows and 33 variables. Rows represent users and
+A matrix with 149 rows and 33 variables. Rows represent users and 
 columns respresent movies. Each cell contains a rating from 1 to 5,
 or \code{NA} if the movie was not rated by the user.
 
-The row names correspond to the user ID and the column names to the movie ID
+The row names correspond to the user ID and the column names to the movie ID 
 in the original MovieLens 100K dataset.
 }
 \source{
-GroupLens Research,
+GroupLens Research, 
 \url{https://grouplens.org/datasets/movielens/100k/}
 }
 \usage{
 data("MovieLensToy")
 }
 \description{
-This dataset is a toy example derived from the MovieLens 100K dataset. The
-original data were collected via the MovieLens website (movielens.umn.edu)
+This dataset is a toy example derived from the MovieLens 100K dataset. The 
+original data were collected via the MovieLens website (movielens.umn.edu) 
 over a seven-month period, from September 19, 1997, to April 22, 1998.
 }
 \details{
-The original MovieLens 100K dataset contains 100,000 ratings on a scale
+The original MovieLens 100K dataset contains 100,000 ratings on a scale 
 from 1 to 5 provided by 943 users for 1,682 movies.
 
-This toy version has been curated to be used in instantaneously computable
-examples of the package documentation. It includes only users who provided
-at least 200 ratings and movies that were rated at least 300 times, ensuring
+This toy version has been curated to be used in instantaneously computable 
+examples of the package documentation. It includes only users who provided 
+at least 200 ratings and movies that were rated at least 300 times, ensuring 
 a denser and more informative subset for testing and demonstration purposes.
 }
 \examples{

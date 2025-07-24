@@ -2,6 +2,6 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 rdmc_cpp <- function(X, idx_NA, idx_observed, values, lambda, d_max, rank_max, type, svd_tol, loss, loss_const, delta, mu, conv_tol, max_iter, L, Theta) {
-    .Call(`_rdmc_rdmc_cpp`, X, idx_NA, idx_observed, values, lambda, d_max, rank_max, type, svd_tol, loss, loss_const, delta, mu, conv_tol, max_iter, L, Theta)
+    .Call(`_RMCLab_rdmc_cpp`, X, idx_NA, idx_observed, values, lambda, d_max, rank_max, type, svd_tol, loss, loss_const, delta, mu, conv_tol, max_iter, L, Theta)
 }
 

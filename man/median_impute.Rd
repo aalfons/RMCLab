@@ -9,38 +9,38 @@ median_impute(X, discretize = TRUE, values = NULL)
 \arguments{
 \item{X}{a matrix or data frame with missing values.}
 
-\item{discretize}{a logical indicating whether to include a discretization
-step after median imputation (defaults to \code{TRUE}).  In case of
-discrete rating-scale data, this can be used to ensure that the imputed
+\item{discretize}{a logical indicating whether to include a discretization 
+step after median imputation (defaults to \code{TRUE}).  In case of 
+discrete rating-scale data, this can be used to ensure that the imputed 
 values are mapped to the discrete rating scale of the observed values.}
 
-\item{values}{an optional numeric vector giving the possible values of
-discrete ratings.  This is ignored if \code{discretize} is \code{FALSE}.
-Currently, the possible values are assumed to be the same for all columns.
-If \code{NULL}, the unique values of the observed parts of \code{X} are
+\item{values}{an optional numeric vector giving the possible values of 
+discrete ratings.  This is ignored if \code{discretize} is \code{FALSE}.  
+Currently, the possible values are assumed to be the same for all columns.  
+If \code{NULL}, the unique values of the observed parts of \code{X} are 
 used.}
 }
 \value{
-An object of class \code{"median_impute"} with the following components:
-\item{medians}{a numeric vector containing the median of the observed values
+An object of class \code{"median_impute"} with the following components: 
+\item{medians}{a numeric vector containing the median of the observed values 
 for each variable.}
-\item{X}{a numeric matrix containing the completed (i.e., imputed) data
+\item{X}{a numeric matrix containing the completed (i.e., imputed) data 
 matrix.}
-\item{X_discretized}{a numeric matrix containing the completed (i.e.,
-imputed) data matrix after the discretization step. This is only returned
+\item{X_discretized}{a numeric matrix containing the completed (i.e., 
+imputed) data matrix after the discretization step. This is only returned 
 if requested via \code{discretize = TRUE}.}
 
-The class structure is still experimental and may change in the future.
-Use the accessor function \code{\link{get_completed}()} to extract the
+The class structure is still experimental and may change in the future. 
+Use the accessor function \code{\link{get_completed}()} to extract the 
 completed (i.e., imputed) data matrix.
 }
 \description{
-Perform median imputation.  In case of discrete rating-scale data, a
-discretization step can be carried out afterwards to make sure that the
-imputed values are mapped to the rating scale of the observed values (as
-the median of a given column may lie in between two answer categories in
-case of an even number of observed values).  This is done by randomly
-sampling from the largest answer category smaller than the median and the
+Perform median imputation.  In case of discrete rating-scale data, a 
+discretization step can be carried out afterwards to make sure that the 
+imputed values are mapped to the rating scale of the observed values (as 
+the median of a given column may lie in between two answer categories in 
+case of an even number of observed values).  This is done by randomly 
+sampling from the largest answer category smaller than the median and the 
 smallest answer category larger than the median (for each missing cell).
 }
 \examples{

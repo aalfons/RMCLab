@@ -21,76 +21,76 @@ soft_impute(
 \arguments{
 \item{X}{a matrix or data frame with missing values.}
 
-\item{lambda}{a numeric vector giving values of the regularization
+\item{lambda}{a numeric vector giving values of the regularization 
 parameter.  See \code{\link{fraction_grid}()} for the default values.}
 
-\item{relative}{a logical indicating whether the values of the
-regularization parameter should be considered relative to a certain
-reference value computed from the data at hand.  If \code{TRUE} (the
-default), the values of \code{lambda} are multiplied with the value
-returned by \code{\link[softImpute]{lambda0}()} (applied to the
+\item{relative}{a logical indicating whether the values of the 
+regularization parameter should be considered relative to a certain 
+reference value computed from the data at hand.  If \code{TRUE} (the 
+default), the values of \code{lambda} are multiplied with the value 
+returned by \code{\link[softImpute]{lambda0}()} (applied to the 
 mean-centered data matrix).}
 
-\item{type}{a character string specifying the type of algorithm. Possible
-values are \code{"svd"} and \code{"als"}. See
-\code{\link[softImpute]{softImpute}()} for details on the algorithms, but
+\item{type}{a character string specifying the type of algorithm. Possible 
+values are \code{"svd"} and \code{"als"}. See 
+\code{\link[softImpute]{softImpute}()} for details on the algorithms, but 
 note that the default value here is \code{"svd"}.}
 
-\item{rank.max}{a positive integer giving a rank constraint.  See
-\code{\link[softImpute]{softImpute}()} for more details, but note that the
-default here is to use the minimum of the number of rows and columns minus 1
+\item{rank.max}{a positive integer giving a rank constraint.  See 
+\code{\link[softImpute]{softImpute}()} for more details, but note that the 
+default here is to use the minimum of the number of rows and columns minus 1 
 if \code{type} is \code{"svd"}, and to use 2 if \code{type} is \code{"als"}.}
 
-\item{thresh, maxit, trace.it, final.svd}{see
+\item{thresh, maxit, trace.it, final.svd}{see 
 \code{\link[softImpute]{softImpute}()}.}
 
-\item{discretize}{a logical indicating whether to include a discretization
-step after fitting the algorithm (defaults to \code{TRUE}).  In case of
-discrete rating-scale data, this can be used to map the imputed values to
+\item{discretize}{a logical indicating whether to include a discretization 
+step after fitting the algorithm (defaults to \code{TRUE}).  In case of 
+discrete rating-scale data, this can be used to map the imputed values to 
 the discrete rating scale of the observed values.}
 
-\item{values}{an optional numeric vector giving the possible values of
-discrete ratings.  This is ignored if \code{discretize} is \code{FALSE}.
-Currently, the possible values are assumed to be the same for all columns.
-If \code{NULL}, the unique values of the observed parts of \code{X} are
+\item{values}{an optional numeric vector giving the possible values of 
+discrete ratings.  This is ignored if \code{discretize} is \code{FALSE}.  
+Currently, the possible values are assumed to be the same for all columns.  
+If \code{NULL}, the unique values of the observed parts of \code{X} are 
 used.}
 }
 \value{
-An object of class \code{"soft_impute"} with the following components:
-\item{lambda}{a numeric vector containing the values of the regularization
+An object of class \code{"soft_impute"} with the following components: 
+\item{lambda}{a numeric vector containing the values of the regularization 
 parameter.}
-\item{lambda0}{a numeric value with which the values of the regularization
-parameter were multiplied. If \code{relative = TRUE}, the value returned by
-\code{\link[softImpute]{lambda0}()} (applied to the mean-centered data
+\item{lambda0}{a numeric value with which the values of the regularization 
+parameter were multiplied. If \code{relative = TRUE}, the value returned by 
+\code{\link[softImpute]{lambda0}()} (applied to the mean-centered data 
 matrix), otherwise 1.}
-\item{svd}{in case of a single value of \code{lambda}, an object returned by
+\item{svd}{in case of a single value of \code{lambda}, an object returned by 
 \code{\link[softImpute]{softImpute}()}. Otherwise a list of such objects.}
-\item{X}{in case of a single value of \code{lambda}, a numeric matrix
-containing the completed (i.e., imputed) data matrix. Otherwise a list of
+\item{X}{in case of a single value of \code{lambda}, a numeric matrix 
+containing the completed (i.e., imputed) data matrix. Otherwise a list of 
 such matrices.}
-\item{X_discretized}{in case of a single value of \code{lambda}, a numeric
-matrix containing the completed (i.e., imputed) data matrix after the
-discretization step. Otherwise a list of such matrices. This is only
+\item{X_discretized}{in case of a single value of \code{lambda}, a numeric 
+matrix containing the completed (i.e., imputed) data matrix after the 
+discretization step. Otherwise a list of such matrices. This is only 
 returned if requested via \code{discretize = TRUE}.}
 
-The class structure is still experimental and may change in the future.
+The class structure is still experimental and may change in the future. 
 The following accessor functions are available:
 \itemize{
-\item \code{\link{get_completed}()} to extract the completed (i.e.,
-imputed) data matrix for a specified value of the regularization
-parameter,
-\item \code{\link{get_lambda}()} to extract the values of the
-regularization parameter.
+  \item \code{\link{get_completed}()} to extract the completed (i.e., 
+  imputed) data matrix for a specified value of the regularization 
+  parameter,
+  \item \code{\link{get_lambda}()} to extract the values of the 
+  regularization parameter.
 }
 }
 \description{
-Convenience wrapper for \code{\link[softImpute]{softImpute}()} that allows
-to supply a grid of values for the regularization parameter.  Other
-noteworthy differences with the original function are that the columns of
-the data matrix are centered internally, that some of the default values are
-different, and that the output is structured differently.  Moreover, in case
-of discrete rating-scale data, the wrapper function allows to include a
-discretization step after fitting the algorithm to map the imputed values to
+Convenience wrapper for \code{\link[softImpute]{softImpute}()} that allows 
+to supply a grid of values for the regularization parameter.  Other 
+noteworthy differences with the original function are that the columns of 
+the data matrix are centered internally, that some of the default values are 
+different, and that the output is structured differently.  Moreover, in case 
+of discrete rating-scale data, the wrapper function allows to include a 
+discretization step after fitting the algorithm to map the imputed values to 
 the rating scale of the observed values.
 }
 \examples{
@@ -105,12 +105,12 @@ head(X_hat)
 
 }
 \references{
-Hastie, T., Mazumder, R., Lee, J. D. and Zadeh, R. (2015) Matrix Completion
-and Low-Rank SVD via Fast Alternating Least Squares. \emph{Journal of
+Hastie, T., Mazumder, R., Lee, J. D. and Zadeh, R. (2015) Matrix Completion 
+and Low-Rank SVD via Fast Alternating Least Squares. \emph{Journal of 
 Machine Learning Research}, \bold{16}(104), 3367--3402.
 
-Mazumder, R., Hastie, T. and Tibshirani, R. (2010) Spectral Regularization
-Algorithms for Learning Large Incomplete Matrices. \emph{Journal of Machine
+Mazumder, R., Hastie, T. and Tibshirani, R. (2010) Spectral Regularization 
+Algorithms for Learning Large Incomplete Matrices. \emph{Journal of Machine 
 Learning Research}, \bold{11}(80), 2287--2322.
 }
 \seealso{

@@ -19,21 +19,21 @@ get_lambda(object, ...)
 \method{get_lambda}{soft_impute}(object, relative = TRUE, ...)
 }
 \arguments{
-\item{object}{an object returned by a matrix completion algorithm with a
+\item{object}{an object returned by a matrix completion algorithm with a 
 regularization parameter.}
 
 \item{\dots}{additional arguments to be passed down to methods.}
 
-\item{relative}{logical; in case the values of the regularization parameter
-were given relative to a certain reference value computed from the data at
-hand, this allows to return the optimal value before or after multiplication
+\item{relative}{logical; in case the values of the regularization parameter 
+were given relative to a certain reference value computed from the data at 
+hand, this allows to return the optimal value before or after multiplication 
 with that reference value.}
 }
 \value{
 The optimal value of the regularization parameter.
 }
 \description{
-Extract the optimal value of the regularization parameter from an object
+Extract the optimal value of the regularization parameter from an object 
 returned by a matrix completion algorithm.
 }
 \examples{

@@ -1,5 +1,5 @@
 ## load packages
-library("rdmc")
+library("RMCLab")
 
 ## additional functions
 # map a vector to an interval (to be used in MNAR settings)
